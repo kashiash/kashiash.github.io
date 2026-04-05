@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jacek Placek | Notatki zgredziałego programisty</title>
+  <meta name="description" content="Osobista strona Jacka Placka: programowanie, notatki techniczne, XAF, .NET i praktyczne doświadczenia z projektów.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Literata:opsz,wght@7..72,500;7..72,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4efe7;
+      --bg-strong: #e7d8be;
+      --surface: rgba(255, 250, 242, 0.78);
+      --surface-strong: #fff9f0;
+      --text: #1f2430;
+      --muted: #5f6877;
+      --line: rgba(31, 36, 48, 0.12);
+      --accent: #c14d2d;
+      --accent-strong: #8d2f17;
+      --accent-soft: #f1c6a5;
+      --shadow: 0 24px 60px rgba(61, 39, 16, 0.14);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --max: 1140px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(193, 77, 45, 0.22), transparent 32%),
+        radial-gradient(circle at top right, rgba(90, 140, 110, 0.16), transparent 28%),
+        linear-gradient(180deg, #f7f1e8 0%, #f1e5d2 48%, #efe7db 100%);
+      min-height: 100vh;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page-shell {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+      padding: 24px 0 72px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 248, 238, 0.7);
+      backdrop-filter: blur(14px);
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(84, 61, 31, 0.08);
+      position: sticky;
+      top: 18px;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent) 0%, #d77d39 100%);
+      color: white;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+    }
+
+    .nav {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav a:hover,
+    .nav a:focus-visible {
+      color: var(--accent-strong);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      margin-top: 28px;
+      align-items: stretch;
+    }
+
+    .hero-card,
+    .panel,
+    .post-card,
+    .note-card {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      bottom: -80px;
+      width: 240px;
+      height: 240px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(193, 77, 45, 0.2) 0%, rgba(193, 77, 45, 0) 68%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(193, 77, 45, 0.18);
+      background: rgba(255, 245, 237, 0.95);
+      color: var(--accent-strong);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Literata", Georgia, serif;
+      margin: 0;
+      line-height: 1.04;
+      letter-spacing: -0.03em;
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 6vw, 5.6rem);
+      margin-top: 22px;
+      max-width: 9ch;
+    }
+
+    .hero-copy {
+      margin-top: 22px;
+      max-width: 58ch;
+      color: var(--muted);
+      font-size: 1.06rem;
+      line-height: 1.75;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .button,
+    .button-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 52px;
+      padding: 0 22px;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .button {
+      background: linear-gradient(135deg, var(--accent) 0%, #dd7c3a 100%);
+      color: white;
+      box-shadow: 0 14px 30px rgba(193, 77, 45, 0.28);
+    }
+
+    .button-secondary {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.6);
+      color: var(--text);
+    }
+
+    .button:hover,
+    .button-secondary:hover,
+    .button:focus-visible,
+    .button-secondary:focus-visible {
+      transform: translateY(-2px);
+    }
+
+    .hero-meta {
+      display: grid;
+      gap: 18px;
+      grid-template-rows: auto 1fr;
+    }
+
+    .panel {
+      border-radius: var(--radius-xl);
+      padding: 28px;
+    }
+
+    .stats {
+      display: grid;
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .stat {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(31, 36, 48, 0.08);
+    }
+
+    .stat:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent-strong);
+      line-height: 1;
+    }
+
+    .stat-copy {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .section {
+      margin-top: 28px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 58ch;
+      line-height: 1.7;
+    }
+
+    .note-grid,
+    .posts-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .note-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .posts-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .note-card,
+    .post-card {
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .note-card::before,
+    .post-card::before {
+      content: "";
+      position: absolute;
+      inset: auto -24px -36px auto;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(241, 198, 165, 0.36), rgba(241, 198, 165, 0));
+    }
+
+    .card-kicker {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent-strong);
+      font-weight: 700;
+    }
+
+    .card-text {
+      color: var(--muted);
+      line-height: 1.7;
+      margin-top: 12px;
+    }
+
+    .post-card h3,
+    .note-card h3 {
+      margin-top: 10px;
+      font-size: 1.45rem;
+    }
+
+    .post-link {
+      display: inline-flex;
+      margin-top: 18px;
+      font-weight: 700;
+      color: var(--accent-strong);
+    }
+
+    .footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 34px;
+      padding: 24px 4px 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .note-grid,
+      .posts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-card,
+      .panel,
+      .note-card,
+      .post-card {
+        padding: 24px;
+      }
+
+      .topbar {
+        border-radius: 26px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page-shell {
+        width: min(calc(100% - 20px), var(--max));
+        padding-top: 14px;
+        padding-bottom: 48px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        border-radius: 24px;
+      }
+
+      .nav {
+        gap: 10px 14px;
+      }
+
+      h1 {
+        max-width: none;
+      }
+
+      .cta-row {
+        flex-direction: column;
+      }
+
+      .button,
+      .button-secondary {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="brand" href="#start" aria-label="Strona główna">
+        <span class="brand-mark">JP</span>
+        <span>Notatki zgredziałego programisty</span>
+      </a>
+      <nav class="nav" aria-label="Nawigacja główna">
+        <a href="#o-mnie">O mnie</a>
+        <a href="#notatki">Notatki</a>
+        <a href="#kontakt">Kontakt</a>
+      </nav>
+    </header>
+
+    <main id="start">
+      <section class="hero">
+        <article class="hero-card">
+          <div class="eyebrow">Programowanie bez marketingowego dymu</div>
+          <h1>Praktyczne notatki po latach pisania kodu.</h1>
+          <p class="hero-copy">
+            Zbieram tu rzeczy, które naprawdę przydają się w pracy: krótkie rozwiązania,
+            techniczne skróty, pułapki i sprawdzone podejścia z projektów .NET, XAF,
+            integracji oraz codziennego utrzymania systemów.
+          </p>
+          <div class="cta-row">
+            <a class="button" href="#notatki">Zobacz wybrane wpisy</a>
+            <a class="button-secondary" href="https://github.com/kashiash" target="_blank" rel="noreferrer">GitHub</a>
+          </div>
+        </article>
+
+        <div class="hero-meta">
+          <aside class="panel" id="o-mnie">
+            <div class="card-kicker">Profil</div>
+            <h2>Jacek Placek</h2>
+            <p class="card-text">
+              Programista z wieloletnim stażem. Zamiast pisać kolejną teorię o produktywności,
+              wolę zostawić po sobie konkret: rozwiązanie, kontekst i powód, dla którego działa.
+            </p>
+          </aside>
+
+          <aside class="panel">
+            <div class="card-kicker">Na tej stronie</div>
+            <div class="stats">
+              <div class="stat">
+                <div class="stat-number">30+</div>
+                <div class="stat-copy">lat doświadczenia przekutych w notatki, które mają skracać drogę do rozwiązania.</div>
+              </div>
+              <div class="stat">
+                <div class="stat-number">.NET</div>
+                <div class="stat-copy">praktyka z aplikacjami biznesowymi, utrzymaniem i codziennym dowożeniem zmian.</div>
+              </div>
+              <div class="stat">
+                <div class="stat-number">XAF</div>
+                <div class="stat-copy">narzędzia, wzorce i obejścia, które warto mieć zapisane zamiast odkrywać drugi raz.</div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section" id="notatki">
+        <div class="section-head">
+          <div>
+            <div class="card-kicker">Kierunki</div>
+            <h2>O czym tu piszę</h2>
+          </div>
+          <p>
+            To nie jest blog o wszystkim. To raczej prywatny warsztat pracy wystawiony publicznie:
+            rzeczy użyteczne, konkretne i zapisane po to, żeby nie wracać do tego samego problemu od zera.
+          </p>
+        </div>
+
+        <div class="note-grid">
+          <article class="note-card">
+            <div class="card-kicker">Aplikacje biznesowe</div>
+            <h3>.NET i architektura, która ma wytrzymać codzienność</h3>
+            <p class="card-text">
+              Mniej teorii, więcej decyzji, które trzeba potem utrzymać. Kod, integracje, poprawki i realne kompromisy.
+            </p>
+          </article>
+
+          <article class="note-card">
+            <div class="card-kicker">XAF i automatyzacja</div>
+            <h3>Narzędzia, które przyspieszają pracę, jeśli używa się ich świadomie</h3>
+            <p class="card-text">
+              Wzorce, obejścia i ostrzeżenia z projektów, gdzie framework ma pomagać, a nie przeszkadzać.
+            </p>
+          </article>
+
+          <article class="note-card">
+            <div class="card-kicker">Notatki robocze</div>
+            <h3>Krótka pamięć człowieka, długa pamięć dobrze opisanej strony</h3>
+            <p class="card-text">
+              Szybkie zapiski techniczne, do których można wrócić po miesiącu i dalej wiedzieć, o co chodziło.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <div class="card-kicker">Wybrane wpisy</div>
+            <h2>Początek archiwum</h2>
+          </div>
+          <p>
+            Na start zostawiłem kilka starszych wpisów. Kolejne notatki można rozwijać już w tym samym repo GitHub Pages.
+          </p>
+        </div>
+
+        <div class="posts-grid">
+          <article class="post-card">
+            <div class="card-kicker">Swift</div>
+            <h3>Daty w Swift</h3>
+            <p class="card-text">
+              Kilka praktycznych uwag o pracy z datami i formatowaniem, czyli temat prosty tylko pozornie.
+            </p>
+            <a class="post-link" href="/2022/10/09/Daty-w-Swift.html">Czytaj wpis</a>
+          </article>
+
+          <article class="post-card">
+            <div class="card-kicker">Geolokalizacja</div>
+            <h3>Pobierz lokalizację na podstawie adresu</h3>
+            <p class="card-text">
+              Techniczna notatka o zamianie danych adresowych na współrzędne i miejscach, gdzie łatwo się potknąć.
+            </p>
+            <a class="post-link" href="/2022/10/10/Pobierz-lokalizacje-na-podstawie-adresy.html">Czytaj wpis</a>
+          </article>
+
+          <article class="post-card">
+            <div class="card-kicker">iOS</div>
+            <h3>Ciekawe strony dotyczące Swift i programowania na iOS</h3>
+            <p class="card-text">
+              Zbiór odnośników i materiałów, które warto mieć pod ręką zamiast szukać ich od nowa.
+            </p>
+            <a class="post-link" href="/2022/11/01/Ciekawe-strony-dotycz%C4%85ce-Swiift-i-programowania-na-IOS.html">Czytaj wpis</a>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" id="kontakt">
+      <div>Kontakt: <a href="mailto:kashiash@gmail.com">kashiash@gmail.com</a></div>
+      <div><a href="https://github.com/kashiash" target="_blank" rel="noreferrer">github.com/kashiash</a></div>
+    </footer>
+  </div>
+</body>
+</html>
