@@ -311,7 +311,7 @@
 
     .manifesto-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 0;
       border-top: 1px solid var(--line);
       border-left: 1px solid var(--line);
@@ -325,63 +325,63 @@
     }
 
     .manifesto-card h3,
-    .news-card h3 {
+    .news-body h3 {
       margin: 10px 0 0;
       font-size: 1.45rem;
       line-height: 1.08;
     }
 
     .manifesto-card p,
-    .news-card p {
+    .news-body p {
       margin: 14px 0 0;
       color: var(--muted);
       line-height: 1.75;
     }
 
     .news {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
       padding: 0;
     }
 
     .news-head {
       padding: 32px 24px;
-      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
     }
 
-    .news-grid {
+    .news-list {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
       gap: 0;
       border-left: 1px solid var(--line);
       border-top: 1px solid var(--line);
     }
 
-    .news-card {
-      min-height: 340px;
-      padding: 26px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+    .news-item {
+      display: grid;
+      grid-template-columns: 132px 1fr;
+      gap: 20px;
+      align-items: start;
+      padding: 24px;
       border-right: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
-      background: rgba(255,255,255,0.32);
+      background: rgba(255,255,255,0.28);
     }
 
-    .news-card:nth-child(1) {
-      background: linear-gradient(180deg, rgba(255,255,255,0.58), rgba(255,255,255,0.28));
+    .news-item:hover,
+    .news-item:focus-within {
+      background: rgba(255,255,255,0.48);
     }
 
-    .news-card:nth-child(2) {
-      background: rgba(32, 71, 57, 0.08);
+    .news-date {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
     }
 
-    .news-card:nth-child(3) {
-      background: rgba(230, 187, 84, 0.14);
-    }
-
-    .card-top {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .news-body {
+      display: block;
     }
 
     .card-kicker {
@@ -426,7 +426,7 @@
       .hero,
       .manifesto,
       .footer,
-      .news-grid {
+      .news {
         grid-template-columns: 1fr;
       }
 
@@ -444,8 +444,9 @@
         grid-template-rows: auto;
       }
 
-      .news-card {
-        min-height: auto;
+      .news-head {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
       }
     }
 
@@ -471,9 +472,13 @@
       }
 
       .hero-strip,
-      .manifesto-grid,
-      .news-grid {
+      .manifesto-grid {
         grid-template-columns: 1fr;
+      }
+
+      .news-item {
+        grid-template-columns: 1fr;
+        gap: 10px;
       }
 
       .hero-actions {
@@ -544,7 +549,7 @@
           <p class="panel-text muted">
             Zainteresowania: wino, kobieta i śpiew. A zawodowo: kod, decyzje techniczne,
             porządkowanie chaosu i notatki, do których można wrócić bez odtwarzania całego
-            kontekstu od zera.
+            kontekstu od zera. Kieruję się zasadą: zrobić i się nie narobić.
           </p>
         </div>
         <div class="hero-panel panel-accent">
@@ -561,37 +566,44 @@
     <section class="manifesto" id="manifest">
       <div class="manifesto-copy">
         <span class="section-label">Manifest</span>
-        <h2>Nie blog. Robocza baza wiedzy.</h2>
+        <h2>Extreme Programming zamiast wielkich obietnic.</h2>
         <p>
-          Strona ma wyglądać jak powierzchnia robocza, nie jak szablon. Dlatego układ jest pełnoszerokosciowy,
-          sekcje mają ciężar, a treść siedzi w siatce, która daje oddech zamiast bocznych tuneli.
+          Wolę małe kroki niż wielkie deklaracje. Najpierw działający fragment, potem test, potem
+          refaktoryzacja i szybki feedback. Jeśli coś da się sprawdzić wcześniej, to nie ma sensu
+          czekać do końca sprintu, wdrożenia albo katastrofy.
         </p>
         <p>
-          Tematy są proste: co działa, co nie działa, na co uważać i jak nie utopić się w narzędziach,
-          które obiecują wygodę, a później zostawiają z długiem technicznym.
+          Prostota, komunikacja, odwaga i szacunek to nie hasła do prezentacji, tylko sposób pracy.
+          Kod ma być czytelny, zmiany małe, wiedza wspólna, a projekt rozwijany tak, żeby dało się go
+          poprawiać bez lęku przy każdym kolejnym commitcie.
         </p>
       </div>
 
       <div class="manifesto-grid">
         <article class="manifesto-card">
-          <span class="card-kicker">Aplikacje biznesowe</span>
-          <h3>Architektura, która ma wytrzymać codzienność</h3>
-          <p>Mniej akademickich diagramów, więcej decyzji, które da się utrzymać po wdrożeniu.</p>
+          <span class="card-kicker">C# / XAF</span>
+          <h3>Biznesowe aplikacje, framework i decyzje architektoniczne</h3>
+          <p>Praktyka z .NET, DevExpress XAF, utrzymaniem systemów i rozwiązaniami, które mają działać po wdrożeniu.</p>
         </article>
         <article class="manifesto-card">
-          <span class="card-kicker">DevExpress / XAF</span>
-          <h3>Framework ma przyspieszać, nie komplikować</h3>
-          <p>Szukanie wzorców, które skracają drogę, oraz obejść, które ratują projekt przed tarciem.</p>
+          <span class="card-kicker">Swift / iOS</span>
+          <h3>Apple stack bez zbędnej teorii</h3>
+          <p>Notatki o Swift, iOS i codziennych problemach programistycznych, do których warto wrócić po czasie.</p>
         </article>
         <article class="manifesto-card">
-          <span class="card-kicker">Integracje</span>
-          <h3>Praktyka ponad teorię integracyjną</h3>
-          <p>API, importy, synchronizacja, błędy produkcyjne i wszystkie niewygodne szczegóły pomiędzy.</p>
+          <span class="card-kicker">SQL</span>
+          <h3>Dane, zapytania i wydajność bez zgadywania</h3>
+          <p>Widoki, optymalizacje, diagnostyka i porządkowanie danych tam, gdzie baza zaczyna decydować o tempie całego systemu.</p>
         </article>
         <article class="manifesto-card">
-          <span class="card-kicker">Pamięć robocza</span>
-          <h3>Notatka ma skracać powrót do problemu</h3>
-          <p>Krótko, konkretnie i z kontekstem. Tak, żeby za pół roku nadal miało sens.</p>
+          <span class="card-kicker">AI</span>
+          <h3>Narzędzia AI w realnej pracy programisty</h3>
+          <p>Automatyzacja, agenci, wsparcie w analizie i to, gdzie AI faktycznie pomaga zamiast tylko dobrze wyglądać na demo.</p>
+        </article>
+        <article class="manifesto-card">
+          <span class="card-kicker">Inne</span>
+          <h3>Rzeczy przydatne, nawet jeśli nie mieszczą się w jednej szufladzie</h3>
+          <p>Luźniejsze notatki techniczne, integracyjne i robocze tematy, które warto mieć zapisane pod ręką.</p>
         </article>
       </div>
     </section>
@@ -599,45 +611,52 @@
     <section class="news" id="news">
       <div class="news-head">
         <span class="section-label">Newsy i wpisy</span>
-        <h2>Pierwszy ekran ma prowadzić do treści, nie być ozdobą.</h2>
+        <h2>Najnowsze na górze. Data zawsze widoczna.</h2>
         <p>
-          Na start najważniejszy news o zmianie w ekosystemie Microsoft i DevExpress, a obok starsze wpisy,
-          które już są w archiwum. Kolejne materiały można rozwijać bez zmiany całej strony głównej.
+          Lista ma być szybka do przeskanowania. Bez kafli i bez zgadywania, co doszło ostatnio.
+          Po lewej data publikacji, po prawej tytuł i krótki opis.
         </p>
       </div>
 
-      <div class="news-grid">
-        <article class="news-card">
-          <div class="card-top">
-            <span class="card-kicker">Nowy wpis</span>
+      <div class="news-list">
+        <article class="news-item">
+          <div class="news-date">2026-04-05</div>
+          <div class="news-body">
+            <span class="card-kicker">DevExpress</span>
             <h3>Koniec MAT. Co dalej z lokalizacją w aplikacjach DevExpress?</h3>
-            <p>
-              Krótkie polskie omówienie wycofania Microsoft MAT, praktyczne wnioski i sensowny kierunek na teraz.
-            </p>
+            <p>Krótkie polskie omówienie wycofania Microsoft MAT, praktyczne wnioski i sensowny kierunek na teraz.</p>
+            <a class="card-link" href="/2026/04/05/mat-deprecated-devexpress-localization-tool.html">Czytaj wpis</a>
           </div>
-          <a class="card-link" href="/2026/04/05/mat-deprecated-devexpress-localization-tool.html">Czytaj wpis</a>
         </article>
 
-        <article class="news-card">
-          <div class="card-top">
-            <span class="card-kicker">Archiwum</span>
-            <h3>Daty w Swift</h3>
-            <p>
-              Techniczna notatka o formatowaniu, konwersjach i miejscach, gdzie data potrafi zachować się inaczej niż oczekujesz.
-            </p>
+        <article class="news-item">
+          <div class="news-date">2022-11-01</div>
+          <div class="news-body">
+            <span class="card-kicker">Swift / iOS</span>
+            <h3>Ciekawe strony dotyczące Swift i programowania na iOS</h3>
+            <p>Zbiór materiałów i odnośników, które warto mieć zapisane zamiast szukać ich jeszcze raz.</p>
+            <a class="card-link" href="/2022/11/01/Ciekawe-strony-dotycz%C4%85ce-Swiift-i-programowania-na-IOS.html">Czytaj wpis</a>
           </div>
-          <a class="card-link" href="/2022/10/09/Daty-w-Swift.html">Czytaj wpis</a>
         </article>
 
-        <article class="news-card">
-          <div class="card-top">
-            <span class="card-kicker">Archiwum</span>
+        <article class="news-item">
+          <div class="news-date">2022-10-10</div>
+          <div class="news-body">
+            <span class="card-kicker">Swift / iOS</span>
             <h3>Pobierz lokalizację na podstawie adresu</h3>
-            <p>
-              Krótki zapis rozwiązania geokodowania, do którego można wrócić bez ponownego przekopywania internetu.
-            </p>
+            <p>Krótki zapis rozwiązania geokodowania, do którego można wrócić bez ponownego przekopywania internetu.</p>
+            <a class="card-link" href="/2022/10/10/Pobierz-lokalizacje-na-podstawie-adresy.html">Czytaj wpis</a>
           </div>
-          <a class="card-link" href="/2022/10/10/Pobierz-lokalizacje-na-podstawie-adresy.html">Czytaj wpis</a>
+        </article>
+
+        <article class="news-item">
+          <div class="news-date">2022-10-09</div>
+          <div class="news-body">
+            <span class="card-kicker">Swift / iOS</span>
+            <h3>Daty w Swift</h3>
+            <p>Techniczna notatka o formatowaniu, konwersjach i miejscach, gdzie data potrafi zachować się inaczej niż oczekujesz.</p>
+            <a class="card-link" href="/2022/10/09/Daty-w-Swift.html">Czytaj wpis</a>
+          </div>
         </article>
       </div>
     </section>
