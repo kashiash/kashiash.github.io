@@ -52,9 +52,14 @@
     }
 
     .page-shell {
-      width: min(calc(100% - 32px), var(--max));
-      margin: 0 auto;
-      padding: 24px 0 72px;
+      width: 100%;
+      padding: 18px 0 72px;
+    }
+
+    .full-bleed {
+      width: 100%;
+      padding-left: 24px;
+      padding-right: 24px;
     }
 
     .topbar {
@@ -71,6 +76,7 @@
       position: sticky;
       top: 18px;
       z-index: 10;
+      width: 100%;
     }
 
     .brand {
@@ -129,6 +135,10 @@
       padding: 40px;
       position: relative;
       overflow: hidden;
+      min-height: 72vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .hero-card::after {
@@ -350,6 +360,11 @@
       font-size: 0.95rem;
     }
 
+    .content-width {
+      width: min(100%, var(--max));
+      margin: 0 auto;
+    }
+
     @media (max-width: 980px) {
       .hero,
       .note-grid,
@@ -371,9 +386,13 @@
 
     @media (max-width: 640px) {
       .page-shell {
-        width: min(calc(100% - 20px), var(--max));
         padding-top: 14px;
         padding-bottom: 48px;
+      }
+
+      .full-bleed {
+        padding-left: 14px;
+        padding-right: 14px;
       }
 
       .topbar {
@@ -402,35 +421,41 @@
 </head>
 <body>
   <div class="page-shell">
-    <header class="topbar">
-      <a class="brand" href="#start" aria-label="Strona główna">
-        <span class="brand-mark">JP</span>
-        <span>Notatki zgredziałego programisty</span>
-      </a>
-      <nav class="nav" aria-label="Nawigacja główna">
-        <a href="#o-mnie">O mnie</a>
-        <a href="#notatki">Notatki</a>
-        <a href="#kontakt">Kontakt</a>
-      </nav>
-    </header>
+    <div class="full-bleed">
+      <header class="topbar">
+        <a class="brand" href="#start" aria-label="Strona główna">
+          <span class="brand-mark">JP</span>
+          <span>Notatki zgredziałego programisty</span>
+        </a>
+        <nav class="nav" aria-label="Nawigacja główna">
+          <a href="#o-mnie">O mnie</a>
+          <a href="#notatki">Notatki</a>
+          <a href="#kontakt">Kontakt</a>
+        </nav>
+      </header>
+    </div>
 
     <main id="start">
-      <section class="hero">
+      <section class="hero full-bleed">
         <article class="hero-card">
-          <div class="eyebrow">Programowanie bez marketingowego dymu</div>
-          <h1>Praktyczne notatki po latach pisania kodu.</h1>
-          <p class="hero-copy">
-            Zbieram tu rzeczy, które naprawdę przydają się w pracy: krótkie rozwiązania,
-            techniczne skróty, pułapki i sprawdzone podejścia z projektów .NET, XAF,
-            integracji oraz codziennego utrzymania systemów.
-          </p>
-          <div class="cta-row">
-            <a class="button" href="#notatki">Zobacz wybrane wpisy</a>
-            <a class="button-secondary" href="https://github.com/kashiash" target="_blank" rel="noreferrer">GitHub</a>
+          <div class="content-width">
+            <div class="eyebrow">Programowanie bez marketingowego dymu</div>
+            <h1>Praktyczne notatki po latach pisania kodu.</h1>
+            <p class="hero-copy">
+              Zbieram tu rzeczy, które naprawdę przydają się w pracy: krótkie rozwiązania,
+              techniczne skróty, pułapki i sprawdzone podejścia z projektów .NET, XAF,
+              integracji oraz codziennego utrzymania systemów.
+            </p>
+            <div class="cta-row">
+              <a class="button" href="#notatki">Zobacz wybrane wpisy</a>
+              <a class="button-secondary" href="https://github.com/kashiash" target="_blank" rel="noreferrer">GitHub</a>
+            </div>
           </div>
         </article>
+      </section>
 
-        <div class="hero-meta">
+      <section class="section full-bleed">
+        <div class="content-width hero-meta">
           <aside class="panel" id="o-mnie">
             <div class="card-kicker">Profil</div>
             <h2>Jacek Placek</h2>
@@ -460,91 +485,97 @@
         </div>
       </section>
 
-      <section class="section" id="notatki">
-        <div class="section-head">
-          <div>
-            <div class="card-kicker">Kierunki</div>
-            <h2>O czym tu piszę</h2>
+      <section class="section full-bleed" id="notatki">
+        <div class="content-width">
+          <div class="section-head">
+            <div>
+              <div class="card-kicker">Kierunki</div>
+              <h2>O czym tu piszę</h2>
+            </div>
+            <p>
+              To nie jest blog o wszystkim. To raczej prywatny warsztat pracy wystawiony publicznie:
+              rzeczy użyteczne, konkretne i zapisane po to, żeby nie wracać do tego samego problemu od zera.
+            </p>
           </div>
-          <p>
-            To nie jest blog o wszystkim. To raczej prywatny warsztat pracy wystawiony publicznie:
-            rzeczy użyteczne, konkretne i zapisane po to, żeby nie wracać do tego samego problemu od zera.
-          </p>
-        </div>
 
-        <div class="note-grid">
-          <article class="note-card">
-            <div class="card-kicker">Aplikacje biznesowe</div>
-            <h3>.NET i architektura, która ma wytrzymać codzienność</h3>
-            <p class="card-text">
-              Mniej teorii, więcej decyzji, które trzeba potem utrzymać. Kod, integracje, poprawki i realne kompromisy.
-            </p>
-          </article>
+          <div class="note-grid">
+            <article class="note-card">
+              <div class="card-kicker">Aplikacje biznesowe</div>
+              <h3>.NET i architektura, która ma wytrzymać codzienność</h3>
+              <p class="card-text">
+                Mniej teorii, więcej decyzji, które trzeba potem utrzymać. Kod, integracje, poprawki i realne kompromisy.
+              </p>
+            </article>
 
-          <article class="note-card">
-            <div class="card-kicker">XAF i automatyzacja</div>
-            <h3>Narzędzia, które przyspieszają pracę, jeśli używa się ich świadomie</h3>
-            <p class="card-text">
-              Wzorce, obejścia i ostrzeżenia z projektów, gdzie framework ma pomagać, a nie przeszkadzać.
-            </p>
-          </article>
+            <article class="note-card">
+              <div class="card-kicker">XAF i automatyzacja</div>
+              <h3>Narzędzia, które przyspieszają pracę, jeśli używa się ich świadomie</h3>
+              <p class="card-text">
+                Wzorce, obejścia i ostrzeżenia z projektów, gdzie framework ma pomagać, a nie przeszkadzać.
+              </p>
+            </article>
 
-          <article class="note-card">
-            <div class="card-kicker">Notatki robocze</div>
-            <h3>Krótka pamięć człowieka, długa pamięć dobrze opisanej strony</h3>
-            <p class="card-text">
-              Szybkie zapiski techniczne, do których można wrócić po miesiącu i dalej wiedzieć, o co chodziło.
-            </p>
-          </article>
+            <article class="note-card">
+              <div class="card-kicker">Notatki robocze</div>
+              <h3>Krótka pamięć człowieka, długa pamięć dobrze opisanej strony</h3>
+              <p class="card-text">
+                Szybkie zapiski techniczne, do których można wrócić po miesiącu i dalej wiedzieć, o co chodziło.
+              </p>
+            </article>
+          </div>
         </div>
       </section>
 
-      <section class="section">
-        <div class="section-head">
-          <div>
-            <div class="card-kicker">Wybrane wpisy</div>
-            <h2>Początek archiwum</h2>
+      <section class="section full-bleed">
+        <div class="content-width">
+          <div class="section-head">
+            <div>
+              <div class="card-kicker">Wybrane wpisy</div>
+              <h2>Początek archiwum</h2>
+            </div>
+            <p>
+              Na start zostawiłem kilka starszych wpisów. Kolejne notatki można rozwijać już w tym samym repo GitHub Pages.
+            </p>
           </div>
-          <p>
-            Na start zostawiłem kilka starszych wpisów. Kolejne notatki można rozwijać już w tym samym repo GitHub Pages.
-          </p>
-        </div>
 
-        <div class="posts-grid">
-          <article class="post-card">
-            <div class="card-kicker">Swift</div>
-            <h3>Daty w Swift</h3>
-            <p class="card-text">
-              Kilka praktycznych uwag o pracy z datami i formatowaniem, czyli temat prosty tylko pozornie.
-            </p>
-            <a class="post-link" href="/2022/10/09/Daty-w-Swift.html">Czytaj wpis</a>
-          </article>
+          <div class="posts-grid">
+            <article class="post-card">
+              <div class="card-kicker">Swift</div>
+              <h3>Daty w Swift</h3>
+              <p class="card-text">
+                Kilka praktycznych uwag o pracy z datami i formatowaniem, czyli temat prosty tylko pozornie.
+              </p>
+              <a class="post-link" href="/2022/10/09/Daty-w-Swift.html">Czytaj wpis</a>
+            </article>
 
-          <article class="post-card">
-            <div class="card-kicker">Geolokalizacja</div>
-            <h3>Pobierz lokalizację na podstawie adresu</h3>
-            <p class="card-text">
-              Techniczna notatka o zamianie danych adresowych na współrzędne i miejscach, gdzie łatwo się potknąć.
-            </p>
-            <a class="post-link" href="/2022/10/10/Pobierz-lokalizacje-na-podstawie-adresy.html">Czytaj wpis</a>
-          </article>
+            <article class="post-card">
+              <div class="card-kicker">Geolokalizacja</div>
+              <h3>Pobierz lokalizację na podstawie adresu</h3>
+              <p class="card-text">
+                Techniczna notatka o zamianie danych adresowych na współrzędne i miejscach, gdzie łatwo się potknąć.
+              </p>
+              <a class="post-link" href="/2022/10/10/Pobierz-lokalizacje-na-podstawie-adresy.html">Czytaj wpis</a>
+            </article>
 
-          <article class="post-card">
-            <div class="card-kicker">iOS</div>
-            <h3>Ciekawe strony dotyczące Swift i programowania na iOS</h3>
-            <p class="card-text">
-              Zbiór odnośników i materiałów, które warto mieć pod ręką zamiast szukać ich od nowa.
-            </p>
-            <a class="post-link" href="/2022/11/01/Ciekawe-strony-dotycz%C4%85ce-Swiift-i-programowania-na-IOS.html">Czytaj wpis</a>
-          </article>
+            <article class="post-card">
+              <div class="card-kicker">iOS</div>
+              <h3>Ciekawe strony dotyczące Swift i programowania na iOS</h3>
+              <p class="card-text">
+                Zbiór odnośników i materiałów, które warto mieć pod ręką zamiast szukać ich od nowa.
+              </p>
+              <a class="post-link" href="/2022/11/01/Ciekawe-strony-dotycz%C4%85ce-Swiift-i-programowania-na-IOS.html">Czytaj wpis</a>
+            </article>
+          </div>
         </div>
       </section>
     </main>
 
-    <footer class="footer" id="kontakt">
-      <div>Kontakt: <a href="mailto:kashiash@gmail.com">kashiash@gmail.com</a></div>
-      <div><a href="https://github.com/kashiash" target="_blank" rel="noreferrer">github.com/kashiash</a></div>
-    </footer>
+    <div class="full-bleed">
+      <footer class="footer content-width" id="kontakt">
+        <div>Kontakt: <a href="mailto:kashiash@gmail.com">kashiash@gmail.com</a></div>
+        <div><a href="https://github.com/kashiash" target="_blank" rel="noreferrer">github.com/kashiash</a></div>
+      </footer>
+    </div>
   </div>
 </body>
 </html>
