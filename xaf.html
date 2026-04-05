@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XAF w skrócie | Jacek Placek</title>
+  <meta name="description" content="Krótki przewodnik po DevExpress XAF: platformy, ORM, kontrolery, Web API, bezpieczeństwo, walidacja i deployment z linkami do oficjalnej dokumentacji.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Bricolage+Grotesque:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f3efe8;
+      --surface: rgba(255,255,255,0.44);
+      --ink: #151515;
+      --muted: #5d5851;
+      --line: rgba(21,21,21,0.12);
+      --accent: #cf4f2f;
+      --forest: #204739;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(207,79,47,0.12), transparent 24%),
+        radial-gradient(circle at top right, rgba(32,71,57,0.12), transparent 22%),
+        linear-gradient(180deg, #f6f0e7 0%, #efe7db 100%);
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+    }
+    a { color: inherit; text-decoration: none; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      padding: 18px 24px;
+      background: rgba(251,247,241,0.82);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { font-weight: 700; }
+    .nav {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      min-height: calc(100vh - 73px);
+      border-bottom: 1px solid var(--line);
+    }
+    .hero-main, .hero-side {
+      padding: 34px 24px 40px;
+    }
+    .hero-main {
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .eyebrow, .section-label {
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: var(--accent);
+    }
+    h1, h2, h3 {
+      margin: 0;
+      font-family: "Bricolage Grotesque", "Space Grotesk", sans-serif;
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+    }
+    h1 { font-size: clamp(3rem, 8vw, 7rem); margin-top: 18px; max-width: 9ch; }
+    .lead {
+      max-width: 62ch;
+      margin-top: 22px;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 1.05rem;
+    }
+    .hero-points {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+      margin-top: 36px;
+    }
+    .point {
+      padding: 20px;
+      background: rgba(255,255,255,0.26);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .point strong {
+      display: block;
+      font-size: 1.35rem;
+      margin-bottom: 10px;
+    }
+    .point span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.94rem;
+    }
+    .intro-card, .link-card, .summary-card {
+      padding: 24px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .intro-card { margin-bottom: 18px; }
+    .intro-card p, .summary-card p {
+      color: var(--muted);
+      line-height: 1.8;
+      margin: 14px 0 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--line);
+    }
+    .summary, .links {
+      padding: 30px 24px 40px;
+    }
+    .summary { border-right: 1px solid var(--line); }
+    .summary-head, .links-head {
+      margin-bottom: 22px;
+    }
+    .summary-head h2, .links-head h2 {
+      margin-top: 14px;
+      font-size: clamp(2rem, 4vw, 4rem);
+    }
+    .summary-list {
+      display: grid;
+      gap: 16px;
+    }
+    .summary-card h3, .link-card h3 {
+      font-size: 1.35rem;
+      line-height: 1.08;
+    }
+    .summary-card ul {
+      margin: 14px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+    .links-list {
+      display: grid;
+      gap: 16px;
+    }
+    .link-card p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+    .link-card a {
+      display: inline-flex;
+      margin-top: 16px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .footer {
+      padding: 24px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    @media (max-width: 1100px) {
+      .hero, .grid { grid-template-columns: 1fr; }
+      .hero-main, .summary { border-right: 0; border-bottom: 1px solid var(--line); }
+    }
+    @media (max-width: 760px) {
+      .topbar, .hero-main, .hero-side, .summary, .links, .footer { padding-left: 16px; padding-right: 16px; }
+      .hero-points { grid-template-columns: 1fr; }
+      .nav { gap: 10px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">Jacek Placek / XAF</a>
+    <nav class="nav">
+      <a href="/">Start</a>
+      <a href="#skrot">Skrót</a>
+      <a href="#linki">Linki</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-main">
+        <div>
+          <span class="eyebrow">DevExpress XAF</span>
+          <h1>XAF W SKRÓCIE, BEZ PRZEKOPYWANIA CAŁEGO DOCS.</h1>
+          <p class="lead">
+            Oficjalna dokumentacja DevExpress jest szeroka i dobra, ale na wejściu łatwo się w niej rozlać.
+            Tu masz krótszą mapę: od czego zacząć, gdzie iść po ORM, gdzie po kontrolery, gdzie po Web API,
+            co jest naprawdę ważne i które linki warto mieć pod ręką.
+          </p>
+        </div>
+
+        <div class="hero-points">
+          <div class="point">
+            <strong>Platformy</strong>
+            <span>Blazor Server, WinForms i osobny Backend Web API. W praktyce to trzy główne wejścia do XAF.</span>
+          </div>
+          <div class="point">
+            <strong>ORM</strong>
+            <span>EF Core albo XPO. To jest jedna z pierwszych decyzji, bo wpływa na model biznesowy i dalszą strukturę projektu.</span>
+          </div>
+          <div class="point">
+            <strong>Logika</strong>
+            <span>Najwięcej realnej pracy kończy się zwykle w modelu biznesowym, kontrolerach, akcjach i bezpieczeństwie.</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero-side">
+        <div class="intro-card">
+          <span class="section-label">Od czego zacząć</span>
+          <h2 style="margin-top:14px;font-size:clamp(1.9rem,4vw,3.3rem);">Najpierw wybierz platformę i ORM.</h2>
+          <p>
+            To jest decyzja numer jeden. Jeśli nie wiesz, od czego zacząć, najpierw sprawdź
+            <strong>Supported XAF UI Platforms</strong>, a potem sekcję <strong>Storage, ORM, and Business Model Design</strong>.
+            Dopiero później schodź w kontrolery, edytory i szczegóły UI.
+          </p>
+        </div>
+        <div class="intro-card">
+          <span class="section-label">Mój skrót</span>
+          <h2 style="margin-top:14px;font-size:clamp(1.8rem,4vw,3rem);">XAF daje szybko UI, ale płacisz zrozumieniem mechaniki.</h2>
+          <p>
+            Jeśli rozumiesz ObjectSpace, model biznesowy, kontrolery i security, to framework naprawdę przyspiesza.
+            Jeśli nie, projekt szybko robi się „magiczny” i trudny w utrzymaniu.
+          </p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <div class="summary" id="skrot">
+        <div class="summary-head">
+          <span class="section-label">Skrót</span>
+          <h2>Co warto wiedzieć bez czytania wszystkiego naraz</h2>
+        </div>
+
+        <div class="summary-list">
+          <article class="summary-card">
+            <h3>1. XAF to nie tylko UI generator</h3>
+            <p>
+              XAF buduje aplikacje biznesowe wokół modelu biznesowego, Application Model, ObjectSpace i modułów.
+              UI jest efektem tych decyzji, a nie osobnym światem.
+            </p>
+          </article>
+
+          <article class="summary-card">
+            <h3>2. ORM i model biznesowy są fundamentem</h3>
+            <ul>
+              <li>Do wyboru masz EF Core albo XPO.</li>
+              <li>Ta decyzja wpływa na business classes, ObjectSpace i dalszą organizację kodu.</li>
+              <li>Jeśli dane nie pochodzą z ORM, używaj non-persistent objects.</li>
+            </ul>
+          </article>
+
+          <article class="summary-card">
+            <h3>3. Kontrolery i akcje to miejsce, gdzie robisz realną logikę UI</h3>
+            <ul>
+              <li>Kontrolery spajają zachowanie widoków, reakcji na stan i logikę operacyjną.</li>
+              <li>Actions to menu commands i workflow użytkownika.</li>
+              <li>To jest sekcja, do której wraca się bardzo często przy customizacji.</li>
+            </ul>
+          </article>
+
+          <article class="summary-card">
+            <h3>4. Web API nie jest dodatkiem „na potem”</h3>
+            <ul>
+              <li>XAF ma gotowy backend oparty o ASP.NET Core OData.</li>
+              <li>Możesz hostować go razem z Blazor Server albo jako osobny projekt.</li>
+              <li>To dobry kierunek, jeśli chcesz obsłużyć MAUI, JS albo inne klienty poza XAF UI.</li>
+            </ul>
+          </article>
+
+          <article class="summary-card">
+            <h3>5. Bez security i validation projekt jest niepełny</h3>
+            <ul>
+              <li>Security w XAF to nie kosmetyka, tylko rdzeń aplikacji biznesowej.</li>
+              <li>Validation i Conditional Appearance szybko porządkują zachowanie formularzy.</li>
+              <li>Deployment warto czytać wcześniej, nie dopiero przed publikacją.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+
+      <div class="links" id="linki">
+        <div class="links-head">
+          <span class="section-label">Właściwe linki</span>
+          <h2>Gdzie wejść dalej w oficjalnym docs</h2>
+        </div>
+
+        <div class="links-list">
+          <article class="link-card">
+            <h3>Start i przegląd całego frameworka</h3>
+            <p>Najlepszy punkt wejścia, jeśli chcesz zobaczyć całą mapę XAF: overview, first steps, concepts, moduły i deployment.</p>
+            <a href="https://docs.devexpress.com/eXpressAppFramework/112670/expressapp-framework" target="_blank" rel="noreferrer">Otwórz overview XAF</a>
+          </article>
+
+          <article class="link-card">
+            <h3>Platformy UI: Blazor, WinForms, Backend Web API</h3>
+            <p>Tu sprawdzasz, co XAF faktycznie generuje na danej platformie i jakie są oficjalnie wspierane ścieżki wejścia.</p>
+            <a href="https://docs.devexpress.com/eXpressAppFramework/401675/overview/supported-ui-platforms" target="_blank" rel="noreferrer">Zobacz supported platforms</a>
+          </article>
+
+          <article class="link-card">
+            <h3>ORM i model biznesowy</h3>
+            <p>Kluczowa sekcja o EF Core, XPO, non-persistent objects i projektowaniu business classes. To jest baza pod resztę frameworka.</p>
+            <a href="https://docs.devexpress.com/eXpressAppFramework/113664/business-model-design-orm" target="_blank" rel="noreferrer">Przejdź do ORM i business model</a>
+          </article>
+
+          <article class="link-card">
+            <h3>Kontrolery i Actions</h3>
+            <p>Najważniejsza sekcja dla customizacji zachowania aplikacji. Jeśli chcesz „żeby coś się działo”, zwykle kończysz właśnie tutaj.</p>
+            <a href="https://docs.devexpress.com/eXpressAppFramework/112621/ui-construction/controllers-and-actions/controllers" target="_blank" rel="noreferrer">Kontrolery</a>
+            <a href="https://docs.devexpress.com/eXpressAppFramework/112622/ui-construction/controllers-and-actions/actions" target="_blank" rel="noreferrer" style="margin-left:16px;">Actions</a>
+          </article>
+
+          <article class="link-card">
+            <h3>Backend Web API / OData</h3>
+            <p>Jeśli chcesz używać XAF jako backendu dla innych klientów, to jest właściwy kierunek. Docs pokazują CRUD, custom endpoints i auth.</p>
+            <a href="https://docs.devexpress.com/eXpressAppFramework/403394/backend-web-api-service" target="_blank" rel="noreferrer">Przejdź do Backend Web API</a>
+          </article>
+
+          <article class="link-card">
+            <h3>Security, Validation, Deployment</h3>
+            <p>Trzy sekcje, które bardzo szybko decydują, czy aplikacja biznesowa nadaje się do normalnej pracy, czy tylko do demo.</p>
+            <a href="https://docs.devexpress.com/eXpressAppFramework/403172/data-security-and-safety" target="_blank" rel="noreferrer">Security</a>
+            <a href="https://docs.devexpress.com/eXpressAppFramework/113684/validation-module" target="_blank" rel="noreferrer" style="margin-left:16px;">Validation</a>
+            <a href="https://docs.devexpress.com/eXpressAppFramework/112691/deployment" target="_blank" rel="noreferrer" style="margin-left:16px;">Deployment</a>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    To jest skrót i mapa wejścia. Po szczegóły i API i tak idź do oficjalnej dokumentacji DevExpress.
+  </footer>
+</body>
+</html>
