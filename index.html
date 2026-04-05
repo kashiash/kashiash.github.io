@@ -4,27 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Jacek Placek | Notatki zgredziałego programisty</title>
-  <meta name="description" content="Osobista strona Jacka Placka: programowanie, notatki techniczne, XAF, .NET i praktyczne doświadczenia z projektów.">
+  <meta name="description" content="Pełnoekranowa strona Jacka Placka o programowaniu, DevExpress, XAF i praktycznych notatkach z projektów.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Literata:opsz,wght@7..72,500;7..72,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Bricolage+Grotesque:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f4efe7;
-      --bg-strong: #e7d8be;
-      --surface: rgba(255, 250, 242, 0.78);
-      --surface-strong: #fff9f0;
-      --text: #1f2430;
-      --muted: #5f6877;
-      --line: rgba(31, 36, 48, 0.12);
-      --accent: #c14d2d;
-      --accent-strong: #8d2f17;
-      --accent-soft: #f1c6a5;
-      --shadow: 0 24px 60px rgba(61, 39, 16, 0.14);
-      --radius-xl: 28px;
-      --radius-lg: 20px;
-      --radius-md: 14px;
-      --max: 1140px;
+      --bg: #f2eee6;
+      --paper: #fbf7f1;
+      --ink: #151515;
+      --muted: #5f5a53;
+      --line: rgba(21, 21, 21, 0.12);
+      --accent: #cf4f2f;
+      --accent-2: #e6bb54;
+      --forest: #204739;
+      --shadow: 0 24px 80px rgba(34, 23, 8, 0.12);
     }
 
     * {
@@ -37,13 +31,12 @@
 
     body {
       margin: 0;
-      font-family: "Space Grotesk", "Segoe UI", sans-serif;
-      color: var(--text);
+      color: var(--ink);
       background:
-        radial-gradient(circle at top left, rgba(193, 77, 45, 0.22), transparent 32%),
-        radial-gradient(circle at top right, rgba(90, 140, 110, 0.16), transparent 28%),
-        linear-gradient(180deg, #f7f1e8 0%, #f1e5d2 48%, #efe7db 100%);
-      min-height: 100vh;
+        radial-gradient(circle at top left, rgba(230, 187, 84, 0.18), transparent 22%),
+        radial-gradient(circle at right 10%, rgba(32, 71, 57, 0.16), transparent 20%),
+        linear-gradient(180deg, #f6f0e7 0%, #efe6d8 100%);
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
     }
 
     a {
@@ -51,144 +44,123 @@
       text-decoration: none;
     }
 
-    .page-shell {
-      width: 100%;
-      padding: 18px 0 72px;
-    }
-
-    .full-bleed {
-      width: 100%;
-      padding-left: 24px;
-      padding-right: 24px;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 14px 18px;
-      border: 1px solid var(--line);
-      background: rgba(255, 248, 238, 0.7);
-      backdrop-filter: blur(14px);
-      border-radius: 999px;
-      box-shadow: 0 10px 30px rgba(84, 61, 31, 0.08);
+    .site-header {
       position: sticky;
-      top: 18px;
-      z-index: 10;
-      width: 100%;
+      top: 0;
+      z-index: 50;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: center;
+      padding: 18px 24px;
+      background: rgba(251, 247, 241, 0.8);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--line);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
+      gap: 14px;
+      min-width: 0;
     }
 
     .brand-mark {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
+      width: 48px;
+      height: 48px;
       display: grid;
       place-items: center;
-      background: linear-gradient(135deg, var(--accent) 0%, #d77d39 100%);
-      color: white;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), #ef8a43);
+      color: #fff;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-title {
+      display: block;
+      font-weight: 700;
+      font-size: 1rem;
+      line-height: 1.1;
+    }
+
+    .brand-subtitle {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.2;
     }
 
     .nav {
       display: flex;
-      gap: 18px;
       flex-wrap: wrap;
+      gap: 18px;
       justify-content: flex-end;
-      color: var(--muted);
       font-size: 0.95rem;
+    }
+
+    .nav a {
+      color: var(--muted);
     }
 
     .nav a:hover,
     .nav a:focus-visible {
-      color: var(--accent-strong);
+      color: var(--accent);
     }
 
     .hero {
+      min-height: calc(100vh - 85px);
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 28px;
-      margin-top: 28px;
-      align-items: stretch;
+      grid-template-columns: 1.25fr 0.75fr;
+      border-bottom: 1px solid var(--line);
     }
 
-    .hero-card,
-    .panel,
-    .post-card,
-    .note-card {
-      border: 1px solid var(--line);
-      background: var(--surface);
-      backdrop-filter: blur(8px);
-      box-shadow: var(--shadow);
-    }
-
-    .hero-card {
-      border-radius: var(--radius-xl);
-      padding: 40px;
-      position: relative;
-      overflow: hidden;
-      min-height: 72vh;
+    .hero-main {
+      padding: 56px 24px 40px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-    }
-
-    .hero-card::after {
-      content: "";
-      position: absolute;
-      right: -70px;
-      bottom: -80px;
-      width: 240px;
-      height: 240px;
-      border-radius: 999px;
-      background: radial-gradient(circle, rgba(193, 77, 45, 0.2) 0%, rgba(193, 77, 45, 0) 68%);
+      justify-content: space-between;
+      border-right: 1px solid var(--line);
     }
 
     .eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      padding: 8px 14px;
+      padding: 9px 14px;
+      border: 1px solid var(--line);
       border-radius: 999px;
-      border: 1px solid rgba(193, 77, 45, 0.18);
-      background: rgba(255, 245, 237, 0.95);
-      color: var(--accent-strong);
+      background: rgba(255,255,255,0.55);
       font-size: 0.9rem;
-      font-weight: 600;
+      font-weight: 700;
+      color: var(--accent);
+      width: fit-content;
     }
 
-    h1,
-    h2,
-    h3 {
-      font-family: "Literata", Georgia, serif;
-      margin: 0;
-      line-height: 1.04;
-      letter-spacing: -0.03em;
+    .hero-title {
+      margin: 26px 0 0;
+      max-width: 10ch;
+      font-family: "Bricolage Grotesque", "Space Grotesk", sans-serif;
+      font-size: clamp(4rem, 12vw, 10rem);
+      line-height: 0.9;
+      letter-spacing: -0.06em;
     }
 
-    h1 {
-      font-size: clamp(2.8rem, 6vw, 5.6rem);
-      margin-top: 22px;
-      max-width: 9ch;
-    }
-
-    .hero-copy {
-      margin-top: 22px;
+    .hero-text {
       max-width: 58ch;
+      margin: 24px 0 0;
       color: var(--muted);
-      font-size: 1.06rem;
-      line-height: 1.75;
+      font-size: 1.08rem;
+      line-height: 1.8;
     }
 
-    .cta-row {
+    .hero-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 14px;
@@ -196,386 +168,494 @@
     }
 
     .button,
-    .button-secondary {
+    .button-ghost {
+      min-height: 54px;
+      padding: 0 22px;
+      border-radius: 999px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      min-height: 52px;
-      padding: 0 22px;
-      border-radius: 999px;
       font-weight: 700;
-      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+      transition: transform 140ms ease, background 140ms ease;
     }
 
     .button {
-      background: linear-gradient(135deg, var(--accent) 0%, #dd7c3a 100%);
-      color: white;
-      box-shadow: 0 14px 30px rgba(193, 77, 45, 0.28);
+      background: var(--ink);
+      color: #fff;
     }
 
-    .button-secondary {
+    .button-ghost {
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.6);
-      color: var(--text);
+      background: rgba(255,255,255,0.55);
     }
 
     .button:hover,
-    .button-secondary:hover,
+    .button-ghost:hover,
     .button:focus-visible,
-    .button-secondary:focus-visible {
+    .button-ghost:focus-visible {
       transform: translateY(-2px);
     }
 
-    .hero-meta {
+    .hero-strip {
       display: grid;
-      gap: 18px;
-      grid-template-rows: auto 1fr;
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: 42px;
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
     }
 
-    .panel {
-      border-radius: var(--radius-xl);
-      padding: 28px;
+    .hero-stat {
+      padding: 22px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.28);
     }
 
-    .stats {
-      display: grid;
-      gap: 16px;
-      margin-top: 18px;
-    }
-
-    .stat {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 14px;
-      align-items: start;
-      padding-bottom: 16px;
-      border-bottom: 1px solid rgba(31, 36, 48, 0.08);
-    }
-
-    .stat:last-child {
-      padding-bottom: 0;
-      border-bottom: 0;
-    }
-
-    .stat-number {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--accent-strong);
+    .hero-stat strong {
+      display: block;
+      font-size: clamp(1.4rem, 3vw, 2.4rem);
       line-height: 1;
+      margin-bottom: 10px;
+      font-family: "Bricolage Grotesque", "Space Grotesk", sans-serif;
     }
 
-    .stat-copy {
+    .hero-stat span {
+      display: block;
       color: var(--muted);
-      line-height: 1.55;
-    }
-
-    .section {
-      margin-top: 28px;
-    }
-
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
-
-    .section-head p {
-      margin: 0;
-      color: var(--muted);
-      max-width: 58ch;
-      line-height: 1.7;
-    }
-
-    .note-grid,
-    .posts-grid {
-      display: grid;
-      gap: 18px;
-    }
-
-    .note-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .posts-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .note-card,
-    .post-card {
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .note-card::before,
-    .post-card::before {
-      content: "";
-      position: absolute;
-      inset: auto -24px -36px auto;
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(241, 198, 165, 0.36), rgba(241, 198, 165, 0));
-    }
-
-    .card-kicker {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--accent-strong);
-      font-weight: 700;
-    }
-
-    .card-text {
-      color: var(--muted);
-      line-height: 1.7;
-      margin-top: 12px;
-    }
-
-    .post-card h3,
-    .note-card h3 {
-      margin-top: 10px;
-      font-size: 1.45rem;
-    }
-
-    .post-link {
-      display: inline-flex;
-      margin-top: 18px;
-      font-weight: 700;
-      color: var(--accent-strong);
-    }
-
-    .footer {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 18px;
-      margin-top: 34px;
-      padding: 24px 4px 0;
-      color: var(--muted);
+      line-height: 1.6;
       font-size: 0.95rem;
     }
 
-    .content-width {
-      width: min(100%, var(--max));
-      margin: 0 auto;
+    .hero-side {
+      display: grid;
+      grid-template-rows: 1.1fr 0.9fr;
+      min-height: 100%;
     }
 
-    @media (max-width: 980px) {
+    .hero-panel {
+      padding: 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-panel:last-child {
+      border-bottom: 0;
+    }
+
+    .panel-dark {
+      background: linear-gradient(180deg, #1a1a19 0%, #26231f 100%);
+      color: #f5f0e8;
+    }
+
+    .panel-dark .muted {
+      color: rgba(245, 240, 232, 0.72);
+    }
+
+    .panel-accent {
+      background: linear-gradient(135deg, #cf4f2f 0%, #e6bb54 100%);
+      color: #1f160d;
+    }
+
+    .section-label {
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 700;
+      font-size: 0.78rem;
+      opacity: 0.9;
+    }
+
+    .panel-title {
+      margin: 16px 0 0;
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      line-height: 0.96;
+      font-family: "Bricolage Grotesque", "Space Grotesk", sans-serif;
+      letter-spacing: -0.05em;
+    }
+
+    .panel-text {
+      margin: 18px 0 0;
+      line-height: 1.75;
+      max-width: 34ch;
+    }
+
+    .manifesto {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .manifesto-copy,
+    .manifesto-grid {
+      padding: 32px 24px;
+    }
+
+    .manifesto-copy {
+      border-right: 1px solid var(--line);
+    }
+
+    .manifesto-copy h2,
+    .news-head h2 {
+      margin: 16px 0 0;
+      font-size: clamp(2.2rem, 5vw, 4.5rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+      font-family: "Bricolage Grotesque", "Space Grotesk", sans-serif;
+    }
+
+    .manifesto-copy p,
+    .news-head p {
+      max-width: 56ch;
+      line-height: 1.85;
+      color: var(--muted);
+    }
+
+    .manifesto-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+
+    .manifesto-card {
+      padding: 26px;
+      background: rgba(255,255,255,0.35);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .manifesto-card h3,
+    .news-card h3 {
+      margin: 10px 0 0;
+      font-size: 1.45rem;
+      line-height: 1.08;
+    }
+
+    .manifesto-card p,
+    .news-card p {
+      margin: 14px 0 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .news {
+      padding: 0;
+    }
+
+    .news-head {
+      padding: 32px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-left: 1px solid var(--line);
+      border-top: 1px solid var(--line);
+    }
+
+    .news-card {
+      min-height: 340px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.32);
+    }
+
+    .news-card:nth-child(1) {
+      background: linear-gradient(180deg, rgba(255,255,255,0.58), rgba(255,255,255,0.28));
+    }
+
+    .news-card:nth-child(2) {
+      background: rgba(32, 71, 57, 0.08);
+    }
+
+    .news-card:nth-child(3) {
+      background: rgba(230, 187, 84, 0.14);
+    }
+
+    .card-top {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card-kicker {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 18px;
+      font-weight: 700;
+    }
+
+    .footer {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .footer-copy,
+    .footer-links {
+      padding: 28px 24px 40px;
+    }
+
+    .footer-copy {
+      border-right: 1px solid var(--line);
+    }
+
+    .footer-links {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1100px) {
       .hero,
-      .note-grid,
-      .posts-grid {
+      .manifesto,
+      .footer,
+      .news-grid {
         grid-template-columns: 1fr;
       }
 
-      .hero-card,
-      .panel,
-      .note-card,
-      .post-card {
-        padding: 24px;
+      .hero-main,
+      .manifesto-copy,
+      .footer-copy {
+        border-right: 0;
       }
 
-      .topbar {
-        border-radius: 26px;
+      .hero {
+        min-height: auto;
+      }
+
+      .hero-side {
+        grid-template-rows: auto;
+      }
+
+      .news-card {
+        min-height: auto;
       }
     }
 
-    @media (max-width: 640px) {
-      .page-shell {
-        padding-top: 14px;
-        padding-bottom: 48px;
-      }
-
-      .full-bleed {
-        padding-left: 14px;
-        padding-right: 14px;
-      }
-
-      .topbar {
-        align-items: flex-start;
-        border-radius: 24px;
+    @media (max-width: 760px) {
+      .site-header,
+      .hero-main,
+      .hero-panel,
+      .manifesto-copy,
+      .manifesto-grid,
+      .news-head,
+      .footer-copy,
+      .footer-links {
+        padding-left: 16px;
+        padding-right: 16px;
       }
 
       .nav {
         gap: 10px 14px;
       }
 
-      h1 {
+      .hero-title {
         max-width: none;
       }
 
-      .cta-row {
+      .hero-strip,
+      .manifesto-grid,
+      .news-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-actions {
         flex-direction: column;
       }
 
       .button,
-      .button-secondary {
+      .button-ghost {
         width: 100%;
       }
     }
   </style>
 </head>
 <body>
-  <div class="page-shell">
-    <div class="full-bleed">
-      <header class="topbar">
-        <a class="brand" href="#start" aria-label="Strona główna">
-          <span class="brand-mark">JP</span>
-          <span>Notatki zgredziałego programisty</span>
-        </a>
-        <nav class="nav" aria-label="Nawigacja główna">
-          <a href="#o-mnie">O mnie</a>
-          <a href="#notatki">Notatki</a>
-          <a href="#kontakt">Kontakt</a>
-        </nav>
-      </header>
-    </div>
+  <header class="site-header">
+    <a class="brand" href="#start" aria-label="Strona główna">
+      <span class="brand-mark">JP</span>
+      <span class="brand-copy">
+        <span class="brand-title">Jacek Placek</span>
+        <span class="brand-subtitle">Notatki zgredziałego programisty</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Nawigacja">
+      <a href="#start">Start</a>
+      <a href="#manifest">Manifest</a>
+      <a href="#news">Newsy</a>
+      <a href="#kontakt">Kontakt</a>
+    </nav>
+  </header>
 
-    <main id="start">
-      <section class="hero full-bleed">
-        <article class="hero-card">
-          <div class="content-width">
-            <div class="eyebrow">Programowanie bez marketingowego dymu</div>
-            <h1>Praktyczne notatki po latach pisania kodu.</h1>
-            <p class="hero-copy">
-              Zbieram tu rzeczy, które naprawdę przydają się w pracy: krótkie rozwiązania,
-              techniczne skróty, pułapki i sprawdzone podejścia z projektów .NET, XAF,
-              integracji oraz codziennego utrzymania systemów.
-            </p>
-            <div class="cta-row">
-              <a class="button" href="#notatki">Zobacz wybrane wpisy</a>
-              <a class="button-secondary" href="https://github.com/kashiash" target="_blank" rel="noreferrer">GitHub</a>
-            </div>
+  <main id="start">
+    <section class="hero">
+      <div class="hero-main">
+        <div>
+          <div class="eyebrow">Kod, decyzje, skróty myślowe, które warto zachować</div>
+          <h1 class="hero-title">STRONA NA CAŁY EKRAN, NIE DO RAMKI.</h1>
+          <p class="hero-text">
+            To nie jest kolejny grzeczny blog upchnięty w wąskim kontenerze. To pełnoekranowy
+            warsztat pracy: programowanie, DevExpress, XAF, integracje i techniczne notatki,
+            które mają być użyteczne od razu.
+          </p>
+          <div class="hero-actions">
+            <a class="button" href="#news">Zobacz najnowszy wpis</a>
+            <a class="button-ghost" href="https://github.com/kashiash" target="_blank" rel="noreferrer">GitHub</a>
           </div>
+        </div>
+
+        <div class="hero-strip">
+          <div class="hero-stat">
+            <strong>30+</strong>
+            <span>lat programowania zamienionych w konkretne notatki, nie marketingowy hałas.</span>
+          </div>
+          <div class="hero-stat">
+            <strong>.NET</strong>
+            <span>projekty biznesowe, utrzymanie, integracje i codzienna praktyka zamiast teorii z prezentacji.</span>
+          </div>
+          <div class="hero-stat">
+            <strong>XAF</strong>
+            <span>wzorce, obejścia i decyzje techniczne, które naprawdę oszczędzają czas.</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero-side">
+        <div class="hero-panel panel-dark">
+          <span class="section-label">Profil</span>
+          <h2 class="panel-title">Urodziłem się, bo nie miałem innego wyjścia.</h2>
+          <p class="panel-text muted">
+            Zainteresowania: wino, kobieta i śpiew. A zawodowo: kod, decyzje techniczne,
+            porządkowanie chaosu i notatki, do których można wrócić bez odtwarzania całego
+            kontekstu od zera.
+          </p>
+        </div>
+        <div class="hero-panel panel-accent">
+          <span class="section-label">Aktualnie</span>
+          <h2 class="panel-title">DevExpress, XAF, lokalizacja, wdrożenia i porządkowanie chaosu.</h2>
+          <p class="panel-text">
+            Gdy pojawia się zmiana w toolingu, frameworku albo procesie, interesuje mnie jedno:
+            co to znaczy w praktyce i jaką decyzję powinien podjąć zespół.
+          </p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="manifesto" id="manifest">
+      <div class="manifesto-copy">
+        <span class="section-label">Manifest</span>
+        <h2>Nie blog. Robocza baza wiedzy.</h2>
+        <p>
+          Strona ma wyglądać jak powierzchnia robocza, nie jak szablon. Dlatego układ jest pełnoszerokosciowy,
+          sekcje mają ciężar, a treść siedzi w siatce, która daje oddech zamiast bocznych tuneli.
+        </p>
+        <p>
+          Tematy są proste: co działa, co nie działa, na co uważać i jak nie utopić się w narzędziach,
+          które obiecują wygodę, a później zostawiają z długiem technicznym.
+        </p>
+      </div>
+
+      <div class="manifesto-grid">
+        <article class="manifesto-card">
+          <span class="card-kicker">Aplikacje biznesowe</span>
+          <h3>Architektura, która ma wytrzymać codzienność</h3>
+          <p>Mniej akademickich diagramów, więcej decyzji, które da się utrzymać po wdrożeniu.</p>
         </article>
-      </section>
+        <article class="manifesto-card">
+          <span class="card-kicker">DevExpress / XAF</span>
+          <h3>Framework ma przyspieszać, nie komplikować</h3>
+          <p>Szukanie wzorców, które skracają drogę, oraz obejść, które ratują projekt przed tarciem.</p>
+        </article>
+        <article class="manifesto-card">
+          <span class="card-kicker">Integracje</span>
+          <h3>Praktyka ponad teorię integracyjną</h3>
+          <p>API, importy, synchronizacja, błędy produkcyjne i wszystkie niewygodne szczegóły pomiędzy.</p>
+        </article>
+        <article class="manifesto-card">
+          <span class="card-kicker">Pamięć robocza</span>
+          <h3>Notatka ma skracać powrót do problemu</h3>
+          <p>Krótko, konkretnie i z kontekstem. Tak, żeby za pół roku nadal miało sens.</p>
+        </article>
+      </div>
+    </section>
 
-      <section class="section full-bleed">
-        <div class="content-width hero-meta">
-          <aside class="panel" id="o-mnie">
-            <div class="card-kicker">Profil</div>
-            <h2>Jacek Placek</h2>
-            <p class="card-text">
-              Programista z wieloletnim stażem. Zamiast pisać kolejną teorię o produktywności,
-              wolę zostawić po sobie konkret: rozwiązanie, kontekst i powód, dla którego działa.
-            </p>
-          </aside>
+    <section class="news" id="news">
+      <div class="news-head">
+        <span class="section-label">Newsy i wpisy</span>
+        <h2>Pierwszy ekran ma prowadzić do treści, nie być ozdobą.</h2>
+        <p>
+          Na start najważniejszy news o zmianie w ekosystemie Microsoft i DevExpress, a obok starsze wpisy,
+          które już są w archiwum. Kolejne materiały można rozwijać bez zmiany całej strony głównej.
+        </p>
+      </div>
 
-          <aside class="panel">
-            <div class="card-kicker">Na tej stronie</div>
-            <div class="stats">
-              <div class="stat">
-                <div class="stat-number">30+</div>
-                <div class="stat-copy">lat doświadczenia przekutych w notatki, które mają skracać drogę do rozwiązania.</div>
-              </div>
-              <div class="stat">
-                <div class="stat-number">.NET</div>
-                <div class="stat-copy">praktyka z aplikacjami biznesowymi, utrzymaniem i codziennym dowożeniem zmian.</div>
-              </div>
-              <div class="stat">
-                <div class="stat-number">XAF</div>
-                <div class="stat-copy">narzędzia, wzorce i obejścia, które warto mieć zapisane zamiast odkrywać drugi raz.</div>
-              </div>
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      <section class="section full-bleed" id="notatki">
-        <div class="content-width">
-          <div class="section-head">
-            <div>
-              <div class="card-kicker">Kierunki</div>
-              <h2>O czym tu piszę</h2>
-            </div>
+      <div class="news-grid">
+        <article class="news-card">
+          <div class="card-top">
+            <span class="card-kicker">Nowy wpis</span>
+            <h3>Koniec MAT. Co dalej z lokalizacją w aplikacjach DevExpress?</h3>
             <p>
-              To nie jest blog o wszystkim. To raczej prywatny warsztat pracy wystawiony publicznie:
-              rzeczy użyteczne, konkretne i zapisane po to, żeby nie wracać do tego samego problemu od zera.
+              Krótkie polskie omówienie wycofania Microsoft MAT, praktyczne wnioski i sensowny kierunek na teraz.
             </p>
           </div>
+          <a class="card-link" href="/2026/04/05/mat-deprecated-devexpress-localization-tool.html">Czytaj wpis</a>
+        </article>
 
-          <div class="note-grid">
-            <article class="note-card">
-              <div class="card-kicker">Aplikacje biznesowe</div>
-              <h3>.NET i architektura, która ma wytrzymać codzienność</h3>
-              <p class="card-text">
-                Mniej teorii, więcej decyzji, które trzeba potem utrzymać. Kod, integracje, poprawki i realne kompromisy.
-              </p>
-            </article>
-
-            <article class="note-card">
-              <div class="card-kicker">XAF i automatyzacja</div>
-              <h3>Narzędzia, które przyspieszają pracę, jeśli używa się ich świadomie</h3>
-              <p class="card-text">
-                Wzorce, obejścia i ostrzeżenia z projektów, gdzie framework ma pomagać, a nie przeszkadzać.
-              </p>
-            </article>
-
-            <article class="note-card">
-              <div class="card-kicker">Notatki robocze</div>
-              <h3>Krótka pamięć człowieka, długa pamięć dobrze opisanej strony</h3>
-              <p class="card-text">
-                Szybkie zapiski techniczne, do których można wrócić po miesiącu i dalej wiedzieć, o co chodziło.
-              </p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section full-bleed">
-        <div class="content-width">
-          <div class="section-head">
-            <div>
-              <div class="card-kicker">Wybrane wpisy</div>
-              <h2>Początek archiwum</h2>
-            </div>
+        <article class="news-card">
+          <div class="card-top">
+            <span class="card-kicker">Archiwum</span>
+            <h3>Daty w Swift</h3>
             <p>
-              Na start zostawiłem kilka starszych wpisów. Kolejne notatki można rozwijać już w tym samym repo GitHub Pages.
+              Techniczna notatka o formatowaniu, konwersjach i miejscach, gdzie data potrafi zachować się inaczej niż oczekujesz.
             </p>
           </div>
+          <a class="card-link" href="/2022/10/09/Daty-w-Swift.html">Czytaj wpis</a>
+        </article>
 
-          <div class="posts-grid">
-            <article class="post-card">
-              <div class="card-kicker">DevExpress</div>
-              <h3>Koniec MAT. Co dalej z lokalizacją?</h3>
-              <p class="card-text">
-                Krótkie omówienie wycofania Microsoft MAT i praktyczne wskazówki, jak podejść teraz do lokalizacji aplikacji DevExpress.
-              </p>
-              <a class="post-link" href="/2026/04/05/mat-deprecated-devexpress-localization-tool.html">Czytaj wpis</a>
-            </article>
-
-            <article class="post-card">
-              <div class="card-kicker">Geolokalizacja</div>
-              <h3>Pobierz lokalizację na podstawie adresu</h3>
-              <p class="card-text">
-                Techniczna notatka o zamianie danych adresowych na współrzędne i miejscach, gdzie łatwo się potknąć.
-              </p>
-              <a class="post-link" href="/2022/10/10/Pobierz-lokalizacje-na-podstawie-adresy.html">Czytaj wpis</a>
-            </article>
-
-            <article class="post-card">
-              <div class="card-kicker">iOS</div>
-              <h3>Ciekawe strony dotyczące Swift i programowania na iOS</h3>
-              <p class="card-text">
-                Zbiór odnośników i materiałów, które warto mieć pod ręką zamiast szukać ich od nowa.
-              </p>
-              <a class="post-link" href="/2022/11/01/Ciekawe-strony-dotycz%C4%85ce-Swiift-i-programowania-na-IOS.html">Czytaj wpis</a>
-            </article>
+        <article class="news-card">
+          <div class="card-top">
+            <span class="card-kicker">Archiwum</span>
+            <h3>Pobierz lokalizację na podstawie adresu</h3>
+            <p>
+              Krótki zapis rozwiązania geokodowania, do którego można wrócić bez ponownego przekopywania internetu.
+            </p>
           </div>
-        </div>
-      </section>
-    </main>
+          <a class="card-link" href="/2022/10/10/Pobierz-lokalizacje-na-podstawie-adresy.html">Czytaj wpis</a>
+        </article>
+      </div>
+    </section>
+  </main>
 
-    <div class="full-bleed">
-      <footer class="footer content-width" id="kontakt">
-        <div>Kontakt: <a href="mailto:kashiash@gmail.com">kashiash@gmail.com</a></div>
-        <div><a href="https://github.com/kashiash" target="_blank" rel="noreferrer">github.com/kashiash</a></div>
-      </footer>
+  <footer class="footer" id="kontakt">
+    <div class="footer-copy">
+      <span class="section-label">Kontakt</span>
+      <h2 class="panel-title">Jeśli coś warto zapisać, to zwykle dlatego, że wróci.</h2>
+      <p class="panel-text" style="color: var(--muted);">
+        Tu będą lądowały techniczne skróty, decyzje i wpisy z rzeczywistej pracy. Bez udawania, że wszystko jest prostsze niż jest.
+      </p>
     </div>
-  </div>
+    <div class="footer-links">
+      <a href="mailto:kashiash@gmail.com">kashiash@gmail.com</a>
+      <a href="https://github.com/kashiash" target="_blank" rel="noreferrer">github.com/kashiash</a>
+      <span>Warsztat online, nie szablonowy landing page.</span>
+    </div>
+  </footer>
 </body>
 </html>
