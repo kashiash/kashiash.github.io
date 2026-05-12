@@ -7,6 +7,28 @@ Wielojęzyczność w Blazorze ma tę samą przypadłość co branding: wygląda 
 
 To nie jest wielka tragedia. To po prostu oznacza, że języki trzeba potraktować jako konfigurację runtime, a nie kosmetykę.
 
+## Konkret z ostatniego wdrożenia, nie teoria
+
+Właśnie zrobiłem taką zmianę w publicznym repo:
+
+- [kashiash/MainDemoEFCoreCustomization](https://github.com/kashiash/MainDemoEFCoreCustomization)
+
+I tam dobrze widać jedną rzecz, której w ładnych, czystych tutorialach zwykle nie ma: czasem sam język to połowa roboty, a druga połowa to ratowanie projektu przed zależnościami, które do tej pory działały tylko dlatego, że lokalnie dziedziczyły ustawienia z katalogu nadrzędnego.
+
+W tym repo dodałem:
+
+- `pl-PL` do `appsettings.json`,
+- `RequestLocalizationOptions` w `Startup.cs`,
+- polskie pliki `dx-analytics-core.pl-PL.json`, `dx-reporting.pl-PL.json` i `pl-PL.json`,
+- `Model.DesignedDiffs.Localization.pl.xafml`,
+- testy dla polskiej lokalizacji,
+- osobny dokument krok po kroku w repo:
+  [`docs/obsluga-jezyka-polskiego-w-main-demo-blazor.md`](https://github.com/kashiash/MainDemoEFCoreCustomization/blob/main/docs/obsluga-jezyka-polskiego-w-main-demo-blazor.md)
+
+I teraz najciekawsze: nie zostawiłem fallbacku na `pl-PL`, mimo że w wielu projektach to ma sens. Tutaj zostawiłem `en-US`, bo inaczej raporty CSV zaczęły zmieniać separator i format daty. Czyli dokładnie ten przypadek, o który zwykle nikt nie pyta na początku, a który potem rozwala testy i „nagle” zmienia zachowanie systemu.
+
+To jest dobry przykład, że artykuł daje kierunek, ale gotową zmianę i tak trzeba dopasować do konkretnego projektu.
+
 ## Sama lista języków niczego jeszcze nie załatwia
 
 Na ogół zaczyna się od `appsettings.json`.
