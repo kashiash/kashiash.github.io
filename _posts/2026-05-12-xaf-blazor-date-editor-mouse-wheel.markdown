@@ -42,7 +42,9 @@ To jest za kruche.
 
 Po pierwsze, DevExpress obsługuje część zdarzeń wcześnie, więc listener powinien działać w fazie `capture`. Po drugie, klasy `dxbl-*` są wewnętrznym detalem biblioteki i mogą się zmienić między wersjami. Po trzecie, globalny selektor może zahaczyć kontrolki, których nie chcemy dotykać.
 
-Lepszy wzorzec jest prosty: custom editor dodaje własną klasę CSS do swojego roota i inputa, a mały moduł JavaScript najpierw sprawdza opt-out, potem blokuje scroll. Moduł jest ładowany przez kontroler XAF, a nie wklejany do `_Host.cshtml`. Dzięki temu host aplikacji nie zna szczegółów konkretnego edytora.
+Lepszy wzorzec jest podobny do tego, co można zrobić w `MainDemo.NET.EFCore`: custom editor dodaje własną klasę CSS do swojego roota i inputa, a osobny plik JavaScript najpierw sprawdza opt-out, potem blokuje scroll.
+
+Różnica w aplikacji produkcyjnej jest jedna, ale ważna: moduł JavaScript jest ładowany przez kontroler XAF, a nie wklejany do `_Host.cshtml`. Dzięki temu host aplikacji nie zna szczegółów konkretnego edytora, a odpowiedzialność zostaje tam, gdzie powinna być: model decyduje, editor oznacza kontrolkę, kontroler uruchamia mechanizm dla widoków XAF.
 
 ```javascript
 let registered = false;
