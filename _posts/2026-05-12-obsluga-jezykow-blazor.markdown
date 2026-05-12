@@ -167,6 +167,20 @@ Pierwsze miejsce, które warto wtedy otworzyć, to:
 
 To jest oficjalny serwis DevExpress z tłumaczeniami. Czasem człowiek odruchowo zaczyna szukać tych plików po starych projektach albo paczkach NuGet, a tu po prostu szybciej jest najpierw sprawdzić, czy gotowa lokalizacja już tam leży.
 
+Drugie miejsce, które naprawdę warto mieć otwarte obok, to główna dokumentacja XAF:
+
+- [Localization | XAF Documentation](https://docs.devexpress.com/eXpressAppFramework/113298/localization)
+
+I to nie jest pusty link „na wszelki wypadek”. DevExpress zbiera tam w jednym miejscu najważniejsze tematy związane z lokalizacją: podstawy, lokalizację standardowych modułów i kontrolek, culture-specific formatting, runtime language switcher oraz osobne instrukcje typu „localize an XAF application”. Jak ktoś robi XAF pierwszy albo drugi raz, to taka strona oszczędza sporo błądzenia między przypadkowymi tematami.
+
+Jest jeszcze trzeci, nowy kierunek: DevExpress MCP Server.
+
+- [Transform Your Development Experience with the DevExpress MCP Server](https://community.devexpress.com/Blogs/news/archive/2025/10/16/transform-your-development-experience-with-the-devexpress-mcp-server.aspx)
+- `https://api.devexpress.com/mcp/docs`
+- `https://api.devexpress.com/mcp/docs?v=24.2`
+
+To przydaje się wtedy, kiedy nie chcesz tylko czytać dokumentacji ręcznie, ale chcesz dać agentowi AI bezpośredni dostęp do aktualnych materiałów DevExpress. W praktyce to jest bardzo sensowne przy pytaniach o XAF, raporty, dashboardy albo Blazor UI, bo agent może szukać po oficjalnej bazie dokumentacji zamiast zgadywać albo opierać się na starych przykładach.
+
 I ważna rzecz praktyczna: samo znalezienie tych plików jeszcze nic nie daje. Trzeba je normalnie dograć do projektu. W moim przypadku był to katalog w stylu:
 
 - `DevExpressLocalizedResources_2025.2_pl\json resources\`
