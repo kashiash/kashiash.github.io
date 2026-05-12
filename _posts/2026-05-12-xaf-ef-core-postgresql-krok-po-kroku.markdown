@@ -201,3 +201,7 @@ Dochodzi:
 - pilnowanie zgodności schematu
 
 Jeżeli jedna zwykła baza nie jest jeszcze dopięta porządnie, nie wchodzisz w multi-tenant.
+
+Osobno rozpisałem to tutaj:
+
+[XAF + EF Core + PostgreSQL + multi-tenant](/2026/05/12/xaf-ef-core-postgresql-multitenant.html)
