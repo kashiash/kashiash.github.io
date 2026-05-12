@@ -167,6 +167,12 @@ Pierwsze miejsce, które warto wtedy otworzyć, to:
 
 To jest oficjalny serwis DevExpress z tłumaczeniami. Czasem człowiek odruchowo zaczyna szukać tych plików po starych projektach albo paczkach NuGet, a tu po prostu szybciej jest najpierw sprawdzić, czy gotowa lokalizacja już tam leży.
 
+I ważna rzecz praktyczna: samo znalezienie tych plików jeszcze nic nie daje. Trzeba je normalnie dograć do projektu. W moim przypadku był to katalog w stylu:
+
+- `DevExpressLocalizedResources_2025.2_pl\json resources\`
+
+czyli miejsce, z którego bierzesz pliki typu `dx-analytics-core.pl.json`, `dx-reporting.pl.json`, `dx-dashboard.pl.json` i kopiujesz je do `wwwroot/js/localization/`.
+
 I teraz najważniejsze: samo wrzucenie ich do katalogu niczego nie gwarantuje.
 
 Trzeba jeszcze je załadować, np.:
