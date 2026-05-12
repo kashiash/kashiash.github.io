@@ -3,84 +3,66 @@ layout: post
 title: "XAF + EF Core + PostgreSQL krok po kroku"
 ---
 
-Jeśli masz zwykłą aplikację **XAF na EF Core** i chcesz dodać do niej **PostgreSQL**, to najgorsze, co możesz zrobić, to potraktować temat jak prostą podmianę connection stringa. To prawie nigdy nie kończy się dobrze.
+Ten tekst jest dla programisty, który ma aplikację XAF na EF Core i chce ją poprawnie uruchomić na PostgreSQL.
 
-Sam provider bazy to tylko początek. Trzeba jeszcze uporządkować konfigurację EF Core, przygotować bazę, sprawdzić mapowanie typów danych, przejść migracje i upewnić się, że aplikacja naprawdę działa na nowej bazie, a nie tylko się kompiluje.
+Zakres:
 
-Ten wpis jest o **zwykłej aplikacji**, bez multi-tenant. Na końcu dopisuję krótko, co dochodzi dodatkowo, jeśli później chcesz pójść w wiele baz albo tenantów.
+- jedna zwykła baza
+- bez multi-tenant na start
+- na końcu krótko: co dochodzi przy multi-tenant
 
-## 1. Najpierw ustal, co dokładnie dziś masz w projekcie
+## 1. Sprawdź stan projektu
 
-Zanim dotkniesz PostgreSQL, sprawdź cztery rzeczy:
+Najpierw znajdź:
 
-1. gdzie rejestrowany jest `DbContext`
-2. gdzie wybierany jest provider bazy
-3. czy projekt już używa migracji EF Core
-4. czy w kodzie są miejsca pisane pod SQL Server
+1. miejsce rejestracji `DbContext`
+2. miejsce wyboru providera bazy
+3. miejsce budowania connection stringa
+4. `IDesignTimeDbContextFactory`, jeśli projekt używa migracji
+5. dodatkowe hosty: worker, testy, API
 
-To jest ważne, bo w wielu projektach konfiguracja bazy nie siedzi w jednym miejscu. Część jest w `Program.cs`, część w innym projekcie, część w testach, a część w pomocniczych klasach. Jeśli tego nie zbierzesz na początku, to później będziesz poprawiał PostgreSQL na raty i w losowych miejscach.
+## 2. Dodaj provider PostgreSQL
 
-## 2. Dodaj provider PostgreSQL dla EF Core
-
-W projekcie, który konfiguruje EF Core, dodaj pakiet:
+Dodaj pakiet:
 
 ```xml
 <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
 ```
 
-Jeśli projekt korzysta z migracji, dopilnuj też, żeby narzędzia EF Core były spójne z używaną wersją .NET i EF.
-
-To jest pierwszy krok techniczny, ale on sam niczego jeszcze nie załatwia. Po jego dodaniu aplikacja dalej może być skonfigurowana pod SQL Server i dalej może zakładać, że działa na SQL Server.
+Jeśli używasz migracji EF Core, dopilnuj zgodności wersji EF Core i narzędzi.
 
 ## 3. Zbierz konfigurację bazy do jednego miejsca
 
-To jest jeden z najważniejszych kroków i bardzo często pomijany.
+Projekt ma mieć jeden punkt, który:
 
-Dobrze zrobiony projekt powinien mieć **jedno miejsce**, w którym:
+- wybiera provider
+- bierze connection string
+- konfiguruje `DbContext`
 
-- wybierasz provider bazy
-- bierzesz connection string
-- konfigurujesz `DbContext`
+Nie trzymaj konfiguracji bazy w kilku różnych plikach.
 
-Nie warto mieć jednego `UseSqlServer(...)` w głównym projekcie, drugiego w testach, trzeciego w osobnym hoście i czwartego w design-time factory. To się bardzo źle utrzymuje.
+## 4. Przełącz EF Core na PostgreSQL
 
-Cel jest prosty: jak zmieniasz bazę, to zmieniasz logikę w jednym punkcie, a nie szukasz jej po całym repo.
-
-## 4. Przełącz EF Core z SQL Server na PostgreSQL
-
-Jeśli dziś masz coś takiego:
+Podmień:
 
 ```csharp
 options.UseSqlServer(connectionString);
 ```
 
-to docelowo ma być:
+na:
 
 ```csharp
 options.UseNpgsql(connectionString);
 ```
 
-Brzmi banalnie, ale trzeba to zrobić we wszystkich miejscach, gdzie naprawdę powstaje `DbContext`.
-
-Jeśli aplikacja ma:
+Zrób to we wszystkich punktach wejścia:
 
 - główny host
-- osobny worker
+- worker
 - testy integracyjne
-- Web API
-- narzędzia design-time
+- design-time factory
 
-to każde z tych miejsc trzeba sprawdzić osobno.
-
-## 5. Przygotuj connection string tak, żeby nie robił wstydu
-
-Connection string do PostgreSQL powinien być trzymany poza kodem. Najczęściej:
-
-- w `appsettings`
-- w zmiennych środowiskowych
-- w lokalnych sekretach
-
-Nie wpisuj hasła na sztywno do klasy konfiguracyjnej. To działa przez chwilę, a potem zaczyna żyć własnym życiem i ląduje w miejscach, w których nie powinno go być.
+## 5. Przygotuj porządny connection string
 
 Przykład:
 
@@ -88,164 +70,124 @@ Przykład:
 Host=localhost;Port=5432;Database=MyApp;Username=myapp;Password=***;Pooling=true
 ```
 
-Najważniejsze jest nie to, żeby ten connection string był "ładny", tylko żeby:
+Trzymaj go poza kodem:
 
-- był pobierany z jednego źródła
-- dało się go zmienić bez przebudowy aplikacji
-- nie mieszał ustawień lokalnych z testowymi i produkcyjnymi
+- `appsettings`
+- zmienne środowiskowe
+- sekrety lokalne
 
 ## 6. Załóż lokalną bazę testową
 
-Nie testuj przejścia na PostgreSQL na przypadkowej starej bazie, jeśli możesz tego uniknąć. Dużo bezpieczniej jest zacząć od czystej bazy developerskiej.
+Załóż:
 
-Na tym etapie potrzebujesz:
-
-- jednej bazy developerskiej
+- jedną bazę developerską
 - jednego użytkownika aplikacyjnego
-- uprawnień wystarczających do pracy aplikacji i migracji
+- prawa wystarczające do migracji i pracy aplikacji
 
-W praktyce warto od razu sprawdzić:
-
-- czy aplikacja łączy się z bazą
-- czy użytkownik ma prawa do tworzenia i aktualizacji schematu
-- czy środowisko działa bez ręcznego poprawiania po starcie
-
-## 7. Zadbaj o polskie znaki i polskie sortowanie
-
-To nie jest temat "na później", jeśli aplikacja ma pracować po polsku.
+## 7. Ustaw polskie znaki i polskie sortowanie
 
 Baza ma:
 
-- poprawnie przechowywać polskie znaki
-- sensownie sortować tekst po polsku
+- poprawnie zapisywać polskie znaki
+- poprawnie sortować polski tekst
 
-To są dwie różne rzeczy. Sam zapis znaków to jeszcze nie wszystko. Użytkownik końcowy zauważa problem dopiero wtedy, gdy lista wygląda dziwnie albo wyszukiwanie działa inaczej, niż się spodziewał.
+Przetestuj to na prawdziwych danych, na przykład `Łódź` i `Żaneta`.
 
-Warto więc od początku przygotować bazę tak, żeby:
+## 8. Uruchom migracje i utwórz schemat
 
-- tekst był zapisywany bez problemów
-- sortowanie było zgodne z polskim użyciem
-- testy obejmowały realne dane typu `Łódź`, `Żaneta`, `Świętochłowice`
+Jeśli używasz migracji EF Core:
 
-## 8. Uruchom migracje EF Core i utwórz schemat
+1. utwórz migrację
+2. uruchom aktualizację bazy
+3. sprawdź, czy schemat tworzy się bez ręcznych poprawek
 
-Jeśli projekt używa migracji, to PostgreSQL powinien mieć własną poprawną ścieżkę utworzenia schematu.
+Projekt ma dać się postawić od zera.
 
-Na tym etapie trzeba:
+## 9. Sprawdź typy danych
 
-1. utworzyć migrację
-2. uruchomić aktualizację bazy
-3. sprawdzić, czy schemat tworzy się bez ręcznych obejść
-
-To jest moment, w którym wychodzą różnice między "projekt kompiluje się" a "projekt naprawdę umie działać na PostgreSQL".
-
-Jeśli migracja się wysypuje, to zwykle problem nie jest w samym PostgreSQL, tylko w tym, że model albo konfiguracja wcześniej były pisane pod założenia SQL Server.
-
-## 9. Sprawdź typy danych, które najczęściej robią problemy
-
-Najwięcej uwagi warto poświęcić tym miejscom:
+Obowiązkowo sprawdź:
 
 - `DateTime`
-- pola tekstowe
+- `string`
 - `decimal`
 - `Guid`
 - `bool`
-- pola opcjonalne
+- `null`
 - wartości domyślne
 
-Nie dlatego, że PostgreSQL jest "dziwny", tylko dlatego, że właśnie tu najłatwiej wyjdą ukryte założenia projektu.
+## 10. Sprawdź zachowanie projektu
 
-Szczególnie daty i czas wymagają ostrożności. Jeśli aplikacja wcześniej działała na innych domyślnych zachowaniach providera, to po zmianie bazy różnice mogą wyjść przy filtrowaniu, porównywaniu albo zapisie.
+Sprawdź:
 
-## 10. PostgreSQL dobrze pokazuje błędy konfiguracji, które wcześniej były ukryte
+- filtrowanie po datach
+- wyszukiwanie po tekście
+- zapis i odczyt pól
+- porównywanie `null`
 
-To nie jest problem XAF. Jeśli model i pola są dobrze skonfigurowane, to standardowe filtry i widoki XAF działają normalnie.
+Nie pytaj, czy aplikacja startuje. Pytaj, czy działa poprawnie.
 
-Problemy zwykle wychodzą gdzie indziej:
+## 11. Zainstaluj `citext`
 
-- przy źle ustawionych datach
-- przy założeniach o porównywaniu tekstu
-- przy polach opcjonalnych i wartościach domyślnych
-- przy własnej logice dopisanej poza standardowym mapowaniem
+Jeśli robisz polską aplikację biznesową na PostgreSQL, instalujesz `citext`.
 
-Dlatego po przejściu na PostgreSQL nie warto pytać tylko "czy lista się otwiera", ale też:
+Powód:
 
-- czy da się filtrować po datach
-- czy wyszukiwanie po tekście zachowuje się tak, jak oczekujesz
-- czy zapis i odczyt pól dają te same wyniki co wcześniej
+- użytkownik wyszukuje tekst bez pilnowania wielkości liter
+- pola tekstowe w aplikacji biznesowej prawie zawsze tego wymagają
+- to jest praktyczny standard
 
-## 11. Rozważ rozszerzenia PostgreSQL tylko wtedy, gdy naprawdę są potrzebne
+Komenda SQL:
 
-Przykład typowy to `citext`, czyli wygodniejsze porównywanie tekstu bez rozróżniania wielkości liter.
+```sql
+CREATE EXTENSION IF NOT EXISTS citext;
+```
 
-To może być bardzo przydatne, ale nie warto wrzucać rozszerzeń tylko dlatego, że "może się kiedyś przyda". Najpierw ustal:
+Przykład dla `psql`:
 
-- jaki problem chcesz rozwiązać
-- czy standardowa konfiguracja już go nie rozwiązuje
-- czy rozszerzenie nie dokłada nowej zależności bez realnej korzyści
+```powershell
+psql -h localhost -U myapp -d MyApp -c "CREATE EXTENSION IF NOT EXISTS citext;"
+```
 
-Dobra zasada jest prosta: najpierw prosta baza i poprawna konfiguracja, potem dodatki.
+Po instalacji mapujesz pola tekstowe tak, żeby projekt rzeczywiście z `citext` korzystał.
 
-## 12. Zrób normalny test końcowy aplikacji
+## 12. Zrób test końcowy
 
-Po zmianie bazy nie wystarczy, że aplikacja się uruchamia.
-
-Trzeba sprawdzić przynajmniej:
+Po zmianie bazy sprawdź:
 
 1. logowanie
-2. otwieranie list i formularzy
-3. zapisywanie rekordów
-4. filtrowanie
-5. wyszukiwanie
-6. raporty i dashboardy, jeśli są w projekcie
+2. otwieranie list
+3. otwieranie formularzy
+4. zapis nowego rekordu
+5. edycję istniejącego rekordu
+6. wyszukiwanie
+7. raporty i dashboardy, jeśli projekt ich używa
 
-Ten etap nie służy do "odbębnienia testu", tylko do złapania miejsc, w których projekt niby działa, ale już nie tak samo jak wcześniej.
+## 13. Przygotuj wdrożenie
 
-## 13. Przygotuj projekt do wdrożenia
+Przed wdrożeniem dopilnuj:
 
-Jeśli lokalnie wszystko działa, to dopiero wtedy przejdź do środowisk wyższych.
-
-Na etapie wdrożenia pilnuj trzech rzeczy:
-
-- ustawienia bazy mają być poza kodem
-- środowiska mają mieć rozdzielone connection stringi
-- proces uruchomienia ma być powtarzalny
-
-Najgorszy scenariusz to taki, w którym lokalnie działa, ale na serwerze trzeba "jeszcze tylko ręcznie poprawić dwie rzeczy". To zwykle znaczy, że proces nie jest gotowy.
+- ustawień bazy poza kodem
+- osobnych connection stringów dla środowisk
+- powtarzalnego procesu uruchomienia
 
 ## 14. Najczęstsze błędy
 
-Najczęściej powtarzają się te same problemy:
+Najczęściej psuje się to:
 
-1. zmiana tylko connection stringa
-2. zostawienie konfiguracji bazy w kilku miejscach
-3. brak porządnej migracji
-4. nieprzemyślane daty i czas
-5. założenia o działaniu tekstu bez testów
-6. brak końcowej weryfikacji na prawdziwej bazie
+1. podmieniony tylko connection string
+2. kilka różnych miejsc konfiguracji bazy
+3. brak poprawnej migracji
+4. zła obsługa dat
+5. brak testów po zmianie bazy
 
-Jeśli tego pilnujesz od początku, to przejście na PostgreSQL jest normalną pracą konfiguracyjną, a nie wielką migracją pełną niespodzianek.
+## 15. Co dochodzi przy multi-tenant
 
-## Co dochodzi później przy multi-tenant
+Przy multi-tenant dochodzi osobna warstwa pracy:
 
-Jeśli później chcesz iść w **multi-tenant**, to dochodzi nowa warstwa problemów:
+- osobne bazy albo osobne schematy
+- trzymanie connection stringów tenantów
+- zakładanie nowych baz
+- migracje wielu baz
+- pilnowanie zgodności schematu
 
-- czy każdy tenant ma mieć osobną bazę
-- jak trzymać connection stringi tenantów
-- jak zakładać nowe bazy
-- jak uruchamiać migracje na wielu bazach
-- jak pilnować zgodności schematu między tenantami
-
-To ma sens, ale to już nie jest "zwykłe dodanie PostgreSQL". To jest osobny temat operacyjny i architektoniczny. Dlatego warto najpierw porządnie ogarnąć jedną zwykłą aplikację na PostgreSQL, a dopiero potem dokładać warstwę tenantów.
-
-Jeśli masz dziś aplikację XAF na EF Core bez PostgreSQL, to najrozsądniejsza kolejność jest taka:
-
-1. uporządkuj konfigurację
-2. dodaj provider
-3. przełącz EF Core
-4. przygotuj bazę
-5. uruchom migracje
-6. sprawdź typy danych i zachowanie aplikacji
-7. dopiero potem myśl o wdrożeniu i multi-tenant
-
-Tak jest po prostu mniej boleśnie.
+Najpierw doprowadź do porządku jedną zwykłą bazę. Multi-tenant dokładaj dopiero potem.
