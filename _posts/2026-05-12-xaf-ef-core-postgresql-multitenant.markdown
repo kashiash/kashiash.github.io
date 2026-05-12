@@ -30,19 +30,31 @@ Przy multi-tenant dochodzą naraz cztery osobne tematy:
 - kto zakłada nową bazę
 - jak puścić migracje na wielu bazach
 
-## Skąd aplikacja ma wiedzieć, który tenant wybrać
+## Skąd aplikacja ma wiedzieć, do której firmy wejść
 
-Najczęściej tenant wybierasz po:
+W praktyce masz kilka normalnych wariantów:
 
-- subdomenie
-- nazwie klienta w URL
-- loginie użytkownika
-- nagłówku albo claimie, jeśli to API
+- firma ma własny adres, na przykład `acme.twojaaplikacja.pl`
+- użytkownik loguje się loginem z nazwą firmy, na przykład `jan@acme`
+- administrator hosta wybiera firmę z listy i otwiera jej panel
+- API dostaje identyfikator firmy w nagłówku albo w claimie tokena
 
-Po rozpoznaniu tenant ma być już jedna konkretna odpowiedź:
+Po rozpoznaniu ma wyjść jedna konkretna rzecz:
 
-- identyfikator tenantu
-- jego connection string
+- identyfikator firmy
+- connection string do jej bazy
+
+Przykład pierwszy:
+
+- `acme.twojaaplikacja.pl` -> baza `MyApp_Acme`
+- `contoso.twojaaplikacja.pl` -> baza `MyApp_Contoso`
+
+Przykład drugi:
+
+- `jan@acme` -> baza `MyApp_Acme`
+- `anna@contoso` -> baza `MyApp_Contoso`
+
+Jeżeli po zalogowaniu dalej nie wiesz, z którą bazą pracujesz, to multi-tenant nie jest jeszcze gotowy.
 
 ## Connection stringi tenantów nie mogą siedzieć w kodzie
 
@@ -64,6 +76,24 @@ public sealed class TenantInfo
 }
 ```
 
+## W XAF masz dwa światy: host i tenant
+
+Masz:
+
+- **Host UI** - panel do zarządzania listą firm
+- **Tenant UI** - właściwą aplikację konkretnej firmy
+
+Host widzi listę tenantów, może ich założyć, włączyć, wyłączyć, zmienić dane połączenia.
+
+Tenant pracuje tylko na swojej bazie, swoich użytkownikach, swoich rolach i swoich danych.
+
+To oznacza dwie osobne bazy:
+
+- **Host Database** - lista tenantów, ustawienia wspólne, obiekty współdzielone jeśli naprawdę ich potrzebujesz
+- **Tenant Database** - dane jednej konkretnej firmy
+
+Tego nie mieszasz. Host i tenant nie mogą używać tego samego connection stringa.
+
 ## `DbContext` musi powstawać per tenant
 
 Normalny wzorzec:
@@ -78,9 +108,9 @@ services.AddDbContext<MyAppDbContext>((serviceProvider, options) =>
 
 Jeżeli tenant jest rozpoznawany za późno, wszystko zaczyna działać losowo.
 
-## Musisz mieć osobną bazę hosta albo katalog tenantów
+## Musisz mieć osobną bazę hosta
 
-Przy modelu „osobna baza na tenant” zwykle potrzebujesz:
+Przy modelu „osobna baza na tenant” potrzebujesz:
 
 - bazy hosta
 - tabeli `Tenants`
@@ -88,7 +118,7 @@ Przy modelu „osobna baza na tenant” zwykle potrzebujesz:
 
 Bez tego zaczyna się ręczne zarządzanie konfiguracją.
 
-## Zakładanie nowego tenantu to proces
+## Zakładanie nowej firmy to proces
 
 Nowy tenant ma przejść dokładnie przez to:
 
@@ -96,7 +126,7 @@ Nowy tenant ma przejść dokładnie przez to:
 2. nadanie właściciela albo użytkownika
 3. dołożenie `citext`
 4. puszczenie migracji
-5. dopisanie tenantu do katalogu
+5. dopisanie firmy do bazy hosta
 
 Przykład:
 
@@ -116,6 +146,16 @@ I dopiero potem:
 dotnet ef database update
 ```
 
+## XAF ma tu jeszcze kilka twardych zasad
+
+Z dokumentacji DevExpress wynikają trzy rzeczy:
+
+- jedna baza tenantowa nie może przechowywać danych kilku różnych firm
+- baza hosta nie może być jednocześnie bazą któregoś tenantu
+- każdy tenant musi mieć własny, unikalny connection string
+
+Jeżeli ktoś próbuje zrobić jedną wspólną bazę dla hosta i jednej firmy, to robi to źle.
+
 ## Migracje na wielu bazach to osobny problem
 
 Na jednej bazie wystarcza:
@@ -131,6 +171,8 @@ To znaczy, że potrzebujesz:
 - listy tenantów
 - skryptu albo joba migracyjnego
 - logu, która baza została zaktualizowana
+
+Przy EF Core baza nowego tenantu ma już mieć puszczone migracje przed pierwszym logowaniem użytkownika.
 
 ## Nie rób tenant provisioning w zwykłym runtime
 
@@ -149,6 +191,8 @@ Sprawdzasz:
 3. czy dwa tenanty nie widzą swoich danych
 4. czy nowy tenant daje się założyć od zera
 5. czy migracje przechodzą po wszystkich tenantach
+6. czy użytkownik hosta widzi listę firm
+7. czy zwykły użytkownik firmy nie widzi panelu hosta
 
 ## Gdzie to się zwykle wykłada
 
@@ -159,6 +203,7 @@ Najczęstsze wtopy:
 - connection string cache'owany nie tam, gdzie trzeba
 - migracje puszczane tylko na jednej bazie
 - ręczne zakładanie nowych baz
+- host i tenant na tej samej bazie
 
 ## Rozsądna kolejność
 
