@@ -1,7 +1,17 @@
 ---
 layout: post
 title: "Branding w Blazorze: logo, splash screen i motywy"
+series: "Dostosowanie demówki XAF Blazor do własnych potrzeb"
+series_part: 2
 ---
+
+> **Część 2 serii: Dostosowanie demówki XAF Blazor do własnych potrzeb**
+>
+> Bierzemy publiczne `MainDemo.NET.EFCore` od DevExpressa i przerabiamy je krok po kroku tak, żeby wyglądało i działało jak nasza własna aplikacja, nie demówka.
+>
+> 1. [Obsługa języków: polski, angielski, niemiecki]({% post_url 2026-05-12-obsluga-jezykow-blazor %})
+> 2. **Branding: logo, splash screen i motywy** — ten wpis
+> 3. [Custom DateEditor z parametrem modelowym do blokady kółka myszy]({% post_url 2026-05-12-xaf-blazor-date-editor-mouse-wheel %})
 
 Najłatwiej zepsuć branding w Blazorze w bardzo elegancki sposób. Niby wszystko działa, aplikacja się uruchamia, logo „jest”, a i tak człowiek od razu widzi, że coś tu się rozjechało. Jedno logo na starcie, drugie po zalogowaniu, trzecie w loaderze. Do tego po prawej jakieś motywy z innej bajki.
 
@@ -202,3 +212,26 @@ I potem zaczyna się tłumaczenie, że „przecież logo już podmienione”.
 Tak, tylko nie wszędzie.
 
 Branding w takich aplikacjach nie jest wielką architekturą. To bardziej kwestia dyscypliny. Ale właśnie przez to łatwo go potraktować byle jak. A wtedy całość wygląda byle jak już od pierwszej sekundy.
+
+## Update 2026-05-12: ten sam pattern w MainDemo
+
+Ten sam zestaw zmian przeszedłem drugi raz, tym razem w [`MainDemoEFCoreCustomization`](https://github.com/kashiash/MainDemoEFCoreCustomization) (publiczny fork XAF Main Demo na EF Core). Robiłem to dosłownie z myślą o tym, czy ten artykuł trzyma się w praktyce, jak się go bierze do innego repo.
+
+Punkt startu w MainDemo był uboższy niż w DataDrive: były tylko `Logo.svg` i `SplashScreen.svg`, pre-loadera nie było wcale, tytuł karty to `XAF Blazor Demo`, theme switcher na `DevExpress Fluent`.
+
+Co się sprawdziło dokładnie tak, jak opisane wyżej:
+
+- **Trzy assety, nie jeden.** Jeszcze raz okazało się, że dopóki nie mamy osobnego `FullLogo` (u mnie `fleet-management-software.svg`), pre-loader albo nie istnieje, albo użyje czegoś, co miało być headerem.
+- **`<title>`, `og:title`, `param-Caption`, `aria-label` razem.** Zmieniłem tylko `<title>` i jakkolwiek logo się ładnie wyświetla, czytnik ekranu nadal czyta starą markę.
+- **`body { margin: 0 }` przy `position: fixed; inset: 0`.** Łatwo pominąć — pre-loading-panel wyglądał poprawnie na pierwszy rzut oka, ale przy szerszym viewporcie widać 8 px ramki z Bootstrapa.
+- **`z-index: 100002` nad `#blazor-error-ui` (`100001`).** Drobiazg, ale jeśli aplikacja umrze podczas startu, błąd nie powinien wskoczyć nad pre-loaderem.
+
+Co dodało się jako konkretna pułapka tylko tego repo:
+
+- **Build pada na MSB3026/MSB3027 jeśli aplikacja jest aktualnie uruchomiona.** Kompilator C# leci czysto, dopiero copy-step `MainDemo.Module.dll` do `MainDemo.Blazor.Server\bin\` próbuje 10 razy i pada. Wniosek: jeśli oceniasz branding w trakcie sesji, najpierw zatrzymaj proces, dopiero potem rebuild.
+- **MainDemo ma własną warstwę modelu po polsku** (`Model.DesignedDiffs.Localization.pl.xafml`). Branding nie ruszał XAFML, ale gdyby ktoś chciał zmienić też nazwę aplikacji w nawigacji, trzeba pamiętać, że ten plik istnieje.
+- **`MainDemoBlazorApplication.ApplicationName = "MainDemo"`** zostało celowo bez zmian — to identyfikator aplikacji w `ModelDifference`, nie napis na ekranie. Zmiana zerwałaby ciągłość modelu w istniejącej bazie.
+
+Pełny zapis zmiany w MainDemo (z fragmentami przed/po, listą plików i tym, czego *nie* ruszałem i dlaczego) leży w repo w [`docs/branding-w-main-demo-blazor.md`](https://github.com/kashiash/MainDemoEFCoreCustomization/blob/main/docs/branding-w-main-demo-blazor.md). To samo wzięte z innej strony.
+
+Wniosek operacyjny: lista kontrolna z tego artykułu — assety → `_Host.cshtml` → `site.css` → `appsettings.json` → rebuild → trzy ekrany do obejrzenia — przeszła drugi raz bez modyfikacji. Jak coś wraca dwa razy z tym samym sukcesem, to przestaje być przypadek i można już z tego zrobić checklistę.
