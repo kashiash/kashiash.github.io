@@ -23,12 +23,18 @@ W XAF + EF Core dla systemu biznesowego najczyściej wychodzi zwykle **osobna ba
 
 ## Nie mieszaj problemów
 
-Przy multi-tenant dochodzą naraz cztery osobne tematy:
+Przy jednej bazie sprawa jest prosta: aplikacja łączy się w jedno miejsce i działa. Przy multi-tenant to się kończy.
 
-- jak rozpoznać tenant
-- skąd wziąć connection string
-- kto zakłada nową bazę
-- jak puścić migracje na wielu bazach
+Teraz musisz osobno ustalić cztery rzeczy. Jak aplikacja poznaje, do której firmy wchodzi użytkownik. Skąd bierze adres do bazy tej firmy. Kto zakłada nową bazę dla nowej firmy. I kto później aktualizuje wszystkie bazy, kiedy zmienisz model albo dodasz migrację.
+
+Przykład z życia. Dzisiaj dochodzi nowy klient `Acme`. Ktoś musi:
+
+1. dopisać `Acme` do bazy hosta
+2. założyć bazę `MyApp_Acme`
+3. puścić na niej migracje
+4. sprawić, żeby `jan@acme` albo `acme.twojaaplikacja.pl` trafiało właśnie do tej bazy
+
+Jeżeli to nie jest rozdzielone, tylko „jakoś zrobi się przy starcie”, to później zaczyna się chaos.
 
 ## Skąd aplikacja ma wiedzieć, do której firmy wejść
 
