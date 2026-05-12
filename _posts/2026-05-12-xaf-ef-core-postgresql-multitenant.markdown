@@ -7,6 +7,30 @@ Jeżeli jedna baza na PostgreSQL już działa, dopiero wtedy bierzesz się za mu
 
 To jest ten moment, w którym kończy się zwykłe „przełączenie providera”, a zaczyna normalna robota architektoniczna.
 
+Najpierw odpowiedz sobie uczciwie na jedno pytanie: po co ci w ogóle multi-tenant.
+
+To ma sens wtedy, gdy:
+
+- jedna aplikacja ma obsługiwać wiele niezależnych firm
+- każda firma ma mieć swoje dane odcięte od pozostałych
+- chcesz wdrażać jeden kod, ale obsługiwać wielu klientów
+- chcesz łatwo założyć nową firmę bez stawiania osobnej aplikacji od zera
+
+Przykład prosty. Masz system dla wypożyczalni, warsztatów albo sieci biur. Klient `Acme` ma swoje auta, swoje dokumenty, swoich użytkowników. Klient `Contoso` ma swoje. Obie firmy używają tej samej aplikacji, ale nie mogą widzieć swoich danych nawzajem.
+
+To właśnie jest normalny przypadek dla multi-tenant.
+
+To nie ma sensu wtedy, gdy:
+
+- masz jedną firmę i jedną bazę
+- każdy klient i tak dostaje osobną instancję aplikacji
+- różnice między klientami są tak duże, że kończysz z osobnym kodem albo osobnymi modułami
+- nie masz procesu zakładania nowej firmy, migracji i utrzymania wielu baz
+
+Jeżeli masz dziś dwóch klientów i dla każdego stawiasz osobny serwer, osobny deploy i osobną bazę, to jeszcze nie jest multi-tenant. To są po prostu dwie osobne instalacje.
+
+Multi-tenant opłaca się wtedy, gdy zyskujesz na wspólnym kodzie i wspólnym utrzymaniu, ale nie mieszasz danych klientów. Nie opłaca się wtedy, gdy dokładasz sobie skomplikowanie, a realnie nie obsługujesz wielu firm z jednego systemu.
+
 Jeżeli jeszcze nie masz dopiętej wersji z jedną zwykłą bazą, najpierw przeczytaj to:
 
 [XAF + EF Core + PostgreSQL krok po kroku](/2026/05/12/xaf-ef-core-postgresql-krok-po-kroku.html)
