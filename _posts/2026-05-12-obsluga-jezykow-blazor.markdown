@@ -1,7 +1,17 @@
 ---
 layout: post
 title: "Obsługa języków w Blazorze: polski, angielski i niemiecki"
+series: "Dostosowanie demówki XAF Blazor do własnych potrzeb"
+series_part: 1
 ---
+
+> **Część 1 serii: Dostosowanie demówki XAF Blazor do własnych potrzeb**
+>
+> Bierzemy publiczne `MainDemo.NET.EFCore` od DevExpressa i przerabiamy je krok po kroku tak, żeby wyglądało i działało jak nasza własna aplikacja, nie demówka.
+>
+> 1. **Obsługa języków: polski, angielski, niemiecki** — ten wpis
+> 2. [Branding: logo, splash screen i motywy]({% post_url 2026-05-12-branding-blazor %})
+> 3. [Custom DateEditor z parametrem modelowym do blokady kółka myszy]({% post_url 2026-05-12-xaf-blazor-date-editor-mouse-wheel %})
 
 Wielojęzyczność w Blazorze ma tę samą przypadłość co branding: wygląda niewinnie, dopóki nie zaczniesz tego robić naprawdę. Na początku człowiek dopisuje dwa kody kultur, włącza przełącznik języka i myśli, że temat zamknięty. A potem okazuje się, że menu przełącza się ładnie, ale raporty dalej są po angielsku, część UI wraca do fallbacku, a nowy użytkownik i tak dostaje zły język na wejściu.
 
