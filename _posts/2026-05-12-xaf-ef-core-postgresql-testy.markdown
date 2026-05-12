@@ -3,38 +3,49 @@ layout: post
 title: "Jakie testy dodać po przejściu XAF na PostgreSQL"
 ---
 
-Po przejściu na PostgreSQL nie wystarczy, że aplikacja startuje. Musisz sprawdzić, że naprawdę działa poprawnie.
+Najczęstszy błąd po przejściu na PostgreSQL wygląda tak: aplikacja startuje, więc wszyscy zakładają, że temat zamknięty. Nie jest.
 
-## 1. Co potwierdzasz testami
+To, że UI się podniesie, nic jeszcze nie mówi o:
 
-Testy mają potwierdzić pięć rzeczy:
+- migracjach
+- zapisie danych
+- filtrowaniu
+- tekstach
+- datach
 
-1. aplikacja łączy się z PostgreSQL
-2. schemat bazy daje się utworzyć albo zaktualizować
-3. zapis i odczyt danych działa poprawnie
-4. filtrowanie i wyszukiwanie działa poprawnie
-5. podstawowe widoki i operacje w aplikacji dalej działają
+## Od czego zacząć
 
-## 2. Testy konfiguracji
+Najpierw testy najtańsze.
 
-Dodaj testy, które sprawdzają:
+Pierwszy pakiet:
 
-- `UseNpgsql(...)`
-- źródło connection stringa
-- spójność konfiguracji między hostem, testami i dodatkowymi procesami
-- budowanie poprawnego connection stringa do PostgreSQL
+1. konfiguracja
+2. połączenie
+3. schemat
+4. zapis prostych danych
 
-## 3. Testy migracji
+## Testy konfiguracji
 
-Sprawdź:
+Sprawdzasz:
 
-- czy pusta baza daje się utworzyć od zera
-- czy migracja przechodzi bez ręcznych poprawek
-- czy aplikacja działa na nowym schemacie
+- czy projekt rzeczywiście używa `UseNpgsql(...)`
+- skąd bierze connection string
+- czy testy, worker i główny host nie mają różnych ustawień
+- czy budowanie connection stringa działa tak, jak zakładasz
 
-## 4. Testy danych
+## Test migracji
 
-Obowiązkowo sprawdź:
+Jeżeli używasz migracji EF Core, to masz obowiązek sprawdzić, czy baza daje się postawić od zera.
+
+Tu testujesz:
+
+- pustą bazę
+- `database update`
+- poprawne utworzenie schematu
+
+## Testy danych
+
+Te rzeczy sprawdzasz obowiązkowo:
 
 - `DateTime`
 - `string`
@@ -44,55 +55,48 @@ Obowiązkowo sprawdź:
 - `null`
 - wartości domyślne
 
-## 5. Testy filtrowania i wyszukiwania
+## Testy filtrowania i wyszukiwania
 
-Sprawdź:
+Tu nie chodzi o to, czy XAF „umie filtrować”. Umie.
 
-- filtrowanie po dacie
-- filtrowanie po tekście
-- wyszukiwanie po fragmencie tekstu
-- porównywanie `null`
-- sortowanie danych z polskimi znakami
+Chodzi o to, czy projekt dobrze działa na PostgreSQL przy:
 
-## 6. Testy końcowe aplikacji
+- filtrowaniu po dacie
+- wyszukiwaniu po tekście
+- porównywaniu `null`
+- sortowaniu polskich znaków
 
-Na końcu sprawdzasz:
+## Testy końcowe
+
+Na końcu i tak trzeba przejść po podstawowych przepływach:
 
 1. logowanie
 2. otwarcie listy
 3. otwarcie formularza
 4. zapis nowego rekordu
-5. edycję istniejącego rekordu
-6. raporty i dashboardy, jeśli projekt ich używa
+5. edycję istniejącego
+6. raport albo dashboard, jeśli projekt ich używa
 
-## 7. Minimalny sensowny pakiet testów
+## Co dodałem tutaj
 
-Jeśli chcesz zacząć rozsądnie, dodaj:
+W tym repo dodałem najpierw lekkie testy konfiguracji PostgreSQL.
 
-1. test konfiguracji PostgreSQL
-2. test budowania connection stringa
-3. test migracji albo tworzenia schematu
-4. test podstawowego połączenia do lokalnego PostgreSQL
-5. test zapisu i odczytu prostych danych
+Sprawdzają:
 
-## 8. Co zostało dodane u mnie
+- budowanie stringa połączenia z `FHOST`, `FDATABASE`, `FUSERNAME`, `FPASSWORD`
+- pierwszeństwo `ConnectionStrings__ConnectionString`
+- budowanie stringa połączenia administracyjnego
+- prawdziwe połączenie do lokalnego PostgreSQL
 
-W moim projekcie dodałem testy:
+To nie są jeszcze testy całej aplikacji. To jest warstwa podstawowa. Potem dokładamy migracje i dane.
 
-- budowania stringa połączenia z `FHOST`, `FDATABASE`, `FUSERNAME`, `FPASSWORD`
-- pierwszeństwa `ConnectionStrings__ConnectionString`
-- budowania stringa połączenia administracyjnego
-- prawdziwego połączenia do lokalnego PostgreSQL
+## Dobra kolejność
 
-To jest pierwszy poziom testów. Następny krok to migracje i zapis danych.
-
-## 9. Dobra kolejność pracy
-
-Rób testy w tej kolejności:
+Rób to tak:
 
 1. konfiguracja
 2. połączenie
-3. schemat
+3. migracje
 4. dane
 5. filtrowanie
-6. końcowe przepływy użytkownika
+6. końcowe przepływy

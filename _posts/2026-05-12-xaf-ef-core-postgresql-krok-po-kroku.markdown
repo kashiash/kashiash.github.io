@@ -3,47 +3,76 @@ layout: post
 title: "XAF + EF Core + PostgreSQL krok po kroku"
 ---
 
-Ten tekst jest dla programisty, który ma aplikację XAF na EF Core i chce ją poprawnie uruchomić na PostgreSQL.
+Masz aplikację XAF na EF Core. Działa na SQL Server. Chcesz ją przełączyć na PostgreSQL i nie utopić dwóch dni w poprawianiu głupot. To jest właśnie ten przypadek.
 
-Zakres:
+Nie zaczynasz od connection stringa. To jest ostatnia rzecz, która wygląda niewinnie, a potem się okazuje, że worker dalej siedzi na SQL Server, migracje lecą przez zły provider, a testy w ogóle nie dotykają tej samej konfiguracji co aplikacja.
 
-- jedna zwykła baza
-- bez multi-tenant na start
-- na końcu krótko: co dochodzi przy multi-tenant
+## Najpierw znajdź, gdzie projekt naprawdę wybiera bazę
 
-## 1. Sprawdź stan projektu
+W praktyce szukasz czterech miejsc:
 
-Najpierw znajdź:
+- rejestracja `DbContext`
+- `IDesignTimeDbContextFactory`
+- worker albo osobny host
+- testy integracyjne
 
-1. miejsce rejestracji `DbContext`
-2. miejsce wyboru providera bazy
-3. miejsce budowania connection stringa
-4. `IDesignTimeDbContextFactory`, jeśli projekt używa migracji
-5. dodatkowe hosty: worker, testy, API
+Typowy stan przed zmianą wygląda tak:
 
-## 2. Dodaj provider PostgreSQL
+```csharp
+services.AddDbContext<MyAppDbContext>(options =>
+    options.UseSqlServer(configuration.GetConnectionString("ConnectionString")));
+```
 
-Dodaj pakiet:
+albo tak:
+
+```csharp
+public class MyAppDesignTimeDbContextFactory : IDesignTimeDbContextFactory<MyAppDbContext>
+{
+    public MyAppDbContext CreateDbContext(string[] args)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<MyAppDbContext>();
+        optionsBuilder.UseSqlServer("...");
+        return new MyAppDbContext(optionsBuilder.Options);
+    }
+}
+```
+
+To drugie miejsce ludzie bardzo lubią pominąć.
+
+## Dodaj provider. Bez kombinowania.
+
+Pakiet:
 
 ```xml
 <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
 ```
 
-Jeśli używasz migracji EF Core, dopilnuj zgodności wersji EF Core i narzędzi.
+Jeżeli używasz migracji, dopilnuj zgodności wersji EF Core i narzędzi.
 
-## 3. Zbierz konfigurację bazy do jednego miejsca
+## Zbierz konfigurację do jednego miejsca
 
-Projekt ma mieć jeden punkt, który:
+Jeżeli projekt ma:
 
-- wybiera provider
-- bierze connection string
-- konfiguruje `DbContext`
+- trochę konfiguracji w `Program.cs`
+- trochę w helperze
+- trochę w testach
+- trochę w design-time factory
 
-Nie trzymaj konfiguracji bazy w kilku różnych plikach.
+to najpierw to porządkujesz.
 
-## 4. Przełącz EF Core na PostgreSQL
+Docelowo chcesz mieć jedną decyzję:
 
-Podmień:
+```csharp
+services.AddDbContext<MyAppDbContext>(options =>
+{
+    string connectionString = configuration.GetConnectionString("ConnectionString");
+    options.UseNpgsql(connectionString);
+});
+```
+
+## Przełącz wszystko, nie tylko główny host
+
+Podmieniasz:
 
 ```csharp
 options.UseSqlServer(connectionString);
@@ -55,139 +84,120 @@ na:
 options.UseNpgsql(connectionString);
 ```
 
-Zrób to we wszystkich punktach wejścia:
+ale nie tylko w głównej aplikacji. Sprawdzasz jeszcze:
 
-- główny host
 - worker
-- testy integracyjne
+- Web API, jeśli jest osobno
 - design-time factory
+- testy
 
-## 5. Przygotuj porządny connection string
+## Connection string ma siedzieć poza kodem
 
-Przykład:
+Normalny przykład:
 
 ```txt
 Host=localhost;Port=5432;Database=MyApp;Username=myapp;Password=***;Pooling=true
 ```
 
-Trzymaj go poza kodem:
+Źródło:
 
-- `appsettings`
+- `appsettings.Development.json`
 - zmienne środowiskowe
-- sekrety lokalne
+- lokalne sekrety
 
-## 6. Załóż lokalną bazę testową
+## Załóż bazę i użytkownika developerskiego
 
-Załóż:
+Na lokalnym środowisku robisz jedną bazę i jednego użytkownika aplikacyjnego.
 
-- jedną bazę developerską
-- jednego użytkownika aplikacyjnego
-- prawa wystarczające do migracji i pracy aplikacji
+Przykład:
 
-## 7. Ustaw polskie znaki i polskie sortowanie
+```sql
+CREATE USER myapp WITH PASSWORD 'mocne_haslo';
+CREATE DATABASE "MyApp" OWNER myapp;
+GRANT ALL PRIVILEGES ON DATABASE "MyApp" TO myapp;
+```
 
-Baza ma:
+Po tym od razu sprawdzasz połączenie:
 
-- poprawnie zapisywać polskie znaki
-- poprawnie sortować polski tekst
+```powershell
+psql -h localhost -U myapp -d MyApp
+```
 
-Przetestuj to na prawdziwych danych, na przykład `Łódź` i `Żaneta`.
+## Polskie znaki i sortowanie
 
-## 8. Uruchom migracje i utwórz schemat
+To sprawdzasz od razu:
 
-Jeśli używasz migracji EF Core:
+- zapis `Łódź`
+- zapis `Żaneta`
+- wyszukiwanie `warszawa` kontra `Warszawa`
+- kolejność sortowania na liście
 
-1. utwórz migrację
-2. uruchom aktualizację bazy
-3. sprawdź, czy schemat tworzy się bez ręcznych poprawek
+## Zainstaluj `citext`
 
-Projekt ma dać się postawić od zera.
+Dla polskiej aplikacji biznesowej na PostgreSQL instalujesz `citext`.
 
-## 9. Sprawdź typy danych
-
-Obowiązkowo sprawdź:
-
-- `DateTime`
-- `string`
-- `decimal`
-- `Guid`
-- `bool`
-- `null`
-- wartości domyślne
-
-## 10. Sprawdź zachowanie projektu
-
-Sprawdź:
-
-- filtrowanie po datach
-- wyszukiwanie po tekście
-- zapis i odczyt pól
-- porównywanie `null`
-
-Nie pytaj, czy aplikacja startuje. Pytaj, czy działa poprawnie.
-
-## 11. Zainstaluj `citext`
-
-Jeśli robisz polską aplikację biznesową na PostgreSQL, instalujesz `citext`.
-
-Powód:
-
-- użytkownik wyszukuje tekst bez pilnowania wielkości liter
-- pola tekstowe w aplikacji biznesowej prawie zawsze tego wymagają
-- to jest praktyczny standard
-
-Komenda SQL:
+Komenda:
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS citext;
 ```
 
-Przykład dla `psql`:
+Przez `psql`:
 
 ```powershell
 psql -h localhost -U myapp -d MyApp -c "CREATE EXTENSION IF NOT EXISTS citext;"
 ```
 
-Po instalacji mapujesz pola tekstowe tak, żeby projekt rzeczywiście z `citext` korzystał.
+Potem mapujesz pola tekstowe tak, żeby projekt rzeczywiście z `citext` korzystał.
 
-## 12. Zrób test końcowy
+## Migracje. Tu zwykle wychodzi prawda o projekcie.
 
-Po zmianie bazy sprawdź:
+Normalna ścieżka:
+
+```powershell
+dotnet ef migrations add InitPostgres
+dotnet ef database update
+```
+
+albo, jeśli migracja już istnieje:
+
+```powershell
+dotnet ef database update
+```
+
+## Co najczęściej pęka
+
+Zwykle te same rzeczy:
+
+- `DateTime`
+- `decimal`
+- własne domyślne wartości
+- tekst i porównywanie napisów
+- ręcznie dopisany SQL
+
+## Sprawdź projekt jak człowiek, nie jak README
+
+Po przejściu na PostgreSQL odpalasz i sprawdzasz:
 
 1. logowanie
-2. otwieranie list
-3. otwieranie formularzy
+2. otwarcie listy
+3. otwarcie formularza
 4. zapis nowego rekordu
-5. edycję istniejącego rekordu
-6. wyszukiwanie
-7. raporty i dashboardy, jeśli projekt ich używa
+5. edycję istniejącego
+6. filtrowanie po dacie
+7. wyszukiwanie po tekście
+8. raporty albo dashboardy, jeśli ich używasz
 
-## 13. Przygotuj wdrożenie
+## Co dochodzi przy multi-tenant
 
-Przed wdrożeniem dopilnuj:
+Na końcu dopiero dokładamy multi-tenant.
 
-- ustawień bazy poza kodem
-- osobnych connection stringów dla środowisk
-- powtarzalnego procesu uruchomienia
+Dochodzi:
 
-## 14. Najczęstsze błędy
-
-Najczęściej psuje się to:
-
-1. podmieniony tylko connection string
-2. kilka różnych miejsc konfiguracji bazy
-3. brak poprawnej migracji
-4. zła obsługa dat
-5. brak testów po zmianie bazy
-
-## 15. Co dochodzi przy multi-tenant
-
-Przy multi-tenant dochodzi osobna warstwa pracy:
-
-- osobne bazy albo osobne schematy
+- osobna baza na tenant albo osobny schemat
 - trzymanie connection stringów tenantów
 - zakładanie nowych baz
 - migracje wielu baz
 - pilnowanie zgodności schematu
 
-Najpierw doprowadź do porządku jedną zwykłą bazę. Multi-tenant dokładaj dopiero potem.
+Jeżeli jedna zwykła baza nie jest jeszcze dopięta porządnie, nie wchodzisz w multi-tenant.
