@@ -338,6 +338,80 @@ Pierwsza wersja opisu była dobra jako demonstracja mechanizmu, ale brakowało w
 
 Po tej zmianie editor jest domyślny w całej aplikacji, ale nadal zachowuje się zgodnie z konfiguracją XAF Model.
 
+## Gotowy prompt dla agenta AI
+
+Poniższy prompt jest wersją operacyjną. Można go wkleić agentowi AI pracującemu w repo XAF Blazor i oczekiwać kompletnego wdrożenia, a nie tylko fragmentu kodu.
+
+```text
+Pracujesz w aplikacji DevExpress XAF Blazor. Wdroż globalny domyślny edytor daty dla DateTime i DateTime?, który blokuje zmianę wartości kółkiem myszy, ale nadal respektuje maski XAF.
+
+Wymagania funkcjonalne:
+1. Dodaj custom property editor dziedziczący po DateTimePropertyEditor dla DateTime.
+2. Dodaj analogiczny custom property editor dla DateTime?.
+3. Oba editory zarejestruj przez [PropertyEditor(..., isDefaultEditor: true)], tak żeby były globalnym domyślnym edytorem dla DateTime i DateTime?.
+4. Nie wymagaj [EditorAlias] na poszczególnych właściwościach.
+5. Dodaj rozszerzenie modelu IModelMemberViewItemMouseWheel z bool BlockMouseWheel, Category("Behavior"), DefaultValue(true) i opisem dla Model Editora.
+6. Zarejestruj rozszerzenie modelu w module Blazor przez ExtendModelInterfaces:
+   extenders.Add<IModelMemberViewItem, IModelMemberViewItemMouseWheel>();
+7. Domyślnie blokuj scroll myszą wewnątrz edytora daty.
+8. Jeśli w Model Editorze dla konkretnego ViewItem ustawiono BlockMouseWheel = False, nie dodawaj klasy CSS blokującej scroll dla tego pola.
+9. Blokada scrolla ma działać tylko dla tego custom editora, a nie globalnie dla wszystkich kontrolek DevExpressa.
+10. Dodaj własną klasę CSS, np. "myapp-dateedit-wheel-blocked", do adapter.CssClass edytora, gdy BlockMouseWheel nie jest false.
+11. Dodaj listener JavaScript dla zdarzenia wheel w fazie capture:
+    - { capture: true, passive: false }
+    - sprawdź target.closest('.myapp-dateedit-wheel-blocked')
+    - wywołaj e.preventDefault()
+    - wywołaj e.stopImmediatePropagation()
+12. Nie używaj selektorów po wewnętrznych klasach DevExpress typu dxbl-* jako podstawy działania.
+
+Wymagania dotyczące masek:
+1. Nie ustawiaj globalnie jednej maski typu "dd.MM.yyyy HH:mm".
+2. Czytaj model.EditMask i model.DisplayFormat z IModelMemberViewItem.
+3. Jeśli DisplayFormat ma postać "{0:g}" albo "{0:dd.MM.yyyy HH:mm}", znormalizuj go do "g" albo "dd.MM.yyyy HH:mm".
+4. Jeśli model ma EditMask, ustaw adapter.Mask na tę wartość.
+5. Jeśli model ma DisplayFormat, ustaw adapter.Format i adapter.DisplayFormat na tę wartość.
+6. Ustaw adapter.TimeSectionVisible = true tylko wtedy, gdy efektywna maska lub format zawiera czas.
+7. Traktuj jako formaty z czasem standardowe formaty .NET: f, F, g, G, o, O, r, R, s, t, T, u, U.
+8. Traktuj jako formaty z czasem maski zawierające tokeny: H, h, m, s, t, f, F, K, z.
+9. Nie traktuj pojedynczego standardowego formatu "m" ani "M" jako czasu, bo to format miesiąc/dzień.
+10. Przy analizie maski pomijaj literały w apostrofach, cudzysłowach i znaki escapowane backslashem.
+
+Wymagania DevExpress:
+1. Ustaw MaskCaretMode.Advancing dla:
+   - DxDateEditMaskProperties.DateTime
+   - DxDateEditMaskProperties.DateOnly
+   - DxDateEditMaskProperties.DateTimeOffset
+2. Zrób to w miejscu, gdzie editor ma dostęp do DxDateEditMaskProperties.
+3. Pracuj na DxDateEditModel<DateTime> i DxDateEditModel<DateTime?>.
+
+Weryfikacja:
+1. Uruchom build projektu Blazor w konfiguracji Release.
+2. Sprawdź, że kompilacja przechodzi bez błędów.
+3. Sprawdź w kodzie lub testowo, że:
+   - maska "d" nie pokazuje sekcji czasu,
+   - maska "dd.MM.yyyy" nie pokazuje sekcji czasu,
+   - maska "g" pokazuje sekcję czasu,
+   - maska "dd.MM.yyyy HH:mm" pokazuje sekcję czasu,
+   - maska "HH:mm" pokazuje sekcję czasu,
+   - "{0:g}" jest interpretowane jak "g".
+4. Sprawdź, że scroll nad polem z domyślnym BlockMouseWheel nie zmienia wartości.
+5. Sprawdź, że po ustawieniu BlockMouseWheel = False dla pojedynczego ViewItem klasa CSS nie jest dodawana i scroll nie jest blokowany przez nasz listener.
+
+Ograniczenia:
+1. Nie zmieniaj semantyki istniejących pól datowych.
+2. Nie przenoś wszystkich pól na datę z godziną.
+3. Nie opieraj rozwiązania na klasach CSS DevExpressa.
+4. Nie wyłączaj scrolla globalnie w całej aplikacji.
+5. Nie rób osobnego opt-in przez [EditorAlias], chyba że repo ma wyraźny wymóg przeciwny. Domyślnie editor ma być globalny.
+
+Na końcu podaj:
+1. listę zmienionych plików,
+2. wynik builda,
+3. krótką instrukcję, gdzie w Model Editorze wyłączyć BlockMouseWheel dla pojedynczego pola.
+```
+
+W praktyce najważniejsze zdanie w tym promptcie to: **"Nie ustawiaj globalnie jednej maski typu `dd.MM.yyyy HH:mm`."** Bez tego agent bardzo łatwo zrobi rozwiązanie, które wygląda poprawnie w jednym polu, ale po wdrożeniu zmieni zachowanie całej aplikacji.
+
 ## Checklist wdrożeniowy
 
 1. Dodaj custom property editor dla `DateTime` i `DateTime?` z `isDefaultEditor: true`.
