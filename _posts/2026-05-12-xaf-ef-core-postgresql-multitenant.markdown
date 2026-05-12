@@ -13,13 +13,13 @@ Jeżeli jeszcze nie masz dopiętej wersji z jedną zwykłą bazą, najpierw prze
 
 ## Najpierw ustal, jaki multi-tenant w ogóle robisz
 
-Są trzy typowe układy:
+Technicznie są trzy warianty:
 
 - jedna baza, wspólne tabele, `TenantId` w rekordach
 - jedna baza na tenant
 - osobny schemat na tenant
 
-W XAF + EF Core dla systemu biznesowego najczyściej wychodzi zwykle **osobna baza na tenant**.
+W XAF + EF Core dla normalnej aplikacji biznesowej bierzesz **osobną bazę na firmę**. To jest wariant, pod który DevExpress naprawdę to układa.
 
 ## Nie mieszaj problemów
 
@@ -64,11 +64,11 @@ Jeżeli po zalogowaniu dalej nie wiesz, z którą bazą pracujesz, to multi-tena
 
 ## Connection stringi tenantów nie mogą siedzieć w kodzie
 
-Connection stringi tenantów trzymasz w:
+Adresy do baz trzymasz w jednym kontrolowanym miejscu:
 
 - centralnej bazie hosta
-- bezpiecznej konfiguracji
-- vault
+- ustawieniach środowiska
+- menedżerze sekretów, jeśli go używasz
 
 Minimalny model wygląda tak:
 
@@ -100,9 +100,11 @@ To oznacza dwie osobne bazy:
 
 Tego nie mieszasz. Host i tenant nie mogą używać tego samego connection stringa.
 
-## `DbContext` musi powstawać per tenant
+## `DbContext` musi powstawać osobno dla każdej firmy
 
-Normalny wzorzec:
+To jest proste. Jeśli firma `Acme` ma inną bazę niż `Contoso`, to `DbContext` nie może być zbudowany raz na sztywno dla wszystkich.
+
+Robisz to w `scoped`, na podstawie rozpoznanej firmy:
 
 ```csharp
 services.AddDbContext<MyAppDbContext>((serviceProvider, options) =>
@@ -112,7 +114,7 @@ services.AddDbContext<MyAppDbContext>((serviceProvider, options) =>
 });
 ```
 
-Jeżeli tenant jest rozpoznawany za późno, wszystko zaczyna działać losowo.
+Jeżeli najpierw tworzysz `DbContext`, a dopiero potem próbujesz ustalić firmę, to jedziesz w ciemno.
 
 ## Musisz mieć osobną bazę hosta
 
@@ -124,9 +126,9 @@ Przy modelu „osobna baza na tenant” potrzebujesz:
 
 Bez tego zaczyna się ręczne zarządzanie konfiguracją.
 
-## Zakładanie nowej firmy to proces
+## Założenie nowej firmy musi być procedurą
 
-Nowy tenant ma przejść dokładnie przez to:
+Nowy klient ma przejść dokładnie przez to:
 
 1. utworzenie bazy
 2. nadanie właściciela albo użytkownika
@@ -170,22 +172,23 @@ Na jednej bazie wystarcza:
 dotnet ef database update
 ```
 
-Przy multi-tenant musisz przejść po wszystkich aktywnych tenantach i puścić migrację dla każdej bazy osobno.
+Przy wielu firmach musisz przejść po wszystkich aktywnych firmach i puścić migrację dla każdej bazy osobno.
 
-To znaczy, że potrzebujesz:
+W praktyce robisz to tak:
 
-- listy tenantów
-- skryptu albo joba migracyjnego
-- logu, która baza została zaktualizowana
+1. pobierasz listę aktywnych firm z bazy hosta
+2. bierzesz connection string każdej firmy
+3. odpalasz migrację na tej konkretnej bazie
+4. zapisujesz, gdzie poszło dobrze, a gdzie się wywaliło
 
-Przy EF Core baza nowego tenantu ma już mieć puszczone migracje przed pierwszym logowaniem użytkownika.
+Przy EF Core nowa baza ma już być gotowa przed pierwszym logowaniem użytkownika.
 
-## Nie rób tenant provisioning w zwykłym runtime
+## Nie wkładaj zakładania nowych firm do zwykłego startu aplikacji
 
 Lepszy układ:
 
-- zwykły runtime tylko korzysta z istniejących tenantów
-- provisioning tenantu robi osobny proces albo endpoint administracyjny
+- zwykły runtime tylko korzysta z istniejących firm
+- założenie nowej firmy robi osobny proces, ekran administracyjny albo narzędzie
 - migracje wielu baz robi osobny krok operacyjny
 
 ## Co trzeba testować przy multi-tenant
