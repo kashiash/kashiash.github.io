@@ -161,6 +161,12 @@ Dochodzą pliki lokalizacyjne, na przykład:
 - `dx-rich.pl.json`
 - `dx-spreadsheet.pl.json`
 
+Pierwsze miejsce, które warto wtedy otworzyć, to:
+
+- [localization.devexpress.com](https://localization.devexpress.com/)
+
+To jest oficjalny serwis DevExpress z tłumaczeniami. Czasem człowiek odruchowo zaczyna szukać tych plików po starych projektach albo paczkach NuGet, a tu po prostu szybciej jest najpierw sprawdzić, czy gotowa lokalizacja już tam leży.
+
 I teraz najważniejsze: samo wrzucenie ich do katalogu niczego nie gwarantuje.
 
 Trzeba jeszcze je załadować, np.:
