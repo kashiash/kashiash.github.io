@@ -3,15 +3,15 @@ layout: post
 title: "Obsługa języków w Blazorze: polski, angielski i niemiecki"
 ---
 
-Włączenie wielu języków w aplikacji Blazor bardzo rzadko kończy się na dopisaniu jednej listy kultur. Jeśli zrobisz tylko tyle, użytkownik może zobaczyć język w menu, ale raporty dalej zostaną po angielsku, a aplikacja i tak nie wybierze poprawnie języka z przeglądarki.
+Wielojęzyczność w Blazorze ma tę samą przypadłość co branding: wygląda niewinnie, dopóki nie zaczniesz tego robić naprawdę. Na początku człowiek dopisuje dwa kody kultur, włącza przełącznik języka i myśli, że temat zamknięty. A potem okazuje się, że menu przełącza się ładnie, ale raporty dalej są po angielsku, część UI wraca do fallbacku, a nowy użytkownik i tak dostaje zły język na wejściu.
 
-Dlatego warto patrzeć na lokalizację jak na kilka warstw, a nie jedną opcję w konfiguracji.
+To nie jest wielka tragedia. To po prostu oznacza, że języki trzeba potraktować jako konfigurację runtime, a nie kosmetykę.
 
-## 1. Zacznij od listy języków, które aplikacja ma pokazywać
+## Sama lista języków niczego jeszcze nie załatwia
 
-Najczęściej pierwszym miejscem jest `appsettings.json`.
+Na ogół zaczyna się od `appsettings.json`.
 
-Przykład:
+Na przykład tak:
 
 ```json
 "DevExpress": {
@@ -22,17 +22,17 @@ Przykład:
 }
 ```
 
-To steruje tym, co użytkownik widzi w przełączniku języków.
+To jest potrzebne. Ale tylko potrzebne.
 
-Jeśli `ShowLanguageSwitcher` jest wyłączone, to nawet dobrze skonfigurowane kultury nie będą łatwo dostępne z UI.
+Ta sekcja mówi aplikacji, jakie języki ma pokazać w UI. Nie mówi jeszcze, jak wybrać domyślny język użytkownika. Nie mówi też nic o raportach.
 
-## 2. Oddziel listę języków od logiki ich wyboru
+Czyli: dobry początek, ale tylko początek.
 
-To, że język jest na liście, nie znaczy jeszcze, że aplikacja go sama wybierze.
+## Prawdziwa robota zaczyna się w `RequestLocalizationOptions`
 
-Za automatyczny wybór odpowiada zwykle `RequestLocalizationOptions`.
+To jest miejsce, gdzie wychodzi, czy aplikacja faktycznie „rozumie” języki użytkownika, czy tylko je wyświetla.
 
-Przykład:
+Typowy układ:
 
 ```csharp
 services.Configure<RequestLocalizationOptions>(options =>
@@ -56,36 +56,38 @@ services.Configure<RequestLocalizationOptions>(options =>
 });
 ```
 
-To jest sensowny układ, bo:
+I tu już widać całą logikę:
 
-1. użytkownik może nadpisać język query stringiem,
-2. potem działa wybór zapisany w cookie,
-3. jeśli nie ma wyboru ręcznego, aplikacja bierze język z przeglądarki,
-4. fallback pozostaje przewidywalny.
+- query string może nadpisać kulturę,
+- cookie pamięta wybór użytkownika,
+- `Accept-Language` bierze język z przeglądarki,
+- `pl-PL` zostaje jako fallback.
 
-## 3. Fallback powinien być świadomą decyzją
+To jest moim zdaniem sensowny kompromis. Użytkownik nie musi klikać niczego ręcznie przy pierwszym wejściu, ale też nie tracisz kontroli nad domyślnym zachowaniem.
 
-W przykładzie fallback to `pl-PL`. To ma sens, jeśli aplikacja jest przede wszystkim używana po polsku.
+## Fallback nie może być przypadkowy
 
-Najgorsze, co można zrobić, to zostawić przypadkową kulturę tylko dlatego, że "tak było wcześniej". Fallback to decyzja produktowa, a nie przypadek.
+W wielu projektach fallback zostaje taki, jaki akurat ktoś kiedyś wpisał.
 
-## 4. Dodanie nowego języka to zwykle co najmniej dwa miejsca
+To jest zły pomysł.
 
-Jeśli chcesz dodać np. `fr-FR`, to sama zmiana w `appsettings.json` nie wystarcza.
+Jeśli aplikacja jest głównie po polsku, `pl-PL` jako fallback ma sens. Jeśli robisz produkt pod rynek międzynarodowy, może mieć sens coś innego. Najgorsze są ustawienia „bo już były”.
 
-Trzeba:
+Takie rzeczy wychodzą dopiero później, kiedy nagle nowy użytkownik z niemieckim systemem dostaje polski, a zespół się zastanawia, czy to bug, czy feature.
 
-1. dopisać język do `Languages`,
-2. dopisać kulturę do `SupportedCultures`,
-3. dopisać kulturę do `SupportedUICultures`.
+## Dodanie nowego języka prawie nigdy nie kończy się na jednym pliku
 
-Przykład:
+Załóżmy, że chcesz dodać `fr-FR`.
+
+Jeśli dopiszesz tylko:
 
 ```json
 "Languages": "pl-PL;en-US;de-DE;fr-FR"
 ```
 
-i równolegle:
+to zrobiłeś tylko pół roboty.
+
+Trzeba jeszcze dopisać kulturę w `Startup.cs`:
 
 ```csharp
 var supportedCultures = new[]
@@ -97,33 +99,39 @@ var supportedCultures = new[]
 };
 ```
 
-Jeśli zrobisz tylko jeden z tych kroków, lokalizacja będzie częściowa albo myląca.
+I dopiero wtedy zaczyna to być spójne.
 
-## 5. Raporty i designer raportów to osobny temat
+Inaczej użytkownik zobaczy język na liście, ale aplikacja nie będzie go poprawnie traktowała jako wspieranego języka runtime.
 
-Tu bardzo często wychodzi różnica między "aplikacja ma języki" a "cały system ma języki".
+## Raporty potrafią udawać, że problemu nie ma
 
-Jeśli używasz raportów DevExpress, zwykle trzeba dodatkowo przekazać aktywną kulturę do JavaScriptu.
+Tu bywa najwięcej pułapek.
 
-Przykład:
+Główne UI może przełączać się poprawnie, a report viewer czy designer i tak zostaną po angielsku. I człowiek ma wtedy takie złudne poczucie, że „w sumie działa prawie wszystko”.
+
+To „prawie” jest właśnie najdroższe.
+
+Jeżeli używasz DevExpress, to zwykle trzeba przekazać kulturę do JavaScriptu. Na przykład tak:
 
 ```csharp
 propertyEditor.CallbacksModel.CustomizeLocalization = "ReportingLocalization.onCustomizeLocalization";
 await jSRuntime.InvokeVoidAsync("ReportingLocalization.setCurrentCulture", cultureInfoService?.CurrentCulture.Name);
 ```
 
-Podobnie dla viewera:
+albo tak:
 
 ```csharp
 propertyEditor.DocumentViewerCallbacksModel.CustomizeLocalization = "ReportingLocalization.onCustomizeLocalization";
 await jSRuntime.InvokeVoidAsync("ReportingLocalization.setCurrentCulture", cultureInfoService?.CurrentCulture.Name);
 ```
 
-Jeśli tego nie dopilnujesz, główne UI może działać poprawnie, a raporty dalej będą wracały do angielskiego.
+I właśnie to jest ten moment, o którym łatwo zapomnieć, jeśli człowiek patrzy tylko na główny shell aplikacji.
 
-## 6. Polski często wymaga dodatkowych plików lokalizacyjnych
+## Polski zwykle potrzebuje jeszcze jednego kroku
 
-W praktyce bardzo często dochodzą pliki typu:
+W projektach z DevExpress polski bardzo często nie kończy się na samej kulturze `pl-PL`.
+
+Dochodzą pliki lokalizacyjne, na przykład:
 
 - `dx-analytics-core.pl.json`
 - `dx-dashboard.pl.json`
@@ -131,12 +139,9 @@ W praktyce bardzo często dochodzą pliki typu:
 - `dx-rich.pl.json`
 - `dx-spreadsheet.pl.json`
 
-Samo ich wrzucenie do katalogu nie wystarcza. Trzeba jeszcze:
+I teraz najważniejsze: samo wrzucenie ich do katalogu niczego nie gwarantuje.
 
-1. upewnić się, że są kopiowane do outputu,
-2. załadować je w `_Host.cshtml`.
-
-Przykład ładowania:
+Trzeba jeszcze je załadować, np.:
 
 ```html
 if (currentCulture == "pl") {
@@ -148,13 +153,15 @@ if (currentCulture == "pl") {
 }
 ```
 
-To jest moment, o którym najłatwiej zapomnieć.
+Jak tego nie zrobisz, to polski będzie „tak trochę”.
 
-## 7. Pliki lokalizacyjne muszą trafić do outputu
+## A potem jeszcze `.csproj`
 
-Jeśli projekt ma `.csproj`, który jawnie kontroluje content, to trzeba dopisać odpowiednie wpisy.
+Tak, jeszcze to.
 
-Przykład:
+Jeśli projekt jawnie kontroluje content, to pliki trzeba skopiować do outputu.
+
+Na przykład:
 
 ```xml
 <Content Update="wwwroot\js\localization\dx-analytics-core.pl.json">
@@ -162,48 +169,59 @@ Przykład:
 </Content>
 ```
 
-Bez tego lokalizacja może działać w repo, ale nie w zbudowanej aplikacji.
+Ten etap jest nudny, ale bez niego można stracić godzinę na patrzenie, czemu lokalnie „w repo jest”, a w uruchomionej aplikacji „jakby nie było”.
 
-## 8. Sensowny workflow dodania języka
+## Jak bym to robił bez marnowania czasu
 
-Najmniej boleśnie robi się to tak:
+Moja kolejność:
 
-1. dodaj kulturę do `appsettings.json`,
-2. dodaj kulturę do `Startup.cs`,
-3. sprawdź wybór z `Accept-Language`,
-4. sprawdź raporty i designer,
-5. dodaj pliki `dx-*`, jeśli są potrzebne,
-6. upewnij się, że trafiają do outputu,
-7. przebuduj aplikację,
-8. sprawdź realne UI, nie tylko kompilację.
+1. ustal listę języków,
+2. włącz przełącznik,
+3. popraw `RequestLocalizationOptions`,
+4. zostaw sensowny fallback,
+5. sprawdź raporty,
+6. dopiero potem baw się dodatkowymi plikami lokalizacji,
+7. zrób prawdziwe sprawdzenie w przeglądarce.
 
-## 9. Prompt dla agenta AI
+Nie tylko build. Nie tylko „kompiluje się”. Normalnie wejść do aplikacji, zmienić język, odświeżyć stronę, wejść w raport, zobaczyć co zostało po staremu.
 
-Jeżeli chcesz zlecić to agentowi, minimalny prompt może wyglądać tak:
+## Prompt dla agenta AI
+
+Jeżeli chcesz to zlecić agentowi, dałbym mu coś w tym stylu:
 
 ```text
 Dodaj lub popraw obsługę języków w aplikacji Blazor.
 
-Zakres:
+Zrób to end-to-end:
 1. Włącz przełącznik języka.
 2. Ustaw listę języków w appsettings.json.
 3. Skonfiguruj RequestLocalizationOptions w Startup.cs.
-4. Domyślnie wybieraj język z przeglądarki/systemu, ale z fallbackiem na pl-PL.
+4. Domyślnie wybieraj język z przeglądarki/systemu, ale zostaw fallback na pl-PL.
 5. Sprawdź raporty i pliki lokalizacyjne DevExpress.
-6. Przebuduj aplikację i podaj listę zmienionych plików.
+6. Przebuduj aplikację i wypisz zmienione pliki.
+
+Sprawdź dokładnie:
+- appsettings.json
+- Startup.cs
+- _Host.cshtml
+- ReportLocalizationController.cs
+- .csproj
+- wwwroot/js/localization/
 ```
 
-To jest krótki prompt, ale nadal mówi agentowi, żeby nie zatrzymał się na samym `Languages`.
+Nie jest to piękny prompt z konferencji o AI. Ale jest użyteczny. I to mnie bardziej interesuje.
 
-## 10. Najczęstsze błędy
+## Najczęstsze wpadki
 
-Najczęściej powtarza się:
+Najczęściej widzę:
 
-1. zmiana `Languages` bez zmiany `RequestLocalizationOptions`,
-2. brak `AcceptLanguageHeaderRequestCultureProvider`,
-3. brak lokalizacji raportów,
-4. brak kopiowania plików `dx-*.json`,
-5. test tylko na poziomie kompilacji,
-6. brak decyzji, jaki ma być fallback.
+- zmianę `Languages` bez ruszania `RequestLocalizationOptions`,
+- brak `AcceptLanguageHeaderRequestCultureProvider`,
+- pominięcie raportów,
+- brak kopiowania plików `dx-*.json`,
+- test tylko na poziomie builda,
+- fallback ustawiony z przypadku.
 
-Jeśli chcesz, żeby aplikacja naprawdę była wielojęzyczna, to trzeba patrzeć na języki tak samo poważnie jak na każdą inną część konfiguracji runtime.
+To nie są wielkie błędy architektoniczne. To są raczej drobne zaniedbania, które razem robią bardzo irytujący efekt końcowy.
+
+I właśnie dlatego warto mieć to spisane. Nie po to, żeby napisać „pełny przewodnik po lokalizacji”, tylko po to, żeby drugi raz nie wpaść w ten sam dołek.

@@ -3,41 +3,44 @@ layout: post
 title: "Branding w Blazorze: logo, splash screen i motywy"
 ---
 
-Jeśli aplikacja Blazor ma wyglądać spójnie, to samo podmienienie logo w headerze zwykle nie wystarcza. W praktyce branding siedzi w kilku miejscach naraz: w preloaderze przed startem aplikacji, w splash screenie, w nagłówku i czasem jeszcze w konfiguracji motywów.
+Najłatwiej zepsuć branding w Blazorze w bardzo elegancki sposób. Niby wszystko działa, aplikacja się uruchamia, logo „jest”, a i tak człowiek od razu widzi, że coś tu się rozjechało. Jedno logo na starcie, drugie po zalogowaniu, trzecie w loaderze. Do tego po prawej jakieś motywy z innej bajki.
 
-Dopóki nie zbierzesz tego w jednym miejscu, każda kolejna zmiana kończy się poprawianiem "jeszcze jednego obrazka", którego nikt wcześniej nie zauważył.
+Przerabiałem to ostatnio na żywym organizmie i właśnie dlatego to zapisuję. Nie jako wielką teorię, tylko jako rzecz, do której da się wrócić za miesiąc bez przeklinania.
 
-## 1. Najpierw ustal, które elementy naprawdę składają się na branding
+## Gdzie ten branding naprawdę siedzi
 
-W typowej aplikacji Blazor masz co najmniej trzy warstwy:
+Na pierwszy rzut oka człowiek myśli: „podmienię SVG i po sprawie”. Nie. W praktyce zwykle są co najmniej trzy miejsca:
 
-1. pełne logo przed spinnerem,
-2. splash screen / loader w środku ekranu,
-3. logo w headerze po załadowaniu aplikacji.
+- pełne logo przed spinnerem,
+- obrazek w splash screenie,
+- logo w headerze po wejściu do aplikacji.
 
-Jeśli masz też przełącznik motywów po prawej stronie, to on również wpływa na odbiór brandingu, nawet jeśli nie jest "logo".
+A czasem jeszcze dochodzi czwarty element, czyli układ motywów po prawej stronie. To nie jest logo, jasne. Ale jeśli masz nowoczesny branding, a Theme Switcher wygląda jak relikt po pięciu refaktoryzacjach, to cały efekt siada.
 
-## 2. Zbierz assety do jednego katalogu
+## Najpierw porządek w plikach, potem reszta
 
-Najwygodniej trzymać branding w jednym miejscu, np.:
+Ja wolę mieć to rozdzielone brutalnie prosto:
 
 ```text
 wwwroot/images/
+  Logo.svg
+  FullLogo.svg
+  SplashScreen.svg
 ```
 
-W praktyce dobrze rozdzielić role plików:
+I koniec filozofii.
 
-- `Logo.svg` - header,
-- `FullLogo.svg` - ekran przed spinnerem,
-- `SplashScreen.svg` - środek loadera.
+- `Logo.svg` - to, co siedzi w headerze,
+- `FullLogo.svg` - szeroki znak przed spinnerem,
+- `SplashScreen.svg` - środek właściwego loadera.
 
-To upraszcza kolejne zmiany. Zamiast zgadywać, który SVG za co odpowiada, masz prosty podział odpowiedzialności.
+Jak nie rozdzielisz tych ról, to później agent AI albo drugi programista podmieni „logo”, ale nie to logo, które trzeba.
 
-## 3. Zmień teksty i markup w `_Host.cshtml`
+## Pierwsze miejsce do sprawdzenia: `_Host.cshtml`
 
-To jest zwykle pierwsze miejsce, które trzeba sprawdzić.
+W moim przypadku to właśnie tam siedziały teksty, które po zmianie assetów natychmiast zdradzały stary branding.
 
-Przykład:
+Przykładowy fragment:
 
 ```cshtml
 <title>DataDrive</title>
@@ -48,21 +51,22 @@ Przykład:
 <component type="typeof(SplashScreen)" render-mode="Static" param-Caption='""' param-ImagePath='"images/SplashScreen.svg"' />
 ```
 
-Tutaj zwykle zmieniasz:
+I teraz ważna rzecz: tu nie zmieniasz tylko jednego napisu.
 
-- nazwę zakładki,
+Trzeba przejrzeć:
+
+- `<title>`,
 - `aria-label`,
-- obrazek splasha,
-- caption splasha,
-- ewentualne komunikaty fallbackowe.
+- `param-Caption`,
+- teksty fallbackowe, jeśli masz jakiś komunikat dla IE albo starej przeglądarki.
 
-Jeśli branding ma być spójny, to te teksty nie mogą zostać stare po podmianie SVG.
+To są drobiazgi, ale właśnie one najczęściej zostają stare. I potem użytkownik widzi nowe logo, ale karta nadal ma starą nazwę.
 
-## 4. Podłącz pełne logo i logo headera w CSS
+## CSS robi połowę roboty
 
-Drugi punkt obowiązkowy to `site.css`.
+Drugi punkt zapalny to `site.css`.
 
-Przykład:
+U mnie wygląda to tak:
 
 ```css
 .pre-loading-image {
@@ -79,13 +83,18 @@ Przykład:
 }
 ```
 
-To są dwa różne miejsca i dwa różne efekty wizualne. Jeśli zmienisz tylko header, preload nadal może pokazywać stare logo.
+To są dwa różne światy:
 
-## 5. Dostosuj sam splash screen, nie tylko obrazek
+- preload bierze `FullLogo.svg`,
+- header bierze `Logo.svg`.
 
-Jeżeli loader wygląda źle po podmianie grafiki, problem często nie jest w samym pliku, tylko w CSS.
+Jeśli podmienisz tylko header, pierwsza plansza dalej pokaże stare logo i cały „profesjonalizm” kończy się po pierwszej sekundzie ładowania.
 
-Przykładowe miejsce:
+## Loader też potrafi zrobić wstyd
+
+Samo wskazanie `SplashScreen.svg` to nie wszystko. Jeżeli nowy asset ma inne proporcje niż stary, to rozmiary loadera potrafią go zmasakrować.
+
+Na przykład:
 
 ```css
 #applicationLoadingPanel .loading {
@@ -100,11 +109,15 @@ Przykładowe miejsce:
 }
 ```
 
-Jeżeli nowe logo ma inne proporcje niż stare, to właśnie tutaj robi się korekty rozmiaru i marginesów.
+Brzmi niewinnie, ale jeśli wrzucisz tam bardzo szerokie logo zamiast zwartego znaku, od razu zaczyna się przycinanie albo śmieszne puste marginesy.
 
-## 6. Jeśli branding obejmuje motywy, trzymaj to w konfiguracji
+To jest właśnie moment, w którym człowiek mówi „obrazek jest dobry”, a problem siedzi w CSS.
 
-Jeżeli po prawej stronie masz przełącznik stylów, to najlepiej nie zaszywać go w kodzie, tylko w konfiguracji.
+## Motywy też są częścią odbioru
+
+Jeżeli po prawej masz wybór stylów, to warto to potraktować jako część brandingu, a nie osobny temat.
+
+Nie pchałbym tego do kodu, jeśli można zostawić w konfiguracji.
 
 Przykład:
 
@@ -124,55 +137,68 @@ Przykład:
 }
 ```
 
-To pozwala zmieniać listę motywów bez ruszania samego hosta aplikacji.
+To jest dużo wygodniejsze niż późniejsze grzebanie w hostach i komponentach tylko po to, żeby uporządkować listę motywów.
 
-## 7. Najbezpieczniejszy workflow zmiany brandingu
+## Jak ja bym to robił drugi raz
 
-Jeśli chcesz zrobić to porządnie, a nie "na szybko", kolejność powinna być taka:
+Nie od assetów. Najpierw zrobiłbym krótką listę:
 
-1. przygotuj nowe SVG,
-2. ustal, który plik odpowiada za header, preload i splash,
-3. podmień assety,
-4. popraw `_Host.cshtml`,
-5. popraw `site.css`,
-6. sprawdź konfigurację motywów,
-7. przebuduj aplikację,
-8. przejrzyj preload, splash i header osobno.
+1. co jest headerem,
+2. co jest preloadem,
+3. co jest splashem,
+4. jakie teksty mają się pojawić,
+5. czy motywy też wchodzą w zakres.
 
-Właśnie rozdzielenie tych trzech ekranów oszczędza później dużo nerwów.
+Dopiero potem podmiana plików.
 
-## 8. Prompt dla agenta AI
+Kolejność praktyczna:
 
-Jeżeli chcesz zlecić taką zmianę agentowi AI, to minimalny prompt może wyglądać tak:
+1. wrzuć nowe SVG,
+2. popraw `_Host.cshtml`,
+3. popraw `site.css`,
+4. sprawdź `appsettings.json`,
+5. przebuduj aplikację,
+6. obejrzyj trzy ekrany osobno: preload, splash, header.
+
+To brzmi banalnie, ale właśnie pominięcie jednego z tych kroków robi później cały bałagan.
+
+## Prompt dla agenta AI, który ma to zrobić bez marudzenia
+
+Jeśli miałbym to zlecić Codexowi albo Claude, dałbym mu coś takiego:
 
 ```text
 Zmień branding w aplikacji Blazor.
 
-Zakres:
+Zrób to end-to-end:
 1. Podmień logo w headerze.
 2. Podmień pełne logo przed spinnerem.
 3. Podmień splash screen.
 4. Zmień teksty brandingowe w _Host.cshtml.
-5. Jeśli trzeba, zaktualizuj ThemeSwitcher w appsettings.json.
-6. Przebuduj aplikację i podaj listę zmienionych plików.
+5. Jeśli trzeba, uporządkuj ThemeSwitcher w appsettings.json.
+6. Przebuduj aplikację i sprawdź trzy stany: preload, splash, header.
 
 Sprawdź dokładnie:
 - Pages/_Host.cshtml
 - wwwroot/css/site.css
 - wwwroot/images/
 - appsettings.json
+
+Na końcu wypisz zmienione pliki i opisz efekt.
 ```
 
-Taki prompt jest wystarczająco krótki, ale nadal mówi agentowi, gdzie szukać i czego nie pominąć.
+Krótko, ale bez zostawiania agentowi pola do zgadywania.
 
-## 9. Najczęstsze błędy
+## Błędy, które wracają jak bumerang
 
-Najczęściej powtarzają się te same problemy:
+Najczęściej widzę to:
 
-1. podmiana tylko jednego SVG,
-2. zostawienie starego `<title>` albo starego `aria-label`,
-3. brak przebudowy po zmianie static assets,
-4. poprawienie headera bez poprawienia preloadu,
-5. zmiana obrazka bez dopasowania CSS.
+- ktoś podmienia tylko `SplashScreen.svg`,
+- ktoś zostawia stare `title`,
+- ktoś zmienia pliki, ale nie robi rebuilda,
+- ktoś poprawia header, a preload zostaje z poprzedniej epoki.
 
-Jeśli branding ma wyglądać profesjonalnie, to trzeba potraktować go jak małą zmianę techniczną, a nie jak wrzutkę jednego pliku graficznego.
+I potem zaczyna się tłumaczenie, że „przecież logo już podmienione”.
+
+Tak, tylko nie wszędzie.
+
+Branding w takich aplikacjach nie jest wielką architekturą. To bardziej kwestia dyscypliny. Ale właśnie przez to łatwo go potraktować byle jak. A wtedy całość wygląda byle jak już od pierwszej sekundy.
