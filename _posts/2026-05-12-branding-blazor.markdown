@@ -1,13 +1,13 @@
 ---
 layout: post
 title: "Branding w Blazorze: logo, splash screen i motywy"
-series: "Dostosowanie demówki XAF Blazor do własnych potrzeb"
+series: "XAF Blazor: od aplikacji referencyjnej do gotowego produktu"
 series_part: 2
 ---
 
-> **Część 2 serii: Dostosowanie demówki XAF Blazor do własnych potrzeb**
+> **Część 2 serii: [XAF Blazor: od aplikacji referencyjnej do gotowego produktu]({% post_url 2026-05-12-seria-dostosowanie-demowki-xaf-blazor %})**
 >
-> Bierzemy publiczne `MainDemo.NET.EFCore` od DevExpressa i przerabiamy je krok po kroku tak, żeby wyglądało i działało jak nasza własna aplikacja, nie demówka.
+> Nie tworzymy aplikacji od zera — postawienie projektu XAF Blazor + EF Core jest krok po kroku opisane w [oficjalnej dokumentacji DevExpress](https://docs.devexpress.com/eXpressAppFramework/) i to jest miejsce, w którym każdy może (i powinien) zacząć. My ciągniemy ten temat dalej: bierzemy publiczny projekt referencyjny `MainDemo.NET.EFCore` i pokazujemy, co dochodzi w nim po stronie realnego wdrożenia.
 >
 > 1. [Obsługa języków: polski, angielski, niemiecki]({% post_url 2026-05-12-obsluga-jezykow-blazor %})
 > 2. **Branding: logo, splash screen i motywy** — ten wpis
