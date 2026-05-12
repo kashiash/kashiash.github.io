@@ -413,47 +413,79 @@ Ważne są dwie rzeczy:
 
 `_Host.cshtml` nie powinien zawierać logiki konkretnego edytora. W demo można spotkać wariant z `<script src="js/disable-wheel-on-editors.js"></script>` w hoście, ale w aplikacji produkcyjnej lepiej zamknąć to w warstwie XAF.
 
-Kontroler ładuje moduł JS po utworzeniu kontrolek widoku:
+Kontroler ładuje moduł JS po utworzeniu kontrolek widoku. Wzorzec jest taki sam jak w `MainDemo.NET.EFCore`:
 
 ```csharp
 public class DateEditMouseWheelGuardController : ViewController
 {
-    private readonly IJSRuntime? jsRuntime;
+    private IJSRuntime? jsRuntime;
 
-    public DateEditMouseWheelGuardController()
+    protected override void OnActivated()
     {
-    }
-
-    [ActivatorUtilitiesConstructor]
-    public DateEditMouseWheelGuardController(IJSRuntime jsRuntime)
-    {
-        this.jsRuntime = jsRuntime;
+        base.OnActivated();
+        jsRuntime = Application?.ServiceProvider?.GetService<IJSRuntime>();
     }
 
     protected override void OnViewControlsCreated()
     {
         base.OnViewControlsCreated();
-        RegisterWheelGuard();
+        _ = RegisterWheelGuard();
     }
 
-    private async void RegisterWheelGuard()
+    private async Task RegisterWheelGuard()
     {
         if (jsRuntime is null)
         {
             return;
         }
 
-        IJSObjectReference module = await jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import",
-            "./js/fleetman-date-edit-wheel-guard.js");
-
-        await module.InvokeVoidAsync("ensureRegistered");
-        await module.DisposeAsync();
+        try
+        {
+            IJSObjectReference module = await jsRuntime.InvokeAsync<IJSObjectReference>(
+                "import",
+                "./js/fleetman-date-edit-wheel-guard.js");
+            await module.InvokeVoidAsync("ensureRegistered");
+            await module.DisposeAsync();
+        }
+        catch
+        {
+            // Brak modułu (np. pierwszy render zanim wwwroot jest gotowe) — kolejne
+            // wywołanie przy następnym widoku zarejestruje listener przez idempotentne
+            // ensureRegistered.
+        }
     }
 }
 ```
 
 Moduł JS ma własną flagę `registered`, więc listener jest podpinany tylko raz na stronie.
+
+### Pułapka: dwa konstruktory i `null` w `IJSRuntime`
+
+W pierwszej wersji kontrolera spróbowałem wstrzyknąć `IJSRuntime` przez konstruktor:
+
+```csharp
+public DateEditMouseWheelGuardController() { }
+
+[ActivatorUtilitiesConstructor]
+public DateEditMouseWheelGuardController(IJSRuntime jsRuntime)
+{
+    this.jsRuntime = jsRuntime;
+}
+```
+
+Build przechodził, kontroler był rejestrowany, edytor dodawał klasę CSS — ale **scroll dalej zmieniał wartości**, bo moduł JS nigdy się nie ładował. Diagnoza zajęła więcej niż powinna.
+
+Powód jest mało oczywisty. XAF tworzy kontrolery przez `application.CreateController<T>()` i w wielu ścieżkach życia widoku trafia na bezparametrowy publiczny konstruktor szybciej, niż dochodzi do `ActivatorUtilities.CreateInstance`. `[ActivatorUtilitiesConstructor]` nie jest dla XAF wiążącym selektorem konstruktora w tej samej skali, w jakiej jest dla `IServiceProvider` w ASP.NET Core. W efekcie `jsRuntime` zostaje `null`, `RegisterWheelGuard` od razu wraca, a operator dostaje editor bez guardu.
+
+Dodatkowo, `async void RegisterWheelGuard()` bez `try/catch` jest niebezpieczny: każdy wyjątek z `InvokeAsync` albo `DisposeAsync` leci do `SynchronizationContext` widoku i potrafi cicho rozłożyć kolejne wywołania.
+
+Dlatego we wzorcu właściwym dla XAF Blazor:
+
+- `IJSRuntime` pobieramy z `Application?.ServiceProvider?.GetService<IJSRuntime>()` w `OnActivated`, a nie z konstruktora;
+- `RegisterWheelGuard` zwraca `Task`, a w miejscu wywołania jest `_ = RegisterWheelGuard()` (fire-and-forget bez `async void`);
+- całe ciało metody siedzi w `try/catch`, bo pierwsze wywołanie potrafi trafić w moment, gdy moduł nie jest jeszcze osiągalny przez `import`.
+
+Jeśli ktoś czyta tylko sygnatury — kontroler wygląda niemal tak samo. Różnica leży w tym, że ten wariant **realnie odpala JS na widoku**, a wariant z `[ActivatorUtilitiesConstructor]` cicho rezygnuje.
 
 ## Co było brakującą informacją w pierwszej wersji
 
@@ -463,6 +495,7 @@ Pierwsza wersja opisu była dobra jako demonstracja mechanizmu, ale brakowało w
 2. **Jak nie zepsuć pól bez godziny.** Globalny editor nie może narzucić `dd.MM.yyyy HH:mm`. Musi uszanować maskę z modelu.
 3. **Że blokada scrolla jest zachowaniem editora, nie ogólną regułą JS dla DevExpressa.** Dlatego selektor JS celuje tylko we własną klasę CSS.
 4. **Gdzie ustawić `CaretMode`.** W tym wariancie `DateEditMaskCaretMode` jest globalną opcją modelu, a nie ustawieniem pojedynczego ViewItem.
+5. **Jak dostać `IJSRuntime` w kontrolerze XAF.** Wstrzyknięcie przez konstruktor z `[ActivatorUtilitiesConstructor]` wygląda na poprawne, kompiluje się, kontroler się rejestruje — ale w praktyce `jsRuntime` bywa `null` i guard cicho nie startuje. Pewny wariant: `Application?.ServiceProvider?.GetService<IJSRuntime>()` w `OnActivated`, jak w `MainDemo.NET.EFCore`.
 
 Po tej zmianie editor jest domyślny w całej aplikacji, ale nadal zachowuje się zgodnie z konfiguracją XAF Model.
 
@@ -497,6 +530,8 @@ Wymagania funkcjonalne:
     - wywołaj e.preventDefault()
     - wywołaj e.stopImmediatePropagation()
 15. Nie używaj klas dxbl-* jako mechanizmu detekcji. Własne klasy dodane przez editor muszą sterować blokadą i opt-outem.
+16. W kontrolerze ładującym moduł JS pobierz IJSRuntime w OnActivated przez Application?.ServiceProvider?.GetService<IJSRuntime>(). Nie używaj konstruktora z [ActivatorUtilitiesConstructor] — XAF często wybiera bezparametrowy konstruktor i wstrzyknięte pole pozostaje null, przez co guard cicho nie startuje.
+17. Metoda ładująca moduł ma zwracać Task (nie async void), wywołanie ma postać fire-and-forget: _ = RegisterWheelGuard(). Całe ciało otocz try/catch — pierwsze wywołanie potrafi trafić w moment, gdy moduł nie jest jeszcze osiągalny przez import.
 
 Wymagania dotyczące masek:
 1. Nie ustawiaj globalnie jednej maski typu "dd.MM.yyyy HH:mm".
@@ -557,7 +592,7 @@ W praktyce najważniejsze zdania w tym promptcie są dwa: **"Options jest źród
 2. Zarejestruj `IModelOptionsDateEditMouseWheel` i `IModelMemberViewItemMouseWheel` przez `ExtendModelInterfaces`.
 3. Ustaw w głównym `Model.xafml`: `BlockDateEditMouseWheelByDefault="True"` i `DateEditMaskCaretMode="Advancing"`.
 4. Dodaj `[DateEditMouseWheel(false)]` jako kodowy opt-out dla pojedynczego pola.
-5. Ładuj moduł JS przez kontroler XAF i blokuj `wheel` w fazie `capture`, ale najpierw honoruj klasę opt-out.
+5. Ładuj moduł JS przez kontroler XAF i blokuj `wheel` w fazie `capture`, ale najpierw honoruj klasę opt-out. `IJSRuntime` pobieraj w `OnActivated` przez `Application?.ServiceProvider?.GetService<IJSRuntime>()` — nie przez `[ActivatorUtilitiesConstructor]`.
 6. Nie ustawiaj jednej maski globalnie. Czytaj `EditMask` i `DisplayFormat`.
 7. Pokazuj sekcję czasu tylko wtedy, gdy maska zawiera czas.
 8. Sprawdź pola z maskami `d`, `g`, `dd.MM.yyyy`, `dd.MM.yyyy HH:mm` i `HH:mm`.
