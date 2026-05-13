@@ -707,13 +707,51 @@ W praktyce najważniejsze zdania w tym promptcie są dwa: **"Options jest źród
 
 ## Checklist wdrożeniowy
 
-1. Dodaj custom property editor dla `DateTime` i `DateTime?` z `isDefaultEditor: true`.
-2. Zarejestruj `IModelOptionsDateEditMouseWheel` i `IModelMemberViewItemMouseWheel` przez `ExtendModelInterfaces`.
-3. Ustaw w głównym `Model.xafml`: `BlockDateEditMouseWheelByDefault="True"` i `DateEditMaskCaretMode="Advancing"`.
-4. Dodaj `[DateEditMouseWheel(false)]` jako kodowy opt-out dla pojedynczego pola.
-5. Ładuj moduł JS przez kontroler XAF i blokuj `wheel` w fazie `capture`, ale najpierw honoruj klasę opt-out. `IJSRuntime` pobieraj w `OnActivated` przez `Application?.ServiceProvider?.GetService<IJSRuntime>()` — nie przez `[ActivatorUtilitiesConstructor]`.
-6. Nie ustawiaj jednej maski globalnie. Czytaj `EditMask` i `DisplayFormat`.
-7. Pokazuj sekcję czasu tylko wtedy, gdy maska zawiera czas.
-8. Sprawdź pola z maskami `d`, `g`, `dd.MM.yyyy`, `dd.MM.yyyy HH:mm` i `HH:mm`.
+Checklist jest rozbity na dwa warianty. Wariant minimalny pokazuje, ile naprawdę trzeba dotknąć, żeby zablokować scroll w całej aplikacji bez żadnej dodatkowej konfiguracji. Wariant pełny rozszerza go o sterowanie z Model Editora, atrybut na property i wykrywanie sekcji czasu z maski. W praktyce wybiera się jeden z nich — wybór zależy od tego, czy aplikacja potrzebuje wyjątków per pole i per widok, czy nie. Można też zacząć od minimalnego i przejść na pełny, kiedy pojawi się pierwsze pole, dla którego scroll ma działać (najczęstszy kandydat: data urodzenia).
+
+### Wariant minimalny — wszystko na sztywno
+
+Dla projektów, w których akceptujemy globalną blokadę bez wyjątków per pole i bez konfiguracji w Model Editorze. Dwa pliki, ~40 linii kodu razem.
+
+1. **Dodaj `GlobalDateEditorTweaksController.cs`** w `MainDemo.Blazor.Server/Controllers/` (lub odpowiedniku w Twoim projekcie). Klasa dziedziczy po `ViewController<DetailView>`. W `OnActivated` ustaw globalnie `DxDateEditMaskProperties.{DateTime,DateOnly,DateTimeOffset}.CaretMode = MaskCaretMode.Advancing`. W `OnViewControlsCreated` iteruj po `View.Items.OfType<PropertyEditor>()`, sprawdź typ przez `MemberInfo.MemberType` i dla `DateTime` / `DateTime?` cast-uj `Control` na `DxDateEditModel<T>`, doczepiając klasę CSS `fleetman-dateedit-wheel-blocked` do `CssClass` **i** `InputCssClass`. Pełen kod jest w sekcji „Wersja minimalna" na początku tego wpisu. XAF zarejestruje kontroler automatycznie — nie ma żadnego `AddTransient` ani podobnego wpisu.
+2. **Wklej blok `<script>`** w `Pages/_Host.cshtml` po linijce z `_framework/blazor.server.js`. Listener musi mieć trzy flagi: `capture: true` (zdarzenie łapane przed DevExpressem, w fazie capture), `passive: false` (żeby `preventDefault()` faktycznie zadziałał) oraz wywołanie `e.stopImmediatePropagation()` po `preventDefault()` (zatrzymuje inne listenery na tym samym elemencie). Selektor `.fleetman-dateedit-wheel-blocked` celuje wyłącznie w naszą klasę — nie zależy od żadnej wewnętrznej klasy DevExpressa.
+3. **Build i smoke test.** Otwórz w przeglądarce dowolny detail view z polem daty, kliknij w `<input>`, przewiń kółkiem — wartość nie powinna się zmienić. W konsoli devtools potwierdź, że istnieją elementy z klasą:
+   ```javascript
+   document.querySelectorAll('.fleetman-dateedit-wheel-blocked').length
+   ```
+   Wartość ≥ 1 na widoku z polem daty oznacza, że editor doczepia klasę.
+
+Czego ten wariant **nie** robi: nie pozwala wyłączyć blokady dla wybranego pola, nie obsługuje grida (`ListView` z inline edit), nie zmienia maski w zależności od `EditMask`/`DisplayFormat` — wszystkie pola dostają zachowanie domyślne DevExpressa. Jeśli w toku użytkowania okaże się, że jedno-dwa pola wymagają wyjątku, przejdź na wariant pełny.
+
+### Wariant pełny — sterowany z Model Editora
+
+Dla projektów, w których chcemy: opcji w Model Editor (globalne `Options.BlockDateEditMouseWheelByDefault`, per-ViewItem `BlockMouseWheel`), atrybutu deklaratywnego na property, format-świadomego pokazywania sekcji czasu i czystego JS-modułu ładowanego przez kontroler.
+
+1. **Dodaj custom property editor dla `DateTime` i `DateTime?` z `isDefaultEditor: true`.** Dwie klasy (XAF property editory są typo-specyficzne, nullable to osobny typ): `CustomDateTimeEditor : DateTimePropertyEditor` i `CustomNullableDateTimeEditor : DateTimePropertyEditor`. Oba zarejestrowane przez `[PropertyEditor(typeof(DateTime|DateTime?), CustomEditorAliases.DateTimeEditor, true)]`. Trzeci parametr `true` oznacza, że editor staje się domyślnym dla danego typu w całej aplikacji — nie trzeba dorzucać `[EditorAlias]` na każdej property. W `OnControlCreated` cast-uj `Control` na `DxDateEditModel<T>` i deleguj do statycznego `Configurator.Configure(adapter, Model)`.
+2. **Zarejestruj `IModelOptionsDateEditMouseWheel` i `IModelMemberViewItemMouseWheel` przez `ExtendModelInterfaces`** w `BlazorModule.cs`. Dwa wpisy: `extenders.Add<IModelOptions, IModelOptionsDateEditMouseWheel>()` i `extenders.Add<IModelMemberViewItem, IModelMemberViewItemMouseWheel>()`. Bez tych rejestracji interfejsy istnieją w kodzie, ale Model Editor ich nie zobaczy — pierwsze property w `Application > Options` ani `BlockMouseWheel` w `MemberViewItem` nie pojawi się jako konfigurowalne.
+3. **Ustaw w głównym `Model.xafml`: `BlockDateEditMouseWheelByDefault="True"` i `DateEditMaskCaretMode="Advancing"`.** Te atrybuty dodaj do elementu `<Options ...>`. Można je zostawić puste — wtedy zadziała `[DefaultValue]` z interfejsu (`True` i `Advancing`), ale jawne ustawienie w xafml-u jest czytelniejsze dla każdego, kto otworzy plik. Operator/admin może zmienić wartości w trakcie deploy-u bez recompile.
+4. **Dodaj `[DateEditMouseWheel(false)]` jako kodowy opt-out dla pojedynczego pola.** Atrybut leży w warstwie modułowej (poza projektem Blazor), więc business objecty mogą go używać bez referencji do Blazor.Server. Żywy przykład: w `MainDemo.NET.EFCore` jest tak oznaczone pole `Employee.Birthday`, bo data urodzenia to typowe „cofnij o lata", gdzie scroll jest wygodniejszy niż wpisywanie. Pozostałe pola (`Anniversary`, `DemoTask.DueDate`, `DemoTask.StartDate`) zostają w domyślnej blokadzie. Atrybut wygrywa nad `Model.xafml` — jeśli ktoś jednocześnie wpisze przeciwną wartość w Model Editorze, atrybut zostaje pierwszy w kolejności decyzji.
+5. **Ładuj moduł JS przez kontroler XAF i blokuj `wheel` w fazie `capture`, ale najpierw honoruj klasę opt-out.** `DateEditMouseWheelGuardController` dziedziczy po `ViewController` (bez parametru typu — działa na każdym widoku). W `OnActivated` pobierz `IJSRuntime` przez `Application?.ServiceProvider?.GetService<IJSRuntime>()` — **nie** przez konstruktor z `[ActivatorUtilitiesConstructor]`, bo XAF często wybiera bezparametrowy konstruktor i wstrzyknięte pole zostaje `null`, przez co guard cicho nie startuje. W `OnViewControlsCreated` zrób `_ = RegisterWheelGuard()` (fire-and-forget, nie `async void`). Metoda `RegisterWheelGuard` zwraca `Task`, woła `jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/fleetman-date-edit-wheel-guard.js")`, potem `module.InvokeVoidAsync("ensureRegistered")`, na końcu `module.DisposeAsync()`. Całość owinięta w `try/catch` — pierwsze wywołanie może trafić w moment, gdy moduł nie jest jeszcze osiągalny przez `import`, kolejne ustabilizują listener przez idempotentne `ensureRegistered`.
+6. **Nie ustawiaj jednej maski globalnie. Czytaj `EditMask` i `DisplayFormat`.** Najczęstsza pułapka pierwszej iteracji — wpisanie `adapter.Mask = "dd.MM.yyyy HH:mm"` globalnie zmienia semantykę wszystkich pól datowych. Zamiast tego w konfiguratorze normalizuj `model.EditMask` i `model.DisplayFormat` (usuwając zewnętrzny `{0:...}` z `DisplayFormat`), ustawiaj `adapter.Mask = editMask` jeśli niepuste, `adapter.Format = adapter.DisplayFormat = displayFormat` jeśli niepuste.
+7. **Pokazuj sekcję czasu tylko wtedy, gdy maska zawiera czas.** Parser w `IncludesTimeSection(format)` powinien wyrzucić literały w apostrofach, cudzysłowach i escapowane backslashem, a potem sprawdzić, czy w pozostałych znakach jest jeden z tokenów `H h s t f F K z` lub samodzielne `m` w masce dłuższej niż 1 znak. Standardowe formaty .NET-owe `f F g G o O r R s t T u U` traktuj jako mające czas. W konfiguratorze: `adapter.TimeSectionVisible = hasTime`; jeśli `hasTime`, dorzuć `adapter.TimeSectionScrollPickerFormat = "H m"`.
+8. **Sprawdź pola z maskami `d`, `g`, `dd.MM.yyyy`, `dd.MM.yyyy HH:mm` i `HH:mm`.** To pięć przypadków, na których łatwo wykryć regresję:
+   - `d` → tylko data, sekcja czasu ukryta
+   - `dd.MM.yyyy` → tylko data, sekcja czasu ukryta
+   - `g` → data + czas, sekcja czasu widoczna
+   - `dd.MM.yyyy HH:mm` → data + czas, sekcja czasu widoczna
+   - `HH:mm` → tylko czas, sekcja czasu widoczna
+   Plus `{0:g}` jako `DisplayFormat` — po normalizacji powinno być traktowane jak `g`.
+
+### Weryfikacja po wdrożeniu
+
+Po zakończonym builodzie warto przejść siedem testów ręcznych, żeby potwierdzić, że pattern działa od końca do końca:
+
+1. **Build i uruchom aplikację** w trybie Debug. Brak błędów kompilacji to oczywiste minimum, ale `TreatWarningsAsErrors=true` w niektórych projektach wyłapuje też nieużywane `using` po refaktorze.
+2. **Otwórz Model Editor.** W `Application > Options` powinny być widoczne dwa nowe property z sekcji `Behavior`: `BlockDateEditMouseWheelByDefault` (default `True`) i `DateEditMaskCaretMode` (default `Advancing`). Jeśli ich nie ma — krok 2 z wariantu pełnego (`ExtendModelInterfaces`) został pominięty.
+3. **Otwórz dowolny detail view z polem daty** w przeglądarce. Kliknij w input daty, przewiń kółkiem — wartość nie powinna się zmienić, caret powinien przeskakiwać między sekcjami po wpisaniu pełnej liczby znaków (np. `28` skoczyć na miesiąc).
+4. **Otwórz dropdown daty.** Kalendarz w popupie powinien działać normalnie — selektor JS celuje tylko w `.*-wheel-blocked`, nie w wnętrze popupu.
+5. **F12 → Elements → znajdź input daty.** Sprawdź, czy ma klasę `fleetman-dateedit-wheel-blocked` (lub jak nazwałeś ją w swojej aplikacji). Jeśli klasy nie ma — editor nie dostał się do tej kontrolki, sprawdź `[PropertyEditor]` z `isDefaultEditor: true`.
+6. **Wyłącz blokadę dla wybranego pola** w Model Editorze (`BlockMouseWheel = False` na konkretnym `MemberViewItem`) lub przez atrybut na property. Po reloadzie input tego pola powinien dostać klasę `fleetman-dateedit-wheel-allowed`, scroll powinien znowu zmieniać wartość, a reszta pól daty na tym samym widoku — zostać zablokowana.
+7. **Sprawdź konsolę przeglądarki** pod kątem błędów po pierwszym wejściu na widok z datą. Brak komunikatów typu „Could not import module ./js/..." potwierdza, że kontroler `DateEditMouseWheelGuardController` zadziałał. Jeśli widzisz błąd — najpewniej moduł JS nie został umieszczony w `wwwroot/js/`, albo nazwa pliku jest inna niż w `InvokeAsync<IJSObjectReference>("import", "./js/...")`.
 
 To jest mała zmiana w kodzie, ale duża zmiana w jakości pracy operatora: przewijanie formularza nie zmienia danych, a edytor dalej pozwala wpisywać dokładnie taki zakres informacji, jaki wynika z modelu.
