@@ -26,6 +26,105 @@ Chciałem uzyskać cztery rzeczy naraz:
 
 Ostatni punkt jest ważny. Pierwsza wersja z twardym `dd.MM.yyyy HH:mm` działała, ale była zbyt agresywna: każde pole datowe nagle dostawało czas. To psuje model aplikacji, bo nie każde `DateTime` w XAF oznacza "data i godzina" z perspektywy użytkownika.
 
+## Wersja minimalna — wszystko na sztywno, bez konfiguracji
+
+Zanim pójdziemy w stronę interfejsów modelu, atrybutów i konfiguratorów, warto pokazać minimalny wariant, w którym ten sam efekt — globalna blokada scrolla i `MaskCaretMode.Advancing` dla wszystkich pól daty — robi się **dwoma plikami**, bez żadnej możliwości wyjątku per pole czy per widok. To jest wzorzec, który DevExpress dokumentuje pod hasłem „Customize a Built-in Property Editor": zamiast subclass-ować editor, dorzucamy zwykły `ViewController`, który łapie wszystkie property editory daty i modyfikuje ich adapter w runtime.
+
+### Krok 1: kontroler ustawiający caret mode i klasę CSS
+
+```csharp
+using DevExpress.Blazor;
+using DevExpress.ExpressApp;
+using DevExpress.ExpressApp.Blazor.Components.Models;
+using DevExpress.ExpressApp.Editors;
+
+public class GlobalDateEditorTweaksController : ViewController<DetailView>
+{
+    protected override void OnActivated()
+    {
+        base.OnActivated();
+        DxDateEditMaskProperties.DateTime.CaretMode = MaskCaretMode.Advancing;
+        DxDateEditMaskProperties.DateOnly.CaretMode = MaskCaretMode.Advancing;
+        DxDateEditMaskProperties.DateTimeOffset.CaretMode = MaskCaretMode.Advancing;
+    }
+
+    protected override void OnViewControlsCreated()
+    {
+        base.OnViewControlsCreated();
+        foreach (var item in View.Items.OfType<PropertyEditor>())
+        {
+            Type t = item.MemberInfo.MemberType;
+            if (t == typeof(DateTime) && item.Control is DxDateEditModel<DateTime> a1)
+            {
+                AppendCss(a1);
+            }
+            else if (t == typeof(DateTime?) && item.Control is DxDateEditModel<DateTime?> a2)
+            {
+                AppendCss(a2);
+            }
+        }
+    }
+
+    static void AppendCss<T>(DxDateEditModel<T> adapter)
+    {
+        const string cls = "fleetman-dateedit-wheel-blocked";
+        adapter.CssClass = string.IsNullOrEmpty(adapter.CssClass) ? cls : adapter.CssClass + " " + cls;
+        adapter.InputCssClass = string.IsNullOrEmpty(adapter.InputCssClass) ? cls : adapter.InputCssClass + " " + cls;
+    }
+}
+```
+
+XAF rejestruje ten kontroler automatycznie. Na każdym `DetailView` iteruje po `PropertyEditor`-ach, sprawdza, czy pole jest typu `DateTime` lub `DateTime?`, i doczepia stałą klasę CSS do adaptera DevExpress. Bez subclass-owania, bez `[PropertyEditor]`, bez `[EditorAlias]` na business objectach.
+
+### Krok 2: globalny listener `wheel`
+
+W `_Host.cshtml` po `_framework/blazor.server.js`:
+
+```html
+<script>
+(function () {
+    document.addEventListener('wheel', function (e) {
+        var t = e.target;
+        if (t && typeof t.closest === 'function' && t.closest('.fleetman-dateedit-wheel-blocked')) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+        }
+    }, { capture: true, passive: false });
+})();
+</script>
+```
+
+Trzy szczegóły, które już omówiliśmy wcześniej — `capture: true`, `passive: false`, `stopImmediatePropagation()` — pozostają takie same. Selektor celuje wyłącznie w naszą klasę, więc działa niezależnie od wersji DevExpress.
+
+To jest cała wersja minimalna. Build + run i wszystkie pola daty w aplikacji mają zablokowany scroll oraz `MaskCaretMode.Advancing`.
+
+### Czego ta wersja nie daje
+
+- **Nie ma wyjątków per pole.** Jeśli jedno pole — np. data urodzenia, gdzie wygodniej cofnąć rok kółkiem — ma scrollować, musimy albo zmienić kod, albo wprowadzić wyjątek z innego kontrolera. W obu wariantach jest to twarda zmiana w kodzie, nie konfiguracja.
+- **Nie ma wyjątków per widok.** Gdyby data urodzenia była scrollowalna w widoku rekrutacji, a zablokowana w HR, jeden kontroler już nie wystarczy.
+- **Nie ma konfiguracji bez recompile.** Admin nie wpłynie na zachowanie inaczej niż przez nowy build i deploy.
+- **Caret mode jest globalny.** `Advancing` dla wszystkich pól bez wyjątku. Jeśli pojawi się pole z maską niestandardową, dla której `Static` jest lepszy, kontroler trzeba przerobić.
+- **`DxDateEditMaskProperties.*.CaretMode` to globalny statyczny stan DevExpress.** Ustawiamy go w `OnActivated` przy każdym widoku — redundantnie, ale nieszkodliwie. Strategia odpada, gdy chcielibyśmy różny caret-mode w różnych widokach.
+- **`ListView` (grid inline edit) nie jest pokryty**, bo kontroler jest `ViewController<DetailView>`. Dla grida trzeba dorobić analogiczny albo zmienić bazę na samo `ViewController` i obsłużyć oba typy widoków.
+
+Dla projektów typu „demo + jedna domena" to często wystarczy. Dla aplikacji, gdzie różne klasy biznesowe potrzebują różnych ustawień, gdzie admin ma móc zmienić zachowanie bez rebuilda, albo gdzie pojedyncze pola chcemy oznaczać deklaratywnie (atrybut na property zamiast „przeczytaj, co robi kontroler"), trzeba pójść krok dalej.
+
+## Co dorzucić, żeby zarządzać tym z Model Editora
+
+Wersja minimalna ma sztywno wpisane „wszystko zablokowane, caret mode Advancing". Żeby z tego zrobić system, w którym deweloper i admin mogą wpływać na zachowanie bez rebuilda, dorzucamy następujące elementy. Każdy z nich rozwiązuje jeden konkretny problem wersji minimalnej, więc nic nie stoi na przeszkodzie, żeby wprowadzać je iteracyjnie — niekoniecznie wszystkie naraz.
+
+1. **Własna subclass `DateTimePropertyEditor` zamiast generycznego kontrolera** — dwie klasy: dla `DateTime` i `DateTime?`. Powód: property editor ma własne `Model` (`IModelMemberViewItem`), do którego XAF potrafi dorzucić nasze property widoczne w Model Editor. Generyczny `ViewController` nie ma „własnego Model" i nie zostanie pokazany w Model Editorze jako konfigurowalny.
+2. **Atrybut `[DateEditMouseWheel(false)]`** na property w business objectcie. Powód: są pola, gdzie decyzja „scroll OK / scroll blokuje" należy do modelu domenowego, nie do xafml. Atrybut trzyma tę informację w kodzie razem z definicją property — review pull requesta od razu ją widzi.
+3. **Interfejs `IModelMemberViewItemMouseWheel`** z nullable `BlockMouseWheel`. Powód: w Model Editor każdy `MemberViewItem` dostaje nowe property `BlockMouseWheel`. Pozwala wyłączyć blokadę dla pola w **konkretnym widoku** bez zmiany kodu — pole może być scrollowalne w jednym widoku, zablokowane w drugim.
+4. **Interfejs `IModelOptionsDateEditMouseWheel`** z `BlockDateEditMouseWheelByDefault` i `DateEditMaskCaretMode`. Powód: globalna wartość domyślna dla całej aplikacji zapisana w `Model.xafml`. Admin/devops może to zmienić w trakcie deploy-u bez recompile.
+5. **`ExtendModelInterfaces` w module Blazor**. Powód: bez tego XAF Model Editor nie pokaże nowych property z punktów 3 i 4 — interfejsy istnieją, ale nie są zaczepione do bazowych `IModelMemberViewItem` / `IModelOptions`.
+6. **Konfigurator z kaskadą trzech poziomów** (atrybut → ViewItem → IModelOptions). Powód: trzymanie logiki decyzji „blokować czy nie" w jednym miejscu zamiast duplikowania w obu editorach. Przy okazji zapewnia jednoznaczną kolejność precedencji.
+7. **Wykrywanie sekcji czasu z formatu (`EditMask` / `DisplayFormat`)** w konfiguratorze. Powód: pole z `DisplayFormat="dd.MM.yyyy HH:mm"` powinno mieć widoczną sekcję czasu w UI, a pole z `dd.MM.yyyy` — nie. Bez wykrywania trzeba by trzymać dwa różne typy editorów albo manualnie ustawiać `TimeSectionVisible` w każdym xafml-u.
+8. **Dwie klasy CSS (`-blocked` i `-allowed`) zamiast jednej**. Powód: opt-out per pole działa tak, że pole „dozwolone" dostaje klasę `-allowed`. JS guard widząc tę klasę robi `return` **przed** sprawdzeniem `-blocked`. To prostszy mechanizm niż usuwanie klasy `-blocked`, bo działa też dla pól zagnieżdżonych.
+9. **JS jako moduł ESM z idempotentnym `ensureRegistered()`, ładowany przez kontroler**. Powód: pozbywamy się hardcoded `<script>` w `_Host.cshtml` (kolejność ładowania bywa zawodna — wystarczy, że ktoś dorzuci kolejny `<script>` przed naszym i przestaje działać) i mamy gwarancję, że listener nie jest rejestrowany dwa razy nawet przy SignalR-reconnect.
+
+Reszta artykułu rozwija każdy z tych punktów: sekcja **„Globalny przełącznik w Options"** opisuje punkty 3, 4 i 5; **„Edytor jako globalny domyślny editor"** rozwija punkt 1; **„Najważniejsza poprawka: maska decyduje o czasie"** to punkt 7; **„Klasy CSS: blokada i opt-out"** — punkty 8 i część 6; **„Kontroler ładujący guard"** — punkt 9.
+
 ## Dlaczego nie sam JavaScript
 
 Najprostszy pomysł to zablokować `wheel` po klasach DevExpressa:
@@ -38,7 +137,7 @@ document.addEventListener('wheel', function (e) {
 }, { passive: false });
 ```
 
-To jest za kruche.
+Takie podejście jest zawodne.
 
 Po pierwsze, DevExpress obsługuje część zdarzeń wcześnie, więc listener powinien działać w fazie `capture`. Po drugie, klasy `dxbl-*` są wewnętrznym detalem biblioteki i mogą się zmienić między wersjami. Po trzecie, globalny selektor może zahaczyć kontrolki, których nie chcemy dotykać.
 
@@ -150,6 +249,26 @@ Kodowy opt-out wygląda tak:
 [DateEditMouseWheel(false)]
 public virtual DateTime? DataKtoraMaReagowacNaScroll { get; set; }
 ```
+
+### Żywy przykład: `Employee.Birthday`
+
+W `MainDemo.NET.EFCore`, którego używamy jako referencji, ta decyzja zapadła dla pola `Employee.Birthday`. Powód jest praktyczny: data urodzenia to często edycja typu „cofnij o kilkanaście lat" — wygodniej przewinąć rok kółkiem niż wpisywać go ręcznie. Pozostałe pola daty w aplikacji (`DemoTask.DueDate`, `DemoTask.StartDate`, `Employee.Anniversary`) zostają zablokowane, bo to typowo „dziś plus parę dni", scroll wtedy przeszkadza.
+
+```csharp
+// MainDemo.Module/BusinessObjects/Employee.cs
+[DateEditMouseWheel(false)]
+public virtual DateTime? Birthday { get; set; }
+```
+
+Editor podpina wtedy klasę `fleetman-dateedit-wheel-allowed` zamiast `-blocked` do tej konkretnej kontrolki. Globalny listener `wheel` widzi `.fleetman-dateedit-wheel-allowed`, robi `return` przed sprawdzeniem `-blocked`, i scroll przelatuje do DevExpressa normalnie. Reszta pól daty w widoku detail (`Anniversary` w tej samej klasie, daty w `Tasks` itp.) pozostaje zablokowana, bo nie mają tego atrybutu.
+
+W devtools przeglądarki można szybko zweryfikować:
+
+```javascript
+document.querySelectorAll('.fleetman-dateedit-wheel-allowed').length
+```
+
+zwróci ≥ 1 na widoku z polem `Birthday`. Atrybut wybrałem zamiast ustawienia w Model Editorze, bo decyzja „data urodzenia jest scrollowalna" wynika z modelu domenowego (typ pola, sposób użycia), nie z kontekstu konkretnego widoku. Gdyby było odwrotnie — gdyby pole było scrollowalne w widoku rekrutera, a zablokowane w widoku HR — wybrałbym wariant z `BlockMouseWheel = False` per ViewItem.
 
 ## Edytor jako globalny domyślny editor
 
