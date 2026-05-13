@@ -40,14 +40,6 @@ using DevExpress.ExpressApp.Editors;
 
 public class GlobalDateEditorTweaksController : ViewController<DetailView>
 {
-    protected override void OnActivated()
-    {
-        base.OnActivated();
-        DxDateEditMaskProperties.DateTime.CaretMode = MaskCaretMode.Advancing;
-        DxDateEditMaskProperties.DateOnly.CaretMode = MaskCaretMode.Advancing;
-        DxDateEditMaskProperties.DateTimeOffset.CaretMode = MaskCaretMode.Advancing;
-    }
-
     protected override void OnViewControlsCreated()
     {
         base.OnViewControlsCreated();
@@ -76,6 +68,12 @@ public class GlobalDateEditorTweaksController : ViewController<DetailView>
 
 XAF rejestruje ten kontroler automatycznie. Na każdym `DetailView` iteruje po `PropertyEditor`-ach, sprawdza, czy pole jest typu `DateTime` lub `DateTime?`, i doczepia stałą klasę CSS do adaptera DevExpress. Bez subclass-owania, bez `[PropertyEditor]`, bez `[EditorAlias]` na business objectach.
 
+#### Dlaczego nie ustawiamy tu `MaskCaretMode`
+
+Pierwsza wersja tego kontrolera miała też `OnActivated` z trzema linijkami `DxDateEditMaskProperties.{DateTime,DateOnly,DateTimeOffset}.CaretMode = MaskCaretMode.Advancing`. Wyglądało to na globalną konfigurację DevExpressa — ustawienie raz przy aktywacji widoku, koniec tematu. Okazało się, że tylko pierwsza linijka się kompiluje. Pozostałe dwie produkują `CS0120: Dla niestatycznego pola, metody lub właściwości wymagane jest odwołanie do obiektu`.
+
+Powód jest taki, że `DxDateEditMaskProperties` **nie jest** globalną static class w `DevExpress.Blazor`, jak by to sugerowała składnia. To property dziedziczona z `DateTimePropertyEditor` — `DateTime` jest zagnieżdżonym typem ze static `CaretMode`, ale `DateOnly` i `DateTimeOffset` to instance property na właścicielu. Bez dziedziczenia z `DateTimePropertyEditor` symbol nie ma do czego się rozwiązać. W praktyce oznacza to, że **caret mode da się ustawić tylko z wnętrza property editora**, czyli w wariancie pełnym. W minimalnej wersji zostaje przy domyślnym DevExpressowym `Static`. Jeśli ten kompromis jest do przyjęcia, kontroler powyżej wystarcza; jeśli `Advancing` jest wymagany, trzeba przeskoczyć na subclass `DateTimePropertyEditor` z sekcji „Edytor jako globalny domyślny editor".
+
 ### Krok 2: globalny listener `wheel`
 
 W `_Host.cshtml` po `_framework/blazor.server.js`:
@@ -96,15 +94,14 @@ W `_Host.cshtml` po `_framework/blazor.server.js`:
 
 Trzy szczegóły, które już omówiliśmy wcześniej — `capture: true`, `passive: false`, `stopImmediatePropagation()` — pozostają takie same. Selektor celuje wyłącznie w naszą klasę, więc działa niezależnie od wersji DevExpress.
 
-To jest cała wersja minimalna. Build + run i wszystkie pola daty w aplikacji mają zablokowany scroll oraz `MaskCaretMode.Advancing`.
+To jest cała wersja minimalna. Build + run i wszystkie pola daty w aplikacji mają zablokowany scroll.
 
 ### Czego ta wersja nie daje
 
+- **Nie ma `MaskCaretMode.Advancing`.** Jak wytłumaczono w poprzednim akapicie, ustawienie caret mode wymaga dostępu do property edytora, której ViewController nie ma. Zostaje domyślny `Static`, czyli kursor stoi w sekcji maski aż przełączymy go Tabem lub strzałką. Dla pól `dd.MM.yyyy` to upierdliwe (`Tab` po dwóch znakach), więc jeśli to przeszkadza, trzeba przejść na wariant pełny.
 - **Nie ma wyjątków per pole.** Jeśli jedno pole — np. data urodzenia, gdzie wygodniej cofnąć rok kółkiem — ma scrollować, musimy albo zmienić kod, albo wprowadzić wyjątek z innego kontrolera. W obu wariantach jest to twarda zmiana w kodzie, nie konfiguracja.
 - **Nie ma wyjątków per widok.** Gdyby data urodzenia była scrollowalna w widoku rekrutacji, a zablokowana w HR, jeden kontroler już nie wystarczy.
 - **Nie ma konfiguracji bez recompile.** Admin nie wpłynie na zachowanie inaczej niż przez nowy build i deploy.
-- **Caret mode jest globalny.** `Advancing` dla wszystkich pól bez wyjątku. Jeśli pojawi się pole z maską niestandardową, dla której `Static` jest lepszy, kontroler trzeba przerobić.
-- **`DxDateEditMaskProperties.*.CaretMode` to globalny statyczny stan DevExpress.** Ustawiamy go w `OnActivated` przy każdym widoku — redundantnie, ale nieszkodliwie. Strategia odpada, gdy chcielibyśmy różny caret-mode w różnych widokach.
 - **`ListView` (grid inline edit) nie jest pokryty**, bo kontroler jest `ViewController<DetailView>`. Dla grida trzeba dorobić analogiczny albo zmienić bazę na samo `ViewController` i obsłużyć oba typy widoków.
 
 Dla projektów typu „demo + jedna domena" to często wystarczy. Dla aplikacji, gdzie różne klasy biznesowe potrzebują różnych ustawień, gdzie admin ma móc zmienić zachowanie bez rebuilda, albo gdzie pojedyncze pola chcemy oznaczać deklaratywnie (atrybut na property zamiast „przeczytaj, co robi kontroler"), trzeba pójść krok dalej.
@@ -713,7 +710,7 @@ Checklist jest rozbity na dwa warianty. Wariant minimalny pokazuje, ile naprawd�
 
 Dla projektów, w których akceptujemy globalną blokadę bez wyjątków per pole i bez konfiguracji w Model Editorze. Dwa pliki, ~40 linii kodu razem.
 
-1. **Dodaj `GlobalDateEditorTweaksController.cs`** w `MainDemo.Blazor.Server/Controllers/` (lub odpowiedniku w Twoim projekcie). Klasa dziedziczy po `ViewController<DetailView>`. W `OnActivated` ustaw globalnie `DxDateEditMaskProperties.{DateTime,DateOnly,DateTimeOffset}.CaretMode = MaskCaretMode.Advancing`. W `OnViewControlsCreated` iteruj po `View.Items.OfType<PropertyEditor>()`, sprawdź typ przez `MemberInfo.MemberType` i dla `DateTime` / `DateTime?` cast-uj `Control` na `DxDateEditModel<T>`, doczepiając klasę CSS `fleetman-dateedit-wheel-blocked` do `CssClass` **i** `InputCssClass`. Pełen kod jest w sekcji „Wersja minimalna" na początku tego wpisu. XAF zarejestruje kontroler automatycznie — nie ma żadnego `AddTransient` ani podobnego wpisu.
+1. **Dodaj `GlobalDateEditorTweaksController.cs`** w `MainDemo.Blazor.Server/Controllers/` (lub odpowiedniku w Twoim projekcie). Klasa dziedziczy po `ViewController<DetailView>`. W `OnViewControlsCreated` iteruj po `View.Items.OfType<PropertyEditor>()`, sprawdź typ przez `MemberInfo.MemberType` i dla `DateTime` / `DateTime?` cast-uj `Control` na `DxDateEditModel<T>`, doczepiając klasę CSS `fleetman-dateedit-wheel-blocked` do `CssClass` **i** `InputCssClass`. Pełen kod jest w sekcji „Wersja minimalna" na początku tego wpisu. XAF zarejestruje kontroler automatycznie — nie ma żadnego `AddTransient` ani podobnego wpisu. Uwaga: `MaskCaretMode` nie da się tu ustawić, bo `DxDateEditMaskProperties` jest property dziedziczoną z `DateTimePropertyEditor`, nie globalną static class — patrz akapit „Dlaczego nie ustawiamy tu `MaskCaretMode`" w sekcji „Wersja minimalna".
 2. **Wklej blok `<script>`** w `Pages/_Host.cshtml` po linijce z `_framework/blazor.server.js`. Listener musi mieć trzy flagi: `capture: true` (zdarzenie łapane przed DevExpressem, w fazie capture), `passive: false` (żeby `preventDefault()` faktycznie zadziałał) oraz wywołanie `e.stopImmediatePropagation()` po `preventDefault()` (zatrzymuje inne listenery na tym samym elemencie). Selektor `.fleetman-dateedit-wheel-blocked` celuje wyłącznie w naszą klasę — nie zależy od żadnej wewnętrznej klasy DevExpressa.
 3. **Build i smoke test.** Otwórz w przeglądarce dowolny detail view z polem daty, kliknij w `<input>`, przewiń kółkiem — wartość nie powinna się zmienić. W konsoli devtools potwierdź, że istnieją elementy z klasą:
    ```javascript
@@ -721,7 +718,7 @@ Dla projektów, w których akceptujemy globalną blokadę bez wyjątków per pol
    ```
    Wartość ≥ 1 na widoku z polem daty oznacza, że editor doczepia klasę.
 
-Czego ten wariant **nie** robi: nie pozwala wyłączyć blokady dla wybranego pola, nie obsługuje grida (`ListView` z inline edit), nie zmienia maski w zależności od `EditMask`/`DisplayFormat` — wszystkie pola dostają zachowanie domyślne DevExpressa. Jeśli w toku użytkowania okaże się, że jedno-dwa pola wymagają wyjątku, przejdź na wariant pełny.
+Czego ten wariant **nie** robi: nie ustawia `MaskCaretMode.Advancing` (zostaje domyślny `Static`), nie pozwala wyłączyć blokady dla wybranego pola, nie obsługuje grida (`ListView` z inline edit), nie zmienia maski w zależności od `EditMask`/`DisplayFormat` — wszystkie pola dostają zachowanie domyślne DevExpressa. Jeśli w toku użytkowania okaże się, że któraś z tych rzeczy przeszkadza, przejdź na wariant pełny.
 
 ### Wariant pełny — sterowany z Model Editora
 
