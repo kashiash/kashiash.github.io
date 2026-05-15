@@ -35,7 +35,11 @@ Samo dodanie `pl-PL` nie kończy tematu lokalizacji. W prawdziwym wdrożeniu zos
 
 Jeżeli `[Appearance]` zapisany w kodzie to za mało, można potraktować reguły wyglądu jako dane. W tym odcinku do `MainDemo.NET.EFCore` dochodzi encja z regułą, cache procesowy i kontroler, który dokłada reguły z bazy do standardowego pipeline `ConditionalAppearance`. To jest gotowy wzorzec do przeniesienia do osobnego projektu XAF.
 
-## Co łączy te pięć zmian
+### 6. [Obsługa skanów i podglądu PDF w XAF Blazor: dokumenty, upload i preview inline]({% post_url 2026-05-15-obsluga-skanow-i-podgladu-pdf-w-xaf-blazor %})
+
+Do demówki dochodzi pełny, przenośny wzorzec dokumentów: słownik typów, encja dokumentu, zakładka `Załączniki`, upload wielu plików przez `DxUpload`, endpoint zapisujący `FileData` i custom preview dla PDF i obrazów w Blazorze. Plus konkretne poprawki błędów, które wychodzą dopiero przy prawdziwej kompilacji.
+
+## Co łączy te sześć zmian
 
 Każda z nich:
 
