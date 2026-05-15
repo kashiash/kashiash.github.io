@@ -31,7 +31,11 @@ W aplikacji biznesowej kółko myszy w polu daty nie jest udogodnieniem — jest
 
 Samo dodanie `pl-PL` nie kończy tematu lokalizacji. W prawdziwym wdrożeniu zostają jeszcze resztki angielskiego w modelu XAF: nazwy widoków, klasy frameworkowe, enumy i pozycje nawigacji. Ten odcinek domyka właśnie tę warstwę i pokazuje, jak doprowadzić model językowy do stanu, w którym użytkownik nie widzi już mieszanki polskiego z angielskim.
 
-## Co łączy te cztery zmiany
+### 5. [Dynamiczne reguły wyglądu z bazy w XAF: encja, cache i `AppearanceController`]({% post_url 2026-05-15-dynamiczne-reguly-wygladu-xaf-z-bazy %})
+
+Jeżeli `[Appearance]` zapisany w kodzie to za mało, można potraktować reguły wyglądu jako dane. W tym odcinku do `MainDemo.NET.EFCore` dochodzi encja z regułą, cache procesowy i kontroler, który dokłada reguły z bazy do standardowego pipeline `ConditionalAppearance`. To jest gotowy wzorzec do przeniesienia do osobnego projektu XAF.
+
+## Co łączy te pięć zmian
 
 Każda z nich:
 
