@@ -27,7 +27,11 @@ Trzy SVG (header, pre-loader, splash), nie jeden. `_Host.cshtml` poprawiony raze
 
 W aplikacji biznesowej kółko myszy w polu daty nie jest udogodnieniem — jest źródłem cichych zmian danych. Operator przewija formularz, mija edytor i przy okazji przestawia datę zdarzenia. Rozwiązanie nie polega więc na dorzuceniu pojedynczego edytora z `[EditorAlias]` na wybranych polach, tylko na zmianie domyślnego zachowania całej aplikacji. Edytor zostaje zarejestrowany jako globalny `[PropertyEditor(typeof(DateTime), ..., true)]` dla `DateTime` i `DateTime?`, a indywidualne pola, dla których scroll ma jednak działać (np. wewnętrzne pola serwisowe), są oznaczane atrybutem `[DateEditMouseWheel(false)]`. Domyślne zachowanie i tryb maski siedzą w sekcji `Options` modelu XAF (`IModelOptionsDateEditMouseWheel`), więc cała polityka aplikacji jest deklaratywna i widoczna w Model Editorze, a nie rozproszona po kodzie. Maski są dobierane do typu danych: pole `DateTime` traktowane jako data dostaje `dd.MM.yyyy`, a pole, które ma znaczenie czasu, dostaje `dd.MM.yyyy HH:mm`. JavaScript blokujący scroll wisi w fazie `capture`, identyfikuje edytory po własnej klasie CSS (`fleetman-dateedit-wheel-blocked`/`-allowed`) i ignoruje wewnętrzne klasy DevExpressa, dzięki czemu jest odporny na zmiany wersji DevExpress Blazor.
 
-## Co łączy te trzy zmiany
+### 4. [Domknięcie polskiej lokalizacji: klasy, enumy i widoki bez mieszanki PL/EN]({% post_url 2026-05-15-domkniecie-polskiej-lokalizacji-xaf %})
+
+Samo dodanie `pl-PL` nie kończy tematu lokalizacji. W prawdziwym wdrożeniu zostają jeszcze resztki angielskiego w modelu XAF: nazwy widoków, klasy frameworkowe, enumy i pozycje nawigacji. Ten odcinek domyka właśnie tę warstwę i pokazuje, jak doprowadzić model językowy do stanu, w którym użytkownik nie widzi już mieszanki polskiego z angielskim.
+
+## Co łączy te cztery zmiany
 
 Każda z nich:
 
