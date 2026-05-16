@@ -5,7 +5,7 @@ series: "XAF Blazor: od aplikacji referencyjnej do gotowego produktu"
 series_part: 6
 ---
 
-Ten wpis pokazuje najprostszą kompletną ścieżkę dodania dokumentów do aplikacji XAF Blazor + EF Core.
+Ten wpis pokazuje, jak najprościej dodać pełną obsługę dokumentów do aplikacji XAF Blazor + EF Core.
 
 Cel:
 
