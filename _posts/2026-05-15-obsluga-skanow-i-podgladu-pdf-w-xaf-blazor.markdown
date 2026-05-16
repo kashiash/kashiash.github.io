@@ -7,9 +7,9 @@ series_part: 6
 
 ![PDF i skany: Góra papierów](/assets/images/pdf-preview.png)
 
-Chcę zakładkę „Załączniki" na pracowniku, przeciąganie wielu PDF-ów naraz i podgląd PDF inline — bez własnego silnika renderującego i bez bibliotek zewnętrznych. Wszystko składa się z trzech rzeczy: encji `DocumentFile`, kontrolera XAF z popupem oraz endpointu API, który zapisuje każdy plik jako osobny rekord.
+Jeżeli chcesz, żeby użytkownik mógł wrzucić do pracownika, sprawy albo dowolnego innego obiektu skany, faktury i CV — naraz, przeciągając całą paczkę z dysku — a potem otworzyć każdy plik i zobaczyć podgląd PDF bez pobierania, musisz dorobić to do XAF samodzielnie. Standardowo aplikacja przyjmuje jeden plik na raz i nie pokazuje PDF inline. Tę lukę domyka się jedną encją załącznika, kontrolerem z popupem i endpointem API.
 
-Dalej pokazuję konkretną realizację w `MainDemo.NET.EFCore` (XAF Blazor + EF Core). Wariant działa też po podpięciu pod inne klasy, nie tylko `Employee`.
+Dalej pokazuję konkretną realizację w `MainDemo.NET.EFCore` (XAF Blazor + EF Core). Wariant działa też po podpięciu pod inne klasy, nie tylko `Employee`. PDF rysuje wbudowana w przeglądarkę przeglądarka — bez własnego silnika renderującego i bez bibliotek zewnętrznych.
 
 ## Co dochodzi do projektu
 
