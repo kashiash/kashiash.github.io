@@ -9,80 +9,72 @@ series_part: 1
 
 > **Część 1 serii: [XAF Blazor: od aplikacji referencyjnej do gotowego produktu]({% post_url 2026-05-12-seria-dostosowanie-demowki-xaf-blazor %})**
 >
-> Nie tworzymy aplikacji od zera — postawienie projektu XAF Blazor + EF Core jest krok po kroku opisane w [oficjalnej dokumentacji DevExpress](https://docs.devexpress.com/eXpressAppFramework/) i to jest miejsce, w którym każdy może (i powinien) zacząć. My ciągniemy ten temat dalej: bierzemy publiczny projekt referencyjny `MainDemo.NET.EFCore` i pokazujemy, co dochodzi w nim po stronie realnego wdrożenia.
->
 > 1. **Obsługa języków: polski, angielski, niemiecki** — ten wpis
 > 2. [Branding: logo, splash screen i motywy]({% post_url 2026-05-12-branding-blazor %})
 > 3. [Globalny DateEditor w XAF Blazor: blokada scrolla, polskie maski i czas tylko tam, gdzie trzeba]({% post_url 2026-05-12-xaf-blazor-date-editor-mouse-wheel %})
 
-Wielojęzyczność w Blazorze ma tę samą przypadłość co branding: wygląda niewinnie, dopóki nie zaczniesz tego robić naprawdę. Na początku człowiek dopisuje dwa kody kultur, włącza przełącznik języka i myśli, że temat zamknięty. A potem okazuje się, że menu przełącza się ładnie, ale raporty dalej są po angielsku, część UI wraca do fallbacku, a nowy użytkownik i tak dostaje zły język na wejściu.
+Ten wpis pokazuje dokładnie, co zmieniłem w repo `MainDemo.NET.EFCore`, żeby dodać `pl-PL`.
 
-To nie blokuje wdrożenia. To oznacza, że języki trzeba potraktować jako konfigurację runtime, a nie kosmetykę.
+## Zakres zmiany
 
-## Zmiana w repo
+Zmiana objęła:
 
-Właśnie zrobiłem taką zmianę w publicznym repo:
+1. listę języków w `appsettings.json`,
+2. wybór kultury w `Startup.cs`,
+3. ładowanie plików lokalizacyjnych DevExpress w `scripts.js`,
+4. osadzenie `Model.DesignedDiffs.Localization.pl.xafml`,
+5. testy HTTP dla lokalizacji,
+6. ustabilizowanie testów raportów po dodaniu obsługi kultur.
 
-- [kashiash/MainDemoEFCoreCustomization](https://github.com/kashiash/MainDemoEFCoreCustomization)
+## `appsettings.json`
 
-I tam dobrze widać jedną rzecz, której w ładnych, czystych tutorialach zwykle nie ma: czasem sam język to połowa roboty, a druga połowa to ratowanie projektu przed zależnościami, które do tej pory działały tylko dlatego, że lokalnie dziedziczyły ustawienia z katalogu nadrzędnego.
-
-W tym repo dodałem:
-
-- `pl-PL` do `appsettings.json`,
-- `RequestLocalizationOptions` w `Startup.cs`,
-- polskie pliki `dx-analytics-core.pl-PL.json`, `dx-reporting.pl-PL.json` i `pl-PL.json`,
-- `Model.DesignedDiffs.Localization.pl.xafml`,
-- testy dla polskiej lokalizacji,
-- osobny dokument krok po kroku w repo:
-  [`docs/obsluga-jezyka-polskiego-w-main-demo-blazor.md`](https://github.com/kashiash/MainDemoEFCoreCustomization/blob/main/docs/obsluga-jezyka-polskiego-w-main-demo-blazor.md)
-
-Nie zostawiłem fallbacku na `pl-PL`, mimo że w wielu projektach to ma sens. Tutaj zostawiłem `en-US`, bo inaczej raporty CSV zaczęły zmieniać separator i format daty. To jest przypadek, który łatwo przeoczyć na początku, a potem psuje testy i zmienia zachowanie systemu.
-
-To pokazuje jedną rzecz: artykuł daje kierunek, ale zmianę trzeba dopasować do projektu.
-
-## Sama lista języków niczego jeszcze nie załatwia
-
-Na ogół zaczyna się od `appsettings.json`.
-
-Na przykład tak:
+To jest dokładny fragment z repo:
 
 ```json
 "DevExpress": {
   "ExpressApp": {
     "Languages": "pl-PL;en-US;de-DE",
-    "ShowLanguageSwitcher": true
+    "ShowLanguageSwitcher": true,
+    "Security": {
+      "UrlSigningKey": "669BC10469B34252A2EF1BA1BAFEDEAF"
+    },
+    "ThemeSwitcher": {
+      "DefaultItemName": "Office White",
+      "ShowSizeModeSwitcher": true
+    }
   }
 }
 ```
 
-To jest potrzebne. Ale tylko potrzebne.
+Najważniejsza zmiana to:
 
-Ta sekcja mówi aplikacji, jakie języki ma pokazać w UI. Nie mówi jeszcze, jak wybrać domyślny język użytkownika. Nie mówi też nic o raportach.
+```json
+"Languages": "pl-PL;en-US;de-DE"
+```
 
-Czyli: dobry początek, ale tylko początek.
+W tym repo fallback został na `en-US`. Nie zmieniałem go na `pl-PL`, bo testy raportów CSV zakładają angielski separator i format daty.
 
-## Prawdziwa robota zaczyna się w `RequestLocalizationOptions`
+## `Startup.cs`
 
-To jest miejsce, gdzie wychodzi, czy aplikacja faktycznie „rozumie” języki użytkownika, czy tylko je wyświetla.
-
-Typowy układ:
+To jest dokładna konfiguracja z repo:
 
 ```csharp
-services.Configure<RequestLocalizationOptions>(options =>
-{
-    var supportedCultures = new[]
-    {
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+
+// ...
+
+services.Configure<RequestLocalizationOptions>(options => {
+    var supportedCultures = new[] {
         new CultureInfo("pl-PL"),
         new CultureInfo("en-US"),
         new CultureInfo("de-DE")
     };
 
-    options.DefaultRequestCulture = new RequestCulture("pl-PL");
+    options.DefaultRequestCulture = new RequestCulture("en-US");
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
-    options.RequestCultureProviders = new List<IRequestCultureProvider>
-    {
+    options.RequestCultureProviders = new List<IRequestCultureProvider> {
         new QueryStringRequestCultureProvider(),
         new CookieRequestCultureProvider(),
         new AcceptLanguageHeaderRequestCultureProvider()
@@ -90,198 +82,191 @@ services.Configure<RequestLocalizationOptions>(options =>
 });
 ```
 
-I tu już widać całą logikę:
+To ustawienie:
 
-- query string może nadpisać kulturę,
-- cookie pamięta wybór użytkownika,
-- `Accept-Language` bierze język z przeglądarki,
-- `pl-PL` zostaje jako fallback.
+1. rejestruje `pl-PL`,
+2. bierze kulturę z query stringa, cookie i `Accept-Language`,
+3. zostawia `en-US` jako domyślne zachowanie.
 
-To jest moim zdaniem sensowny kompromis. Użytkownik nie musi klikać niczego ręcznie przy pierwszym wejściu, ale też nie tracisz kontroli nad domyślnym zachowaniem.
+## `scripts.js`
 
-## Fallback nie może być przypadkowy
+Tu siedzi dokładna obsługa lokalizacji reportingu i widgetów DevExpress:
 
-W wielu projektach fallback zostaje taki, jaki akurat ktoś kiedyś wpisał.
+```javascript
+window.ReportingLocalization = {
+    currentCulture: null,
+    loadMergedMessages: function (baseUrl, overrideUrl) {
+        return $.get(baseUrl).then(baseMessages => {
+            return $.get(overrideUrl)
+                .then(overrideMessages => $.extend(true, {}, baseMessages, overrideMessages))
+                .catch(() => baseMessages);
+        });
+    },
+    resolveLocalizationCulture: function (culture) {
+        if (!culture) {
+            return null;
+        }
 
-To jest zły pomysł.
+        const normalizedCulture = culture.toLowerCase();
+        if (normalizedCulture.startsWith("de")) {
+            return "de-DE";
+        }
+        if (normalizedCulture.startsWith("pl")) {
+            return "pl-PL";
+        }
 
-Jeśli aplikacja jest głównie po polsku, `pl-PL` jako fallback ma sens. Jeśli robisz produkt pod rynek międzynarodowy, może mieć sens coś innego. Najgorsze są ustawienia „bo już były”.
+        return null;
+    },
+    setCurrentCulture: function (culture) {
+        window.ReportingLocalization.currentCulture = culture;
+    },
+    onCustomizeLocalization: function (_, e) {
+        const currentCulture = window.ReportingLocalization.resolveLocalizationCulture(window.ReportingLocalization.currentCulture);
+        if (currentCulture) {
+            const analyticsMessages = window.ReportingLocalization.loadMergedMessages(
+                "js/localization/dx-analytics-core." + currentCulture + ".json",
+                "js/localization/overrides/dx-analytics-core." + currentCulture + ".json"
+            );
+            const reportingMessages = window.ReportingLocalization.loadMergedMessages(
+                "js/localization/dx-reporting." + currentCulture + ".json",
+                "js/localization/overrides/dx-reporting." + currentCulture + ".json"
+            );
+            const widgetMessages = window.ReportingLocalization.loadMergedMessages(
+                "js/localization/" + currentCulture + ".json",
+                "js/localization/overrides/" + currentCulture + ".json"
+            );
 
-Takie rzeczy wychodzą dopiero później, kiedy nagle nowy użytkownik z niemieckim systemem dostaje polski, a zespół się zastanawia, czy to bug, czy feature.
-
-## Dodanie nowego języka prawie nigdy nie kończy się na jednym pliku
-
-Załóżmy, że chcesz dodać `fr-FR`.
-
-Jeśli dopiszesz tylko:
-
-```json
-"Languages": "pl-PL;en-US;de-DE;fr-FR"
-```
-
-to zrobiłeś tylko pół roboty.
-
-Trzeba jeszcze dopisać kulturę w `Startup.cs`:
-
-```csharp
-var supportedCultures = new[]
-{
-    new CultureInfo("pl-PL"),
-    new CultureInfo("en-US"),
-    new CultureInfo("de-DE"),
-    new CultureInfo("fr-FR")
+            e.LoadMessages(analyticsMessages);
+            e.LoadMessages(reportingMessages);
+            widgetMessages.done(result => {
+                e.WidgetLocalization.loadMessages(result);
+            }).always(() => {
+                e.WidgetLocalization.locale(currentCulture);
+            });
+        }
+    }
 };
 ```
 
-I dopiero wtedy zaczyna to być spójne.
+## `MainDemo.Module.csproj`
 
-Inaczej użytkownik zobaczy język na liście, ale aplikacja nie będzie go poprawnie traktowała jako wspieranego języka runtime.
+Polski model lokalizacji został osadzony jako zasób:
 
-## Raporty potrafią udawać, że problemu nie ma
-
-Tu bywa najwięcej pułapek.
-
-Główne UI może przełączać się poprawnie, a report viewer czy designer i tak zostaną po angielsku. I człowiek ma wtedy takie złudne poczucie, że „w sumie działa prawie wszystko”.
-
-To „prawie” jest właśnie najdroższe.
-
-Jeżeli używasz DevExpress, to zwykle trzeba przekazać kulturę do JavaScriptu. Na przykład tak:
-
-```csharp
-propertyEditor.CallbacksModel.CustomizeLocalization = "ReportingLocalization.onCustomizeLocalization";
-await jSRuntime.InvokeVoidAsync("ReportingLocalization.setCurrentCulture", cultureInfoService?.CurrentCulture.Name);
+```xml
+<EmbeddedResource Include="Model.DesignedDiffs.Localization.de.xafml">
+  <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+</EmbeddedResource>
+<EmbeddedResource Include="Model.DesignedDiffs.Localization.pl.xafml">
+  <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+</EmbeddedResource>
 ```
 
-albo tak:
+## Test lokalizacji
+
+To jest pełny test z repo:
 
 ```csharp
-propertyEditor.DocumentViewerCallbacksModel.CustomizeLocalization = "ReportingLocalization.onCustomizeLocalization";
-await jSRuntime.InvokeVoidAsync("ReportingLocalization.setCurrentCulture", cultureInfoService?.CurrentCulture.Name);
-```
+public class LocalizationTests : BaseWebApiTest {
+    const string ApiUrl = "/api/Localization/";
 
-I właśnie to jest ten moment, o którym łatwo zapomnieć, jeśli człowiek patrzy tylko na główny shell aplikacji.
+    [Fact]
+    public async System.Threading.Tasks.Task GetClassCaption() {
+        string url = "ClassCaption?classFullName=DevExpress.Persistent.BaseImpl.EF.PermissionPolicy.PermissionPolicyUser";
 
-## Polski zwykle potrzebuje jeszcze jednego kroku
+        string result = await SendRequestAsync("de-DE", url);
+        Assert.Equal("Benutzer", result);
 
-W projektach z DevExpress polski bardzo często nie kończy się na samej kulturze `pl-PL`.
+        result = await SendRequestAsync("pl-PL", url);
+        Assert.Equal("Użytkownik", result);
 
-Dochodzą pliki lokalizacyjne, na przykład:
+        result = await SendRequestAsync("en-US", url);
+        Assert.Equal("Base User", result);
+    }
 
-- `dx-analytics-core.pl.json`
-- `dx-dashboard.pl.json`
-- `dx-reporting.pl.json`
-- `dx-rich.pl.json`
-- `dx-spreadsheet.pl.json`
+    [Fact]
+    public async System.Threading.Tasks.Task GetAdditionalPolishClassCaptions() {
+        var result = await SendRequestAsync("pl-PL", "ClassCaption?classFullName=MainDemo.Module.BusinessObjects.Position");
+        Assert.Equal("Stanowisko", result);
 
-Pierwsze miejsce, które warto wtedy otworzyć, to:
+        result = await SendRequestAsync("pl-PL", "ClassCaption?classFullName=MainDemo.Module.BusinessObjects.Resume");
+        Assert.Equal("CV", result);
 
-- [localization.devexpress.com](https://localization.devexpress.com/)
+        result = await SendRequestAsync("pl-PL", "ClassCaption?classFullName=DevExpress.Persistent.BaseImpl.EF.ReportDataV2");
+        Assert.Equal("Raporty", result);
+    }
 
-To jest oficjalny serwis DevExpress z tłumaczeniami. Czasem człowiek odruchowo zaczyna szukać tych plików po starych projektach albo paczkach NuGet, a tu po prostu szybciej jest najpierw sprawdzić, czy gotowa lokalizacja już tam leży.
+    [Fact]
+    public async System.Threading.Tasks.Task GetMemberCaption() {
+        string url = "MemberCaption?classFullName=MainDemo.Module.BusinessObjects.Employee&memberName=Birthday";
 
-Drugie miejsce, które naprawdę warto mieć otwarte obok, to główna dokumentacja XAF:
+        string result = await SendRequestAsync("de-DE", url);
+        Assert.Equal("Geburtstag", result);
 
-- [Localization | XAF Documentation](https://docs.devexpress.com/eXpressAppFramework/113298/localization)
+        result = await SendRequestAsync("pl-PL", url);
+        Assert.Equal("Data urodzenia", result);
 
-I to nie jest pusty link „na wszelki wypadek”. DevExpress zbiera tam w jednym miejscu najważniejsze tematy związane z lokalizacją: podstawy, lokalizację standardowych modułów i kontrolek, culture-specific formatting, runtime language switcher oraz osobne instrukcje typu „localize an XAF application”. Jak ktoś robi XAF pierwszy albo drugi raz, to taka strona oszczędza sporo błądzenia między przypadkowymi tematami.
+        result = await SendRequestAsync("en-US", url);
+        Assert.Equal("Birth Date", result);
+    }
 
-Jest jeszcze trzeci, nowy kierunek: DevExpress MCP Server.
+    [Fact]
+    public async System.Threading.Tasks.Task GetActionCaption() {
+        string url = "ActionCaption?actionName=SetTaskAction";
 
-- [Transform Your Development Experience with the DevExpress MCP Server](https://community.devexpress.com/Blogs/news/archive/2025/10/16/transform-your-development-experience-with-the-devexpress-mcp-server.aspx)
-- `https://api.devexpress.com/mcp/docs`
-- `https://api.devexpress.com/mcp/docs?v=24.2`
+        string result = await SendRequestAsync("de-DE", url);
+        Assert.Equal("Setze für Aufgabe...", result);
 
-To przydaje się wtedy, kiedy nie chcesz tylko czytać dokumentacji ręcznie, ale chcesz dać agentowi AI bezpośredni dostęp do aktualnych materiałów DevExpress. W praktyce to jest bardzo sensowne przy pytaniach o XAF, raporty, dashboardy albo Blazor UI, bo agent może szukać po oficjalnej bazie dokumentacji zamiast zgadywać albo opierać się na starych przykładach.
+        result = await SendRequestAsync("pl-PL", url);
+        Assert.Equal("Ustaw zadanie...", result);
 
-I ważna rzecz praktyczna: samo znalezienie tych plików jeszcze nic nie daje. Trzeba je normalnie dograć do projektu. W moim przypadku był to katalog w stylu:
-
-- `DevExpressLocalizedResources_2025.2_pl\json resources\`
-
-czyli miejsce, z którego bierzesz pliki typu `dx-analytics-core.pl.json`, `dx-reporting.pl.json`, `dx-dashboard.pl.json` i kopiujesz je do `wwwroot/js/localization/`.
-
-I teraz najważniejsze: samo wrzucenie ich do katalogu niczego nie gwarantuje.
-
-Trzeba jeszcze je załadować, np.:
-
-```html
-if (currentCulture == "pl") {
-    e.LoadMessages($.get("/js/localization/dx-analytics-core." + currentCulture + ".json"));
-    e.LoadMessages($.get("/js/localization/dx-dashboard." + currentCulture + ".json"));
-    e.LoadMessages($.get("/js/localization/dx-reporting." + currentCulture + ".json"));
-    e.LoadMessages($.get("/js/localization/dx-rich." + currentCulture + ".json"));
-    e.LoadMessages($.get("/js/localization/dx-spreadsheet." + currentCulture + ".json"));
+        result = await SendRequestAsync("en-US", url);
+        Assert.Equal("Set Task", result);
+    }
 }
 ```
 
-Jak tego nie zrobisz, to polski będzie „tak trochę”.
-
-## A potem jeszcze `.csproj`
-
-Tak, jeszcze to.
-
-Jeśli projekt jawnie kontroluje content, to pliki trzeba skopiować do outputu.
-
-Na przykład:
-
-```xml
-<Content Update="wwwroot\js\localization\dx-analytics-core.pl.json">
-  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-</Content>
-```
-
-Ten etap jest nudny, ale bez niego można stracić godzinę na patrzenie, czemu lokalnie „w repo jest”, a w uruchomionej aplikacji „jakby nie było”.
-
-## Jak bym to robił bez marnowania czasu
-
-Moja kolejność:
-
-1. ustal listę języków,
-2. włącz przełącznik,
-3. popraw `RequestLocalizationOptions`,
-4. zostaw sensowny fallback,
-5. sprawdź raporty,
-6. dopiero potem baw się dodatkowymi plikami lokalizacji,
-7. zrób prawdziwe sprawdzenie w przeglądarce.
-
-Nie tylko build. Nie tylko „kompiluje się”. Normalnie wejść do aplikacji, zmienić język, odświeżyć stronę, wejść w raport, zobaczyć co zostało po staremu.
-
-## Prompt dla agenta AI
-
-Jeżeli chcesz to zlecić agentowi, dałbym mu coś w tym stylu:
+To jest realny test HTTP pod:
 
 ```text
-Dodaj lub popraw obsługę języków w aplikacji Blazor.
-
-Zrób to end-to-end:
-1. Włącz przełącznik języka.
-2. Ustaw listę języków w appsettings.json.
-3. Skonfiguruj RequestLocalizationOptions w Startup.cs.
-4. Domyślnie wybieraj język z przeglądarki/systemu, ale zostaw fallback na pl-PL.
-5. Sprawdź raporty i pliki lokalizacyjne DevExpress.
-6. Przebuduj aplikację i wypisz zmienione pliki.
-
-Sprawdź dokładnie:
-- appsettings.json
-- Startup.cs
-- _Host.cshtml
-- ReportLocalizationController.cs
-- .csproj
-- wwwroot/js/localization/
+/api/Localization/
 ```
 
-Nie jest to piękny prompt z konferencji o AI. Ale jest użyteczny. I to mnie bardziej interesuje.
+## Test raportów
 
-## Najczęstsze wpadki
+Po dodaniu kultur trzeba było ustabilizować testy raportów:
 
-Najczęściej widzę:
+```csharp
+using System.Globalization;
 
-- zmianę `Languages` bez ruszania `RequestLocalizationOptions`,
-- brak `AcceptLanguageHeaderRequestCultureProvider`,
-- pominięcie raportów,
-- brak kopiowania plików `dx-*.json`,
-- test tylko na poziomie builda,
-- fallback ustawiony z przypadku.
+string currentData = DateTime.Now.ToString("d", CultureInfo.GetCultureInfo("en-US"));
 
-To nie są wielkie błędy architektoniczne. To są raczej drobne zaniedbania, które razem robią bardzo irytujący efekt końcowy.
+private async System.Threading.Tasks.Task LoadReportAndCompare(string userName, string url, string expectedResult) {
+    var request = new HttpRequestMessage(HttpMethod.Get, url);
+    request.Headers.Add("Accept-Language", "en-US");
+    var response = await WebApiClient.SendAsync(request);
+    Assert.True(response.IsSuccessStatusCode, $"Request failed for {userName} @ {url} ");
 
-I właśnie dlatego warto mieć to spisane. Nie po to, żeby napisać „pełny przewodnik po lokalizacji”, tylko po to, żeby drugi raz nie wpaść w ten sam dołek.
+    string loadedReport = await response.Content.ReadAsStringAsync();
+    Assert.Equal(expectedResult, loadedReport);
+}
+```
+
+## Pliki z tłumaczeniami JavaScript
+
+Do repo doszły:
+
+```text
+CS/MainDemo.Blazor.Server/wwwroot/js/localization/pl-PL.json
+CS/MainDemo.Blazor.Server/wwwroot/js/localization/dx-analytics-core.pl-PL.json
+CS/MainDemo.Blazor.Server/wwwroot/js/localization/dx-reporting.pl-PL.json
+```
+
+## Wynik
+
+Po tej zmianie aplikacja:
+
+1. pokazuje `pl-PL` na liście języków,
+2. wybiera polski z `Accept-Language`,
+3. ładuje polskie komunikaty DevExpress dla reportingu,
+4. ma polskie captiony w modelu XAF,
+5. przechodzi testy HTTP dla lokalizacji.
