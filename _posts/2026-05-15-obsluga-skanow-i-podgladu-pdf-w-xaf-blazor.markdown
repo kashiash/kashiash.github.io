@@ -19,18 +19,64 @@ To jest dokładnie wariant wdrożony w `MainDemo.NET.EFCore`.
 
 ## Co trzeba dodać
 
-1. `DocumentFileType` jako słownik typów dokumentów,
-2. `DocumentFile` jako encję dokumentu,
-3. `IHasDocumentFiles` jako interfejs właściciela,
-4. `DocumentFiles` jako kolekcję na właścicielu,
-5. `DbSet` i relacje w `DbContext`,
-6. `DocumentFileUploadParameters` do popupu,
-7. `DocumentFileNestedListViewController` z akcją `Dodaj pliki`,
-8. `DocumentUploadAreaRenderer` z `DxUpload`,
-9. `DocumentFileUploadController` jako endpoint API,
-10. `DocumentPreviewRenderer` do podglądu PDF,
-11. wpis `DocumentFiles` do detail view właściciela,
-12. `DocumentFile_DetailView` z `PreviewFile`.
+Żeby to działało od początku do końca, trzeba dołożyć kilka elementów w czterech miejscach:
+
+1. w modelu danych,
+2. w `DbContext`,
+3. w warstwie XAF i Blazor,
+4. w modelu widoków.
+
+Każdy z tych elementów ma własną rolę.
+
+### 1. Klasy danych
+
+- `DocumentFileType`
+  To słownik typów dokumentów, na przykład `Faktura`, `Umowa`, `Korespondencja`.
+
+- `DocumentFile`
+  To encja dokumentu. Przechowuje plik, typ dokumentu, opis i dane potrzebne do podglądu.
+
+- `IHasDocumentFiles`
+  To interfejs dla obiektów, które mają mieć zakładkę `Załączniki`.
+
+- `DocumentFiles` na właścicielu
+  To kolekcja dokumentów na klasie takiej jak `Employee` albo `DemoTask`.
+
+- `DocumentFileUploadParameters`
+  To obiekt pomocniczy do popupu `Dodaj pliki`.
+
+### 2. Rejestracja w bazie i `DbContext`
+
+- `DbSet<DocumentFile>`
+  Dzięki temu dokumenty są zapisywane w bazie.
+
+- `DbSet<DocumentFileType>`
+  Dzięki temu słownik typów dokumentów jest zapisywany w bazie.
+
+- relacje `DocumentFile -> Employee` i `DocumentFile -> DemoTask`
+  Dzięki nim dokument wie, do jakiego właściciela należy.
+
+### 3. Warstwa XAF i Blazor
+
+- `DocumentFileNestedListViewController`
+  Dodaje akcję `Dodaj pliki`, otwiera popup i odświeża listę po uploadzie.
+
+- `DocumentUploadAreaRenderer`
+  To komponent z `DxUpload`. On obsługuje przeciągnięcie wielu plików naraz.
+
+- `DocumentFileUploadController`
+  To endpoint HTTP, który zapisuje każdy plik jako osobny rekord `DocumentFile`.
+
+- `DocumentPreviewRenderer`
+  To komponent do podglądu PDF i obrazów.
+
+### 4. Model widoków
+
+- wpis `DocumentFiles` do detail view właściciela
+  Dzięki temu użytkownik widzi zakładkę `Załączniki`.
+
+- `DocumentFile_DetailView` z `PreviewFile`
+  Dzięki temu po otwarciu dokumentu widać podgląd pliku.
 
 ## Krok 1. Słownik typów dokumentów
 
