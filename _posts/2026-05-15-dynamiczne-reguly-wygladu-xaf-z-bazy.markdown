@@ -7,23 +7,13 @@ series_part: 5
 
 ![Dynamiczny wygląd: Magiczna różdżka](/assets/images/dynamic-appearance.png)
 
-Sam `[Appearance]` w klasie biznesowej wystarcza wtedy, gdy reguła ma być stała. Gdy administrator ma zmieniać wygląd bez rekompilacji, reguły muszą stać się danymi.
+Atrybut `[Appearance]` w klasie biznesowej działa wtedy, gdy reguła jest stała — wpisuję ją raz przy kompilacji i tyle. Co jednak, gdy administrator ma sam zmieniać kolor wiersza, podświetlać zadania po terminie albo ukrywać kolumny, nie ruszając kodu? Reguły muszą trafić do bazy.
 
-Taki wariant dodałem do `MainDemo.NET.EFCore`. To rozszerzenie standardowego `ConditionalAppearance` z XAF. Reguły siedzą w bazie jako `DynamicAppearanceRule`, są ładowane do cache `DynamicAppearanceRuleStorage`, a kontroler `DynamicAppearanceRuleViewController` dokłada je do `AppearanceController` przez `CollectAppearanceRules`.
+Standardowy `ConditionalAppearance` z XAF nie ma takiej warstwy. Dokłada się ją trzema klasami: encją `DynamicAppearanceRule`, statycznym cache'em `DynamicAppearanceRuleStorage` i kontrolerem `DynamicAppearanceRuleViewController`. Kontroler podpina cache do standardowego `AppearanceController` przez zdarzenie `CollectAppearanceRules`. Reszta dzieje się w XAF jak dotąd — silnik wygląda na te same reguły co dla `[Appearance]`, tylko że źródło danych jest inne.
 
-W praktyce wzorzec składa się z siedmiu kroków:
+Tak to zrobiłem w `MainDemo.NET.EFCore`. Dalej cały kod plus krótki komentarz, co każdy fragment robi i dlaczego.
 
-1. włączasz `ConditionalAppearanceModule` w module i hostach,
-2. dodajesz encję implementującą `IAppearanceRuleProperties`,
-3. dopisujesz `DbSet` do `DbContext`,
-4. tworzysz storage z metodami `Initialize`, `Put`, `Remove` i `GetRules`,
-5. podpinasz kontroler do `AppearanceController.CollectAppearanceRules`,
-6. inicjalizujesz cache przy starcie aplikacji,
-7. seedujesz pierwszą regułę albo wystawiasz ekran administracyjny.
-
-Najważniejsze jest jednak to, żeby nie kończyć na samym opisie. Poniżej jest pełny kod z repo.
-
-### `DynamicAppearanceRule.cs`
+## Encja: `DynamicAppearanceRule`
 
 ```csharp
 using System.ComponentModel;
@@ -187,7 +177,17 @@ public class DynamicAppearanceRule : BaseObject, IAppearanceRuleProperties {
 }
 ```
 
-### `DynamicAppearanceRuleStorage.cs`
+Encja implementuje `IAppearanceRuleProperties` — ten sam interfejs, z którego XAF czyta zwykłe reguły z atrybutów. Dzięki temu `AppearanceController` traktuje ją jak każdą inną regułę, bez specjalnych ścieżek.
+
+Pola dokładnie odpowiadają parametrom atrybutu `[Appearance]`: `Criteria`, `TargetItems`, `Context`, `AppearanceItemType`, `Priority`, `Visibility`, `Enabled`, `FontColor`, `BackColor`, `FontStyle`, `Method`. Dodatkowe są dwa: `ObjectTypeFullName` (po jakim typie filtrować) i `ViewId` (czy reguła dotyczy tylko jednego widoku, czy wszystkich).
+
+Kolory są dwojakie: w bazie hex CSS (`#FF0000`), w API .NET — `System.Drawing.Color`. Para `FontColorCss` / `FontColor` konwertuje jedno w drugie przez `ColorTranslator`. Pole CSS nie pokazuje się w UI (`[Browsable(false)]`) — administrator pracuje na `Color` przez color picker, baza dostaje string.
+
+`OnSaving` synchronizuje cache: po zapisie reguła trafia do `DynamicAppearanceRuleStorage`, po usunięciu — z niego znika. Bez tego użytkownik zapisałby zmianę, a UI dalej rysowałby starą wersję aż do restartu.
+
+`NormalizeTypeName` ucina sufiks `Proxy` z nazw klas. EF Core w trybie change tracking proxies pokazuje typ jako `EmployeeProxy`, nie `Employee` — bez tej korekty `Matches` nie znajdowałby żadnego pasującego rekordu.
+
+## Cache: `DynamicAppearanceRuleStorage`
 
 ```csharp
 using DevExpress.ExpressApp.ConditionalAppearance;
@@ -248,7 +248,11 @@ public static class DynamicAppearanceRuleStorage {
 }
 ```
 
-### `DynamicAppearanceRuleViewController.cs`
+Cache jest globalny i statyczny. Reguły wczytuję raz przy starcie (`Initialize`), potem aktualizuję punktowo (`Put`/`Remove`). Trzymam wszystko pod jednym `lock` — operacji jest mało (zapisy są dziełem administratora, czytanie idzie z listy w pamięci), więc nawet prosty zamek nie jest wąskim gardłem.
+
+`GetRules(Type, string)` filtruje cache po typie i widoku — tę metodę wywołuje kontroler przy każdym aktywowaniu widoku.
+
+## Kontroler: `DynamicAppearanceRuleViewController`
 
 ```csharp
 using DevExpress.ExpressApp;
@@ -291,7 +295,13 @@ public class DynamicAppearanceRuleViewController : ObjectViewController<ObjectVi
 }
 ```
 
-### `Updater.cs`
+Kontroler aktywuje się na każdym widoku obiektowym (`ObjectView, object`). Przy `OnActivated` zdobywa `AppearanceController`, resetuje jego cache reguł i podpina się pod zdarzenie `CollectAppearanceRules`. To zdarzenie jest oficjalnym punktem rozszerzenia: zwracam tu reguły z bazy, a XAF traktuje je tak samo jak te z atrybutów.
+
+`ResetRulesCache` jest istotne — bez niego, jeśli administrator zmieni regułę, a widok już był wcześniej otwarty, użytkownik zobaczy starą wersję cache `AppearanceController`. Reset i `Refresh` wymuszają ponowne zbieranie.
+
+`OnDeactivated` odpina handler. Pomijając ten krok, dostaję klasyczny wyciek pamięci w XAF — controller zostaje, frame zostaje, frame trzyma referencję do widoku.
+
+## Seed pierwszej reguły
 
 ```csharp
 private void EnsureDynamicAppearanceRules() {
@@ -313,7 +323,11 @@ private void EnsureDynamicAppearanceRules() {
 }
 ```
 
-### `DynamicAppearanceRuleTests.cs`
+Metoda siedzi w `Updater` i podświetla zaległe zadania na pomarańczowo. Idempotent — sprawdza po nazwie, czy reguła już istnieje, więc kolejne uruchomienia jej nie duplikują.
+
+Pełnoprawne wdrożenie pominie ten seed i da administratorowi `ListView` na `DynamicAppearanceRule` (encja ma `[DefaultClassOptions]`, więc XAF doda ją do nawigacji bez dodatkowej pracy). Pierwsza reguła powstaje wtedy ręcznie z poziomu UI.
+
+## Testy
 
 ```csharp
 using DevExpress.ExpressApp;
@@ -364,8 +378,16 @@ public class DynamicAppearanceRuleTests : BaseWebApiTest {
 }
 ```
 
-W MainDemo seedowana reguła podświetla zadania po terminie. Działa bez zmian zarówno w podejściu „demo”, jak i jako gotowy punkt wyjścia do osobnego projektu XAF. Najważniejsze jest to, że nie trzeba kopiować całej architektury HIS jeden do jednego. Wystarczy potraktować `IAppearanceRuleProperties` jako kontrakt wejściowy do `AppearanceController` i dołożyć tylko brakującą warstwę danych oraz cache.
+Dwa testy pokrywają to, na czym najłatwiej coś popsuć: seed faktycznie wpadł do bazy z prawidłowym kolorem (po refaktorze pól CSS), a cache zwraca tylko reguły pasujące do typu (po refaktorze `Matches` albo `NormalizeTypeName`).
 
-Pełna instrukcja z plikami, kolejnością wdrożenia i komendami uruchomieniowymi jest w repo:
+## Dlaczego ten układ działa
+
+`AppearanceController` z XAF nie obchodzi, skąd pochodzą reguły. Pyta tylko, czy implementują `IAppearanceRuleProperties`. Atrybuty `[Appearance]` to jedno źródło, reguły z bazy — drugie. Oba trafiają do tej samej kolejki przez to samo zdarzenie `CollectAppearanceRules`.
+
+Cały koszt wdrożenia to jedna encja, jeden statyczny cache i jeden krótki kontroler. Nie powielam silnika reguł, nie pisze własnego parsera kryteriów, nie obchodzę logiki priorytetów. To wszystko leży po stronie XAF.
+
+Co zyskuję: administrator może z UI dorobić regułę typu „pracownicy ze statusem urlop — szare tło, podświetlenie wiersza" bez angażowania programisty i bez redeploya.
+
+## Pełna instrukcja w repo
 
 [Dynamiczne reguły wyglądu z bazy w XAF Blazor i WinForms](https://github.com/kashiash/MainDemoEFCoreCustomization/blob/main/CS/docs/dynamiczne-reguly-wygladu-xaf-z-bazy.md)
