@@ -11,13 +11,13 @@ series_part: 1
 >
 > 1. **Obsługa języków: polski, angielski, niemiecki** — ten wpis
 > 2. [Branding: logo, splash screen i motywy]({% post_url 2026-05-12-branding-blazor %})
-> 3. [Custom DateEditor z parametrem modelowym do blokady kółka myszy]({% post_url 2026-05-12-xaf-blazor-date-editor-mouse-wheel %})
+> 3. [Globalny DateEditor w XAF Blazor: blokada scrolla, polskie maski i czas tylko tam, gdzie trzeba]({% post_url 2026-05-12-xaf-blazor-date-editor-mouse-wheel %})
 
 Wielojęzyczność w Blazorze ma tę samą przypadłość co branding: wygląda niewinnie, dopóki nie zaczniesz tego robić naprawdę. Na początku człowiek dopisuje dwa kody kultur, włącza przełącznik języka i myśli, że temat zamknięty. A potem okazuje się, że menu przełącza się ładnie, ale raporty dalej są po angielsku, część UI wraca do fallbacku, a nowy użytkownik i tak dostaje zły język na wejściu.
 
-To nie jest wielka tragedia. To po prostu oznacza, że języki trzeba potraktować jako konfigurację runtime, a nie kosmetykę.
+To nie blokuje wdrożenia. To oznacza, że języki trzeba potraktować jako konfigurację runtime, a nie kosmetykę.
 
-## Konkret z ostatniego wdrożenia, nie teoria
+## Zmiana w repo
 
 Właśnie zrobiłem taką zmianę w publicznym repo:
 
@@ -35,9 +35,9 @@ W tym repo dodałem:
 - osobny dokument krok po kroku w repo:
   [`docs/obsluga-jezyka-polskiego-w-main-demo-blazor.md`](https://github.com/kashiash/MainDemoEFCoreCustomization/blob/main/docs/obsluga-jezyka-polskiego-w-main-demo-blazor.md)
 
-I teraz najciekawsze: nie zostawiłem fallbacku na `pl-PL`, mimo że w wielu projektach to ma sens. Tutaj zostawiłem `en-US`, bo inaczej raporty CSV zaczęły zmieniać separator i format daty. Czyli dokładnie ten przypadek, o który zwykle nikt nie pyta na początku, a który potem rozwala testy i „nagle” zmienia zachowanie systemu.
+Nie zostawiłem fallbacku na `pl-PL`, mimo że w wielu projektach to ma sens. Tutaj zostawiłem `en-US`, bo inaczej raporty CSV zaczęły zmieniać separator i format daty. To jest przypadek, który łatwo przeoczyć na początku, a potem psuje testy i zmienia zachowanie systemu.
 
-To jest dobry przykład, że artykuł daje kierunek, ale gotową zmianę i tak trzeba dopasować do konkretnego projektu.
+To pokazuje jedną rzecz: artykuł daje kierunek, ale zmianę trzeba dopasować do projektu.
 
 ## Sama lista języków niczego jeszcze nie załatwia
 

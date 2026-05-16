@@ -11,21 +11,21 @@ series_part: 2
 >
 > 1. [Obsługa języków: polski, angielski, niemiecki]({% post_url 2026-05-12-obsluga-jezykow-blazor %})
 > 2. **Branding: logo, splash screen i motywy** — ten wpis
-> 3. [Custom DateEditor z parametrem modelowym do blokady kółka myszy]({% post_url 2026-05-12-xaf-blazor-date-editor-mouse-wheel %})
+> 3. [Globalny DateEditor w XAF Blazor: blokada scrolla, polskie maski i czas tylko tam, gdzie trzeba]({% post_url 2026-05-12-xaf-blazor-date-editor-mouse-wheel %})
 
-Najłatwiej zepsuć branding w Blazorze w bardzo elegancki sposób. Niby wszystko działa, aplikacja się uruchamia, logo „jest”, a i tak człowiek od razu widzi, że coś tu się rozjechało. Jedno logo na starcie, drugie po zalogowaniu, trzecie w loaderze. Do tego po prawej jakieś motywy z innej bajki.
+Branding w Blazorze najczęściej psuje się w trzech miejscach: na starcie, po zalogowaniu i w loaderze. Aplikacja działa, ale użytkownik od razu widzi niespójność.
 
-Przerabiałem to ostatnio na żywym organizmie i właśnie dlatego to zapisuję. Nie jako wielką teorię, tylko jako rzecz, do której da się wrócić za miesiąc bez przeklinania.
+Opisuję to tak, żeby dało się do tego wrócić i wdrożyć to drugi raz bez zgadywania.
 
 ## Gdzie ten branding naprawdę siedzi
 
-Na pierwszy rzut oka człowiek myśli: „podmienię SVG i po sprawie”. Nie. W praktyce zwykle są co najmniej trzy miejsca:
+Na pierwszy rzut oka wygląda to prosto: podmiana SVG. W tym układzie zwykle są co najmniej trzy miejsca:
 
 - pełne logo przed spinnerem,
 - obrazek w splash screenie,
 - logo w headerze po wejściu do aplikacji.
 
-A czasem jeszcze dochodzi czwarty element, czyli układ motywów po prawej stronie. To nie jest logo, jasne. Ale jeśli masz nowoczesny branding, a Theme Switcher wygląda jak relikt po pięciu refaktoryzacjach, to cały efekt siada.
+Czasem dochodzi jeszcze czwarty element: układ motywów po prawej stronie. To nie jest logo, ale wpływa na odbiór całego ekranu.
 
 ## Najpierw porządek w plikach, potem reszta
 

@@ -11,11 +11,11 @@ series_part: 3
 >
 > 1. [Obsługa języków: polski, angielski, niemiecki]({% post_url 2026-05-12-obsluga-jezykow-blazor %})
 > 2. [Branding: logo, splash screen i motywy]({% post_url 2026-05-12-branding-blazor %})
-> 3. **Globalny `DateTimePropertyEditor` z blokadą kółka myszy** — ten wpis
+> 3. **Globalny DateEditor w XAF Blazor: blokada scrolla, polskie maski i czas tylko tam, gdzie trzeba** — ten wpis
 
-W XAF Blazor standardowy edytor daty bazuje na `DxDateEdit`. Ten komponent ma wygodne, ale ryzykowne zachowanie: gdy fokus jest w polu daty, kółko myszy potrafi zmienić wartość. Operator przewija formularz, a przy okazji przestawia termin, datę urodzenia albo godzinę zdarzenia.
+W XAF Blazor standardowy edytor daty bazuje na `DxDateEdit`. Gdy fokus jest w polu daty, kółko myszy może zmienić wartość. Operator przewija formularz i przy okazji przestawia termin, datę urodzenia albo godzinę zdarzenia.
 
-W aplikacji biznesowej to nie jest detal UX. To jest ryzyko cichej zmiany danych.
+W aplikacji biznesowej to nie jest detal UX. To ryzyko cichej zmiany danych.
 
 ## Po co to wszystko
 

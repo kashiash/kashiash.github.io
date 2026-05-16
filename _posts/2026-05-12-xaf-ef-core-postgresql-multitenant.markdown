@@ -3,11 +3,11 @@ layout: post
 title: "XAF + EF Core + PostgreSQL + multi-tenant"
 ---
 
-Jeżeli jedna baza na PostgreSQL już działa, dopiero wtedy bierzesz się za multi-tenant. Nie wcześniej.
+Jeżeli jedna baza na PostgreSQL już działa, dopiero wtedy przechodzisz do multi-tenant.
 
-To jest ten moment, w którym kończy się zwykłe „przełączenie providera”, a zaczyna normalna robota architektoniczna.
+Tu kończy się zwykłe przełączenie providera. Zaczyna się projektowanie architektury.
 
-Najpierw odpowiedz sobie uczciwie na jedno pytanie: po co ci w ogóle multi-tenant.
+Najpierw odpowiedz na jedno pytanie: po co ci multi-tenant.
 
 To ma sens wtedy, gdy:
 

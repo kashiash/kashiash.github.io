@@ -4,8 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Jacek Placek | Notatki zgredziałego programisty</title>
-  <meta name="description" content="Notatki z ponad 30 lat programowania. C#, XAF, Swift, SQL i AI — konkretnie, bez pudrowania.">
-  <meta property="og:locale" content="pl_PL">
+  <meta name="description" content="Pełnoekranowa strona Jacka Placka o programowaniu, DevExpress, XAF i praktycznych notatkach z projektów.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Bricolage+Grotesque:wght@500;700;800&display=swap" rel="stylesheet">
@@ -18,10 +17,17 @@
       --line: rgba(21, 21, 21, 0.12);
       --accent: #cf4f2f;
       --accent-2: #e6bb54;
+      --forest: #204739;
+      --shadow: 0 24px 80px rgba(34, 23, 8, 0.12);
     }
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       margin: 0;
@@ -33,9 +39,11 @@
       font-family: "Space Grotesk", "Segoe UI", sans-serif;
     }
 
-    a { color: inherit; text-decoration: none; }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-    /* ── Header ── */
     .site-header {
       position: sticky;
       top: 0;
@@ -44,8 +52,8 @@
       grid-template-columns: 1fr auto;
       gap: 24px;
       align-items: center;
-      padding: 16px 24px;
-      background: rgba(251, 247, 241, 0.88);
+      padding: 18px 24px;
+      background: rgba(251, 247, 241, 0.8);
       backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--line);
     }
@@ -53,95 +61,198 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
+      min-width: 0;
     }
 
     .brand-mark {
-      width: 38px;
-      height: 38px;
+      width: 48px;
+      height: 48px;
       display: grid;
       place-items: center;
-      border-radius: 11px;
+      border-radius: 14px;
       background: linear-gradient(135deg, var(--accent), #ef8a43);
       color: #fff;
       font-weight: 800;
-      font-size: 0.82rem;
-      letter-spacing: 0.06em;
-      flex-shrink: 0;
+      letter-spacing: 0.08em;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+
+    .brand-copy {
+      min-width: 0;
     }
 
     .brand-title {
       display: block;
       font-weight: 700;
-      font-size: 0.95rem;
+      font-size: 1rem;
       line-height: 1.1;
     }
 
     .brand-subtitle {
       display: block;
-      margin-top: 2px;
+      margin-top: 4px;
       color: var(--muted);
-      font-size: 0.8rem;
+      font-size: 0.88rem;
+      line-height: 1.2;
     }
 
     .nav {
       display: flex;
-      gap: 20px;
-      font-size: 0.92rem;
-      color: var(--muted);
-    }
-
-    .nav a:hover { color: var(--accent); }
-
-    /* ── Two-column layout ── */
-    .page-grid {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      min-height: calc(100vh - 71px);
-    }
-
-    /* ── Left: intro ── */
-    .intro {
-      position: sticky;
-      top: 71px;
-      align-self: start;
-      height: calc(100vh - 71px);
-      overflow-y: auto;
-      padding: 36px 28px 40px;
-      border-right: 1px solid var(--line);
-    }
-
-    .intro-name {
-      margin: 0 0 14px;
-      font-family: "Bricolage Grotesque", "Space Grotesk", sans-serif;
-      font-size: 2rem;
-      line-height: 1;
-      letter-spacing: -0.04em;
-    }
-
-    .intro-desc {
-      margin: 0 0 22px;
-      color: var(--muted);
-      line-height: 1.75;
+      flex-wrap: wrap;
+      gap: 18px;
+      justify-content: flex-end;
       font-size: 0.95rem;
     }
 
-    .intro-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 28px;
+    .nav a {
+      color: var(--muted);
     }
 
-    .badge {
-      display: inline-block;
-      padding: 4px 11px;
-      border-radius: 999px;
+    .nav a:hover,
+    .nav a:focus-visible {
+      color: var(--accent);
+    }
+
+    .hero {
+      min-height: calc(100vh - 85px);
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-main {
+      padding: 56px 24px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 14px;
       border: 1px solid var(--line);
-      background: rgba(255,255,255,0.6);
-      font-size: 0.76rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+      font-size: 0.9rem;
       font-weight: 700;
+      color: var(--accent);
+      width: fit-content;
+    }
+
+    .hero-title {
+      margin: 26px 0 0;
+      max-width: 10ch;
+      font-family: "Bricolage Grotesque", "Space Grotesk", sans-serif;
+      font-size: clamp(4rem, 12vw, 10rem);
+      line-height: 0.9;
+      letter-spacing: -0.06em;
+    }
+
+    .hero-text {
+      max-width: 58ch;
+      margin: 24px 0 0;
       color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.8;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .button,
+    .button-ghost {
+      min-height: 54px;
+      padding: 0 22px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      transition: transform 140ms ease, background 140ms ease;
+    }
+
+    .button {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .button-ghost {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.55);
+    }
+
+    .button:hover,
+    .button-ghost:hover,
+    .button:focus-visible,
+    .button-ghost:focus-visible {
+      transform: translateY(-2px);
+    }
+
+    .hero-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: 42px;
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+
+    .hero-stat {
+      padding: 22px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.28);
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: clamp(1.4rem, 3vw, 2.4rem);
+      line-height: 1;
+      margin-bottom: 10px;
+      font-family: "Bricolage Grotesque", "Space Grotesk", sans-serif;
+    }
+
+    .hero-stat span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .hero-side {
+      display: grid;
+      grid-template-rows: 1.1fr 0.9fr;
+      min-height: 100%;
+    }
+
+    .hero-panel {
+      padding: 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-panel:last-child {
+      border-bottom: 0;
+    }
+
+    .panel-dark {
+      background: linear-gradient(180deg, #1a1a19 0%, #26231f 100%);
+      color: #f5f0e8;
+    }
+
+    .panel-dark .muted {
+      color: rgba(245, 240, 232, 0.72);
+    }
+
+    .panel-accent {
+      background: linear-gradient(135deg, #cf4f2f 0%, #e6bb54 100%);
+      color: #1f160d;
     }
 
     .section-label {
@@ -149,158 +260,241 @@
       text-transform: uppercase;
       letter-spacing: 0.16em;
       font-weight: 700;
-      font-size: 0.72rem;
-      color: var(--accent);
+      font-size: 0.78rem;
+      opacity: 0.9;
     }
 
-    .intro-section {
-      padding-top: 22px;
+    .panel-title {
+      margin: 16px 0 0;
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      line-height: 0.96;
+      font-family: "Bricolage Grotesque", "Space Grotesk", sans-serif;
+      letter-spacing: -0.05em;
+    }
+
+    .panel-text {
+      margin: 18px 0 0;
+      line-height: 1.75;
+      max-width: 34ch;
+    }
+
+    .manifesto {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .manifesto-copy,
+    .manifesto-grid {
+      padding: 32px 24px;
+    }
+
+    .manifesto-copy {
+      border-right: 1px solid var(--line);
+    }
+
+    .manifesto-copy h2,
+    .news-head h2 {
+      margin: 16px 0 0;
+      font-size: clamp(2.2rem, 5vw, 4.5rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+      font-family: "Bricolage Grotesque", "Space Grotesk", sans-serif;
+    }
+
+    .manifesto-copy p,
+    .news-head p {
+      max-width: 56ch;
+      line-height: 1.85;
+      color: var(--muted);
+    }
+
+    .manifesto-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
       border-top: 1px solid var(--line);
-    }
-
-    .intro-section p {
-      margin: 10px 0 0;
-      color: var(--muted);
-      line-height: 1.7;
-      font-size: 0.92rem;
-    }
-
-    .intro-contact {
-      margin-top: 22px;
-      padding-top: 22px;
-      border-top: 1px solid var(--line);
-    }
-
-    .intro-contact p {
-      margin: 10px 0 14px;
-      color: var(--muted);
-      line-height: 1.65;
-      font-size: 0.92rem;
-    }
-
-    .intro-contact-links {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .intro-contact-links a {
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
-    .intro-contact-links a:hover { color: var(--accent); }
-
-    /* ── Right: posts ── */
-    .posts-col {
-      min-width: 0;
       border-left: 1px solid var(--line);
     }
 
-    .posts-header {
-      margin: 0;
-      padding: 16px 24px;
+    .manifesto-card {
+      padding: 26px;
+      background: rgba(255,255,255,0.35);
+      border-right: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--muted);
-      background: rgba(255,255,255,0.18);
     }
 
-    .post-item {
+    .manifesto-card h3,
+    .news-body h3 {
+      margin: 10px 0 0;
+      font-size: 1.45rem;
+      line-height: 1.08;
+    }
+
+    .manifesto-card p,
+    .news-body p {
+      margin: 14px 0 0;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .news {
       display: grid;
-      grid-template-columns: 116px 1fr;
-      gap: 16px;
-      padding: 22px 24px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(255,255,255,0.22);
-      transition: background 120ms ease;
+      grid-template-columns: 0.9fr 1.1fr;
+      padding: 0;
     }
 
-    .post-item:hover { background: rgba(255,255,255,0.46); }
-
-    .post-date {
-      font-size: 0.83rem;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: 0.03em;
-      padding-top: 3px;
-      white-space: nowrap;
+    .news-head {
+      padding: 32px 24px;
+      border-right: 1px solid var(--line);
     }
 
-    .post-kicker {
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    .post-title {
-      margin: 6px 0 0;
-      font-size: 1.05rem;
-      font-weight: 700;
-      line-height: 1.3;
-    }
-
-    .post-desc {
-      margin: 7px 0 0;
-      color: var(--muted);
-      line-height: 1.65;
-      font-size: 0.9rem;
-    }
-
-    .post-link {
-      display: inline-flex;
-      align-items: center;
-      margin-top: 10px;
-      font-size: 0.86rem;
-      font-weight: 700;
-    }
-
-    .post-link:hover { color: var(--accent); }
-
-    /* ── Footer ── */
-    .site-footer {
-      padding: 18px 24px;
-      color: var(--muted);
-      font-size: 0.86rem;
+    .news-list {
+      display: grid;
+      gap: 0;
+      border-left: 1px solid var(--line);
       border-top: 1px solid var(--line);
     }
 
-    /* ── Responsive ── */
-    @media (max-width: 760px) {
-      .page-grid {
+    .news-item {
+      display: grid;
+      grid-template-columns: 132px 1fr;
+      gap: 20px;
+      align-items: start;
+      padding: 24px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.28);
+    }
+
+    .news-item:hover,
+    .news-item:focus-within {
+      background: rgba(255,255,255,0.48);
+    }
+
+    .news-date {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .news-body {
+      display: block;
+    }
+
+    .card-kicker {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 18px;
+      font-weight: 700;
+    }
+
+    .footer {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .footer-copy,
+    .footer-links {
+      padding: 28px 24px 40px;
+    }
+
+    .footer-copy {
+      border-right: 1px solid var(--line);
+    }
+
+    .footer-links {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1100px) {
+      .hero,
+      .manifesto,
+      .footer,
+      .news {
         grid-template-columns: 1fr;
       }
 
-      .intro {
-        position: static;
-        height: auto;
+      .hero-main,
+      .manifesto-copy,
+      .footer-copy {
+        border-right: 0;
+      }
+
+      .hero {
+        min-height: auto;
+      }
+
+      .hero-side {
+        grid-template-rows: auto;
+      }
+
+      .news-head {
         border-right: 0;
         border-bottom: 1px solid var(--line);
-        padding: 28px 16px 32px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .site-header,
+      .hero-main,
+      .hero-panel,
+      .manifesto-copy,
+      .manifesto-grid,
+      .news-head,
+      .footer-copy,
+      .footer-links {
+        padding-left: 16px;
+        padding-right: 16px;
       }
 
-      .posts-col { border-left: 0; }
+      .nav {
+        gap: 10px 14px;
+      }
 
-      .post-item {
+      .hero-title {
+        max-width: none;
+      }
+
+      .hero-strip,
+      .manifesto-grid {
         grid-template-columns: 1fr;
-        gap: 6px;
-        padding: 18px 16px;
       }
 
-      .site-header { padding: 14px 16px; }
-      .nav { gap: 14px; font-size: 0.88rem; }
-      .posts-header { padding: 14px 16px; }
+      .news-item {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+      }
+
+      .button,
+      .button-ghost {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="/" aria-label="Strona główna">
+    <a class="brand" href="#start" aria-label="Strona główna">
       <span class="brand-mark">JP</span>
       <span class="brand-copy">
         <span class="brand-title">Jacek Placek</span>
@@ -308,187 +502,280 @@
       </span>
     </a>
     <nav class="nav" aria-label="Nawigacja">
-      <a href="/xaf.html">XAF</a>
-      <a href="https://github.com/kashiash" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="#start">Start</a>
+      <a href="#manifest">Manifest</a>
+      <a href="#news">Newsy</a>
       <a href="#kontakt">Kontakt</a>
     </nav>
   </header>
 
-  <div class="page-grid">
-    <aside class="intro">
-      <p class="intro-name">Jacek Placek</p>
-      <p class="intro-desc">Notatki z ponad 30 lat programowania. C#, XAF, Swift, SQL i AI — konkretnie, bez pudrowania.</p>
-      <div class="intro-badges">
-        <span class="badge">C# / .NET</span>
-        <span class="badge">XAF</span>
-        <span class="badge">Swift</span>
-        <span class="badge">SQL</span>
-        <span class="badge">AI</span>
-      </div>
+  <main id="start">
+    <section class="hero">
+      <div class="hero-main">
+        <div>
+          <div class="eyebrow">Kod, decyzje, skróty myślowe, które warto zachować</div>
+          <h1 class="hero-title">JACEK PLACEK. PROGRAMOWANIE BEZ NADĘCIA.</h1>
+          <p class="hero-text">
+            C#, XAF, Swift, SQL, AI i inne techniczne tematy, które lepiej mieć ogarnięte
+            niż ładnie opisane. Piszę konkretnie: jak coś działa, to pokazuję jak. Jak nie
+            działa, to szkoda czasu na pudrowanie.
+          </p>
+          <div class="hero-actions">
+            <a class="button" href="#news">Zobacz najnowszy wpis</a>
+            <a class="button-ghost" href="https://github.com/kashiash" target="_blank" rel="noreferrer">GitHub</a>
+          </div>
+        </div>
 
-      <div class="intro-section">
-        <span class="section-label">Aktualnie</span>
-        <p>DevExpress, XAF, lokalizacja i porządkowanie chaosu.</p>
-      </div>
-
-      <div class="intro-contact" id="kontakt">
-        <span class="section-label">Kontakt</span>
-        <p>Napisz, jeśli masz pytanie albo temat wart dyskusji. Najszybciej przez maila. Odpowiadam, gdy temat jest konkretny.</p>
-        <div class="intro-contact-links">
-          <a href="mailto:kashiash@gmail.com">kashiash@gmail.com</a>
-          <a href="https://github.com/kashiash" target="_blank" rel="noreferrer">github.com/kashiash</a>
-          <a href="/feed.xml">RSS</a>
+        <div class="hero-strip">
+          <div class="hero-stat">
+            <strong>30+</strong>
+            <span>lat programowania zamienionych w konkretne notatki, nie marketingowy hałas.</span>
+          </div>
+          <div class="hero-stat">
+            <strong>.NET</strong>
+            <span>projekty biznesowe, utrzymanie, integracje i codzienna praktyka zamiast teorii z prezentacji.</span>
+          </div>
+          <div class="hero-stat">
+            <strong>XAF</strong>
+            <span>wzorce, obejścia i decyzje techniczne, które naprawdę oszczędzają czas.</span>
+          </div>
         </div>
       </div>
-    </aside>
 
-    <main class="posts-col">
-      <h2 class="posts-header">Wpisy</h2>
-
-      <article class="post-item">
-        <div class="post-date">2026-05-15</div>
-        <div class="post-body">
-          <span class="post-kicker">Seria 6/6 · XAF / Dokumenty</span>
-          <h3 class="post-title">Obsługa skanów i podglądu PDF w XAF Blazor: dokumenty, upload i preview inline</h3>
-          <p class="post-desc">Jak dołożyć do aplikacji XAF Blazor słownik typów dokumentów, zakładkę załączników, wieloplikowy upload przez DxUpload i podgląd PDF oraz obrazów inline bez rozwalania wspólnego modułu.</p>
-          <a class="post-link" href="/2026/05/15/obsluga-skanow-i-podgladu-pdf-w-xaf-blazor.html">Czytaj wpis →</a>
+      <aside class="hero-side">
+        <div class="hero-panel panel-dark">
+          <span class="section-label">Profil</span>
+          <h2 class="panel-title">Urodziłem się, bo nie miałem innego wyjścia.</h2>
+          <p class="panel-text muted">
+            Zainteresowania: wino, kobieta i śpiew. A zawodowo: kod, decyzje techniczne,
+            porządkowanie chaosu i notatki, do których można wrócić bez odtwarzania całego
+            kontekstu od zera. Kieruję się zasadą: zrobić i się nie narobić.
+          </p>
         </div>
-      </article>
-
-      <article class="post-item">
-        <div class="post-date">2026-05-15</div>
-        <div class="post-body">
-          <span class="post-kicker">Seria 5/6 · XAF / ConditionalAppearance</span>
-          <h3 class="post-title">Dynamiczne reguły wyglądu z bazy w XAF: encja, cache i AppearanceController</h3>
-          <p class="post-desc">Jak dołożyć do XAF reguły wyglądu sterowane danymi: encja, pamięć podręczna, seed i kontroler, który podpina je do standardowego ConditionalAppearance bez budowy własnego silnika od zera.</p>
-          <a class="post-link" href="/2026/05/15/dynamiczne-reguly-wygladu-xaf-z-bazy.html">Czytaj wpis →</a>
+        <div class="hero-panel panel-accent">
+          <span class="section-label">Aktualnie</span>
+          <h2 class="panel-title">DevExpress, XAF, lokalizacja, wdrożenia i porządkowanie chaosu.</h2>
+          <p class="panel-text">
+            Gdy pojawia się zmiana w toolingu, frameworku albo procesie, interesuje mnie jedno:
+            co to znaczy w praktyce i jaką decyzję powinien podjąć zespół.
+          </p>
         </div>
-      </article>
+      </aside>
+    </section>
 
-      <article class="post-item">
-        <div class="post-date">2026-05-15</div>
-        <div class="post-body">
-          <span class="post-kicker">Seria 4/6 · XAF / Lokalizacja</span>
-          <h3 class="post-title">Domknięcie polskiej lokalizacji w XAF: klasy, enumy i widoki</h3>
-          <p class="post-desc">Sam przełącznik języka nie wystarcza. Ten wpis domyka model XAF tak, żeby po pl-PL nie wracały angielskie nazwy raportów, widoków, słowników i typów frameworkowych.</p>
-          <a class="post-link" href="/2026/05/15/domkniecie-polskiej-lokalizacji-xaf.html">Czytaj wpis →</a>
-        </div>
-      </article>
+    <section class="manifesto" id="manifest">
+      <div class="manifesto-copy">
+        <span class="section-label">Manifest</span>
+        <h2>Extreme Programming zamiast wielkich obietnic.</h2>
+        <p>
+          Wolę małe kroki niż wielkie deklaracje. Najpierw działający fragment, potem test, potem
+          refaktoryzacja i szybki feedback. Jeśli coś da się sprawdzić wcześniej, to nie ma sensu
+          czekać do końca sprintu, wdrożenia albo katastrofy.
+        </p>
+        <p>
+          Prostota, komunikacja, odwaga i szacunek to nie hasła do prezentacji, tylko sposób pracy.
+          Kod ma być czytelny, zmiany małe, wiedza wspólna, a projekt rozwijany tak, żeby dało się go
+          poprawiać bez lęku przy każdym kolejnym commitcie.
+        </p>
+      </div>
 
-      <article class="post-item">
-        <div class="post-date">2026-05-12</div>
-        <div class="post-body">
-          <span class="post-kicker">Seria · XAF / Blazor</span>
-          <h3 class="post-title">XAF Blazor: od aplikacji referencyjnej do gotowego produktu</h3>
-          <p class="post-desc">Indeks serii. Bierzemy publiczny projekt MainDemo.NET.EFCore i pokazujemy, co dochodzi po stronie realnego wdrożenia: lokalizacja, branding, custom edytory, archetypy modelu i moduły CRM / inventory / invoicing.</p>
-          <a class="post-link" href="/2026/05/12/seria-dostosowanie-demowki-xaf-blazor.html">Czytaj indeks serii →</a>
-        </div>
-      </article>
+      <div class="manifesto-grid">
+        <article class="manifesto-card">
+          <span class="card-kicker">C# / XAF</span>
+          <h3>Biznesowe aplikacje, framework i decyzje architektoniczne</h3>
+          <p>Praktyka z .NET, DevExpress XAF, utrzymaniem systemów i rozwiązaniami, które mają działać po wdrożeniu.</p>
+          <a class="card-link" href="/xaf.html">Wejdź do działu XAF</a>
+          <a class="card-link" href="/2026/05/12/xaf-ef-core-postgresql-testy.html">Zobacz wpis o testach PostgreSQL</a>
+        </article>
+        <article class="manifesto-card">
+          <span class="card-kicker">Swift / iOS</span>
+          <h3>Apple stack bez zbędnej teorii</h3>
+          <p>Notatki o Swift, iOS i codziennych problemach programistycznych, do których warto wrócić po czasie.</p>
+        </article>
+        <article class="manifesto-card">
+          <span class="card-kicker">SQL</span>
+          <h3>Dane, zapytania i wydajność bez zgadywania</h3>
+          <p>Widoki, optymalizacje, diagnostyka i porządkowanie danych tam, gdzie baza zaczyna decydować o tempie całego systemu.</p>
+        </article>
+        <article class="manifesto-card">
+          <span class="card-kicker">AI</span>
+          <h3>Narzędzia AI w realnej pracy programisty</h3>
+          <p>Automatyzacja, agenci, wsparcie w analizie i to, gdzie AI faktycznie pomaga zamiast tylko dobrze wyglądać na demo.</p>
+        </article>
+        <article class="manifesto-card">
+          <span class="card-kicker">Inne</span>
+          <h3>Rzeczy przydatne, nawet jeśli nie mieszczą się w jednej szufladzie</h3>
+          <p>Luźniejsze notatki techniczne, integracyjne i robocze tematy, które warto mieć zapisane pod ręką.</p>
+        </article>
+      </div>
+    </section>
 
-      <article class="post-item">
-        <div class="post-date">2026-05-12</div>
-        <div class="post-body">
-          <span class="post-kicker">Seria 3/6 · XAF / Blazor</span>
-          <h3 class="post-title">Wyłączenie scrolla na DxDateEdit — z opt-outem w Model Editorze</h3>
-          <p class="post-desc">Custom property editor XAF z parametrem modelowym do blokady kółka myszy. Pattern z HIS rozszerzony o opt-out per pole z Model Editora, bez grzebania w kodzie.</p>
-          <a class="post-link" href="/2026/05/12/xaf-blazor-date-editor-mouse-wheel.html">Czytaj wpis →</a>
-        </div>
-      </article>
+    <section class="news" id="news">
+      <div class="news-head">
+        <span class="section-label">Newsy i wpisy</span>
+        <h2>Najnowsze na górze. Data zawsze widoczna.</h2>
+        <p>
+          Lista ma być szybka do przeskanowania. Bez kafli i bez zgadywania, co doszło ostatnio.
+          Po lewej data publikacji, po prawej tytuł i krótki opis.
+        </p>
+      </div>
 
-      <article class="post-item">
-        <div class="post-date">2026-05-12</div>
-        <div class="post-body">
-          <span class="post-kicker">XAF / EF Core / PostgreSQL</span>
-          <h3 class="post-title">XAF + EF Core + PostgreSQL + multi-tenant</h3>
-          <p class="post-desc">Co naprawdę dochodzi po przejściu z jednej bazy na układ z osobną bazą na tenant i gdzie to zwykle pęka.</p>
-          <a class="post-link" href="/2026/05/12/xaf-ef-core-postgresql-multitenant.html">Czytaj wpis →</a>
-        </div>
-      </article>
+      <div class="news-list">
+        <article class="news-item">
+          <div class="news-date">2026-05-15</div>
+          <div class="news-body">
+            <span class="card-kicker">Seria 6/6 · XAF / Dokumenty</span>
+            <h3>Obsługa skanów i podglądu PDF w XAF Blazor: dokumenty, upload i preview inline</h3>
+            <p>Jak dodać dokumenty, zakładkę załączników, upload wielu plików przez `DxUpload` i podgląd PDF oraz obrazów.</p>
+            <a class="card-link" href="/2026/05/15/obsluga-skanow-i-podgladu-pdf-w-xaf-blazor.html">Czytaj wpis</a>
+          </div>
+        </article>
 
-      <article class="post-item">
-        <div class="post-date">2026-05-12</div>
-        <div class="post-body">
-          <span class="post-kicker">Seria 2/6 · Blazor / UI</span>
-          <h3 class="post-title">Branding w Blazorze: logo, splash screen i motywy</h3>
-          <p class="post-desc">Jak poukładać preload, splash screen, header i Theme Switcher tak, żeby branding nie był zlepkiem przypadkowych zmian.</p>
-          <a class="post-link" href="/2026/05/12/branding-blazor.html">Czytaj wpis →</a>
-        </div>
-      </article>
+        <article class="news-item">
+          <div class="news-date">2026-05-15</div>
+          <div class="news-body">
+            <span class="card-kicker">Seria 5/6 · XAF / ConditionalAppearance</span>
+            <h3>Dynamiczne reguły wyglądu z bazy w XAF: encja, cache i AppearanceController</h3>
+            <p>Jak dodać do XAF reguły wyglądu sterowane danymi: encja, cache, seed i kontroler podpięty do `ConditionalAppearance`.</p>
+            <a class="card-link" href="/2026/05/15/dynamiczne-reguly-wygladu-xaf-z-bazy.html">Czytaj wpis</a>
+          </div>
+        </article>
 
-      <article class="post-item">
-        <div class="post-date">2026-05-12</div>
-        <div class="post-body">
-          <span class="post-kicker">Seria 1/6 · Blazor / Lokalizacja</span>
-          <h3 class="post-title">Obsługa języków w Blazorze: polski, angielski i niemiecki</h3>
-          <p class="post-desc">Jak włączyć przełącznik języków, wybór z systemu użytkownika i nie zgubić po drodze lokalizacji raportów.</p>
-          <a class="post-link" href="/2026/05/12/obsluga-jezykow-blazor.html">Czytaj wpis →</a>
-        </div>
-      </article>
+        <article class="news-item">
+          <div class="news-date">2026-05-15</div>
+          <div class="news-body">
+            <span class="card-kicker">Seria 4/6 · XAF / Lokalizacja</span>
+            <h3>Domknięcie polskiej lokalizacji w XAF: klasy, enumy i widoki</h3>
+            <p>Jak uzupełnić model XAF, żeby po `pl-PL` nie wracały angielskie nazwy raportów, widoków, słowników i typów frameworkowych.</p>
+            <a class="card-link" href="/2026/05/15/domkniecie-polskiej-lokalizacji-xaf.html">Czytaj wpis</a>
+          </div>
+        </article>
 
-      <article class="post-item">
-        <div class="post-date">2026-05-12</div>
-        <div class="post-body">
-          <span class="post-kicker">XAF / EF Core / PostgreSQL</span>
-          <h3 class="post-title">Jakie testy dodać po przejściu XAF na PostgreSQL</h3>
-          <p class="post-desc">Krótka i konkretna lista testów, które naprawdę warto dodać po przejściu aplikacji XAF na PostgreSQL.</p>
-          <a class="post-link" href="/2026/05/12/xaf-ef-core-postgresql-testy.html">Czytaj wpis →</a>
-        </div>
-      </article>
+        <article class="news-item">
+          <div class="news-date">2026-05-12</div>
+          <div class="news-body">
+            <span class="card-kicker">Seria / XAF / Blazor</span>
+            <h3>XAF Blazor: od aplikacji referencyjnej do gotowego produktu</h3>
+            <p>Indeks serii. Bierzemy publiczny projekt <code>MainDemo.NET.EFCore</code> i pokazujemy, co trzeba dołożyć przed wdrożeniem.</p>
+            <a class="card-link" href="/2026/05/12/seria-dostosowanie-demowki-xaf-blazor.html">Czytaj indeks serii</a>
+          </div>
+        </article>
 
-      <article class="post-item">
-        <div class="post-date">2026-05-12</div>
-        <div class="post-body">
-          <span class="post-kicker">XAF / EF Core / PostgreSQL</span>
-          <h3 class="post-title">XAF + EF Core + PostgreSQL krok po kroku</h3>
-          <p class="post-desc">Praktyczny plan przejścia ze zwykłej aplikacji XAF na EF Core z SQL Server na PostgreSQL, bez bełkotu i bez multi-tenant na start.</p>
-          <a class="post-link" href="/2026/05/12/xaf-ef-core-postgresql-krok-po-kroku.html">Czytaj wpis →</a>
-        </div>
-      </article>
+        <article class="news-item">
+          <div class="news-date">2026-05-12</div>
+          <div class="news-body">
+            <span class="card-kicker">Seria 3/6 · XAF / Blazor</span>
+            <h3>Globalny DateEditor w XAF Blazor: blokada scrolla, polskie maski i czas tylko tam, gdzie trzeba</h3>
+            <p>Jak zablokować kółko myszy w polach daty, ustawić maski i zostawić wyjątki tylko tam, gdzie są potrzebne.</p>
+            <a class="card-link" href="/2026/05/12/xaf-blazor-date-editor-mouse-wheel.html">Czytaj wpis</a>
+          </div>
+        </article>
 
-      <article class="post-item">
-        <div class="post-date">2026-04-05</div>
-        <div class="post-body">
-          <span class="post-kicker">DevExpress</span>
-          <h3 class="post-title">Koniec MAT. Co dalej z lokalizacją w aplikacjach DevExpress?</h3>
-          <p class="post-desc">Krótkie polskie omówienie wycofania Microsoft MAT, praktyczne wnioski i sensowny kierunek na teraz.</p>
-          <a class="post-link" href="/2026/04/05/mat-deprecated-devexpress-localization-tool.html">Czytaj wpis →</a>
-        </div>
-      </article>
+        <article class="news-item">
+          <div class="news-date">2026-05-12</div>
+          <div class="news-body">
+            <span class="card-kicker">XAF / EF Core / PostgreSQL</span>
+            <h3>XAF + EF Core + PostgreSQL + multi-tenant</h3>
+            <p>Co naprawdę dochodzi po przejściu z jednej bazy na układ z osobną bazą na tenant i gdzie to zwykle pęka.</p>
+            <a class="card-link" href="/2026/05/12/xaf-ef-core-postgresql-multitenant.html">Czytaj wpis</a>
+          </div>
+        </article>
 
-      <article class="post-item">
-        <div class="post-date">2022-11-01</div>
-        <div class="post-body">
-          <span class="post-kicker">Swift / iOS</span>
-          <h3 class="post-title">Ciekawe strony dotyczące Swift i programowania na iOS</h3>
-          <p class="post-desc">Zbiór materiałów i odnośników, które warto mieć zapisane zamiast szukać ich jeszcze raz.</p>
-          <a class="post-link" href="/2022/11/01/Ciekawe-strony-dotycz%C4%85ce-Swiift-i-programowania-na-IOS.html">Czytaj wpis →</a>
-        </div>
-      </article>
+        <article class="news-item">
+          <div class="news-date">2026-05-12</div>
+          <div class="news-body">
+            <span class="card-kicker">Seria 2/6 · Blazor / UI</span>
+            <h3>Branding w Blazorze: logo, splash screen i motywy</h3>
+            <p>Jak poukładać preload, splash screen, header i Theme Switcher tak, żeby branding był spójny.</p>
+            <a class="card-link" href="/2026/05/12/branding-blazor.html">Czytaj wpis</a>
+          </div>
+        </article>
 
-      <article class="post-item">
-        <div class="post-date">2022-10-10</div>
-        <div class="post-body">
-          <span class="post-kicker">Swift / iOS</span>
-          <h3 class="post-title">Pobierz lokalizację na podstawie adresu</h3>
-          <p class="post-desc">Geokodowanie w iOS — zamiana tekstowego adresu na współrzędne przy użyciu CLGeocoder.</p>
-          <a class="post-link" href="/2022/10/10/Pobierz-lokalizacje-na-podstawie-adresy.html">Czytaj wpis →</a>
-        </div>
-      </article>
+        <article class="news-item">
+          <div class="news-date">2026-05-12</div>
+          <div class="news-body">
+            <span class="card-kicker">Seria 1/6 · Blazor / Lokalizacja</span>
+            <h3>Obsługa języków w Blazorze: polski, angielski i niemiecki</h3>
+            <p>Jak włączyć przełącznik języków, wybór z systemu użytkownika i zachować lokalizację raportów.</p>
+            <a class="card-link" href="/2026/05/12/obsluga-jezykow-blazor.html">Czytaj wpis</a>
+          </div>
+        </article>
 
-      <article class="post-item">
-        <div class="post-date">2022-10-09</div>
-        <div class="post-body">
-          <span class="post-kicker">Swift / iOS</span>
-          <h3 class="post-title">Daty w Swift</h3>
-          <p class="post-desc">Konwersja dat — string↔Date, rozszerzenia, formaty i pułapka z UTC.</p>
-          <a class="post-link" href="/2022/10/09/Daty-w-Swift.html">Czytaj wpis →</a>
-        </div>
-      </article>
-    </main>
-  </div>
+        <article class="news-item">
+          <div class="news-date">2026-05-12</div>
+          <div class="news-body">
+            <span class="card-kicker">XAF / EF Core / PostgreSQL</span>
+            <h3>Jakie testy dodać po przejściu XAF na PostgreSQL</h3>
+            <p>Krótka i konkretna lista testów, które naprawdę warto dodać po przejściu aplikacji XAF na PostgreSQL.</p>
+            <a class="card-link" href="/2026/05/12/xaf-ef-core-postgresql-testy.html">Czytaj wpis</a>
+          </div>
+        </article>
 
-  <footer class="site-footer">
-    © 2026 Jacek Placek · <a href="mailto:kashiash@gmail.com">kashiash@gmail.com</a>
+        <article class="news-item">
+          <div class="news-date">2026-05-12</div>
+          <div class="news-body">
+            <span class="card-kicker">XAF / EF Core / PostgreSQL</span>
+            <h3>XAF + EF Core + PostgreSQL krok po kroku</h3>
+            <p>Plan przejścia z SQL Server na PostgreSQL w aplikacji XAF na EF Core, bez multi-tenant na start.</p>
+            <a class="card-link" href="/2026/05/12/xaf-ef-core-postgresql-krok-po-kroku.html">Czytaj wpis</a>
+          </div>
+        </article>
+
+        <article class="news-item">
+          <div class="news-date">2026-04-05</div>
+          <div class="news-body">
+            <span class="card-kicker">DevExpress</span>
+            <h3>Koniec MAT. Co dalej z lokalizacją w aplikacjach DevExpress?</h3>
+            <p>Krótkie polskie omówienie wycofania Microsoft MAT, praktyczne wnioski i sensowny kierunek na teraz.</p>
+            <a class="card-link" href="/2026/04/05/mat-deprecated-devexpress-localization-tool.html">Czytaj wpis</a>
+          </div>
+        </article>
+
+        <article class="news-item">
+          <div class="news-date">2022-11-01</div>
+          <div class="news-body">
+            <span class="card-kicker">Swift / iOS</span>
+            <h3>Ciekawe strony dotyczące Swift i programowania na iOS</h3>
+            <p>Zbiór materiałów i odnośników, które warto mieć zapisane zamiast szukać ich jeszcze raz.</p>
+            <a class="card-link" href="/2022/11/01/Ciekawe-strony-dotycz%C4%85ce-Swiift-i-programowania-na-IOS.html">Czytaj wpis</a>
+          </div>
+        </article>
+
+        <article class="news-item">
+          <div class="news-date">2022-10-10</div>
+          <div class="news-body">
+            <span class="card-kicker">Swift / iOS</span>
+            <h3>Pobierz lokalizację na podstawie adresu</h3>
+            <p>Krótki zapis rozwiązania geokodowania, do którego można wrócić bez ponownego przekopywania internetu.</p>
+            <a class="card-link" href="/2022/10/10/Pobierz-lokalizacje-na-podstawie-adresy.html">Czytaj wpis</a>
+          </div>
+        </article>
+
+        <article class="news-item">
+          <div class="news-date">2022-10-09</div>
+          <div class="news-body">
+            <span class="card-kicker">Swift / iOS</span>
+            <h3>Daty w Swift</h3>
+            <p>Techniczna notatka o formatowaniu, konwersjach i miejscach, gdzie data potrafi zachować się inaczej niż oczekujesz.</p>
+            <a class="card-link" href="/2022/10/09/Daty-w-Swift.html">Czytaj wpis</a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="kontakt">
+    <div class="footer-copy">
+      <span class="section-label">Kontakt</span>
+      <h2 class="panel-title">Jeśli coś warto zapisać, to zwykle dlatego, że wróci.</h2>
+      <p class="panel-text" style="color: var(--muted);">
+        Tu będą lądowały techniczne skróty, decyzje i wpisy z rzeczywistej pracy. Bez udawania, że wszystko jest prostsze niż jest.
+      </p>
+    </div>
+    <div class="footer-links">
+      <a href="mailto:kashiash@gmail.com">kashiash@gmail.com</a>
+      <a href="https://github.com/kashiash" target="_blank" rel="noreferrer">github.com/kashiash</a>
+    </div>
   </footer>
 </body>
 </html>

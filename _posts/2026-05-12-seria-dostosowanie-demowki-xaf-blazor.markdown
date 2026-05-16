@@ -7,9 +7,9 @@ series_part: 0
 
 **Nie zaczynamy od zera.** Postawienie aplikacji XAF Blazor + EF Core jest krok po kroku opisane w [oficjalnej dokumentacji DevExpress](https://docs.devexpress.com/eXpressAppFramework/) — to jest miejsce, w którym każdy może (i powinien) zacząć. Materiał startowy istnieje, jest aktualizowany i nie ma sensu go duplikować.
 
-Ta seria ciągnie temat dalej. Bierzemy publiczny projekt referencyjny `MainDemo.NET.EFCore` udostępniony przez DevExpress — kompletną aplikację XAF Blazor z EF Core, klientem WinForms i osadzonym Web API — i krok po kroku pokazujemy, **co dochodzi po stronie realnego wdrożenia**. To, czego w aplikacji referencyjnej z definicji nie ma: lokalny branding zamiast brandu DevExpressa, polskie nazwy i komunikaty, zachowania kontrolek dopasowane do operatora, własne edytory, archetypy modelu domenowego, integracje z bazą produkcyjną i moduły, które robią z demonstracji gotowy produkt.
+Ta seria idzie krok dalej. Bierzemy publiczny projekt `MainDemo.NET.EFCore` i pokazujemy, co trzeba dołożyć przed wdrożeniem. Chodzi o rzeczy, których w aplikacji referencyjnej nie ma: branding, polskie nazwy, własne edytory, zmiany w modelu i integracje z bazą.
 
-Każdy etap to konkretne pliki, konkretne diffy i konkretne pułapki, których nie widać z poziomu prezentacji. Wszystko publicznie w [`MainDemoEFCoreCustomization`](https://github.com/kashiash/MainDemoEFCoreCustomization) — można otworzyć dowolny commit i powtórzyć tę samą zmianę u siebie.
+Każdy etap pokazuje konkretne pliki, diffy i problemy. Wszystko jest publicznie w [`MainDemoEFCoreCustomization`](https://github.com/kashiash/MainDemoEFCoreCustomization).
 
 Ta strona jest **indeksem serii**. Każdy kolejny etap to osobny artykuł.
 
@@ -23,7 +23,7 @@ Wielojęzyczność z fallbackiem na `en-US` (świadomie, nie z lenistwa — z po
 
 Trzy SVG (header, pre-loader, splash), nie jeden. `_Host.cshtml` poprawiony razem z `aria-label` i `og:title`. `site.css` z customowym `#applicationLoadingPanel .loading-floated-circle` (conic-gradient łuk). Theme switcher na `Office White`. Plus update opisujący powtórne przejście tego samego patterna w innym repo — pokazuje, że to się trzyma jako checklista.
 
-### 3. [Globalny `DateTimePropertyEditor` z blokadą kółka myszy, polskimi maskami i opt-outem z modelu]({% post_url 2026-05-12-xaf-blazor-date-editor-mouse-wheel %})
+### 3. [Globalny DateEditor w XAF Blazor: blokada scrolla, polskie maski i czas tylko tam, gdzie trzeba]({% post_url 2026-05-12-xaf-blazor-date-editor-mouse-wheel %})
 
 W aplikacji biznesowej kółko myszy w polu daty nie jest udogodnieniem — jest źródłem cichych zmian danych. Operator przewija formularz, mija edytor i przy okazji przestawia datę zdarzenia. Rozwiązanie nie polega więc na dorzuceniu pojedynczego edytora z `[EditorAlias]` na wybranych polach, tylko na zmianie domyślnego zachowania całej aplikacji. Edytor zostaje zarejestrowany jako globalny `[PropertyEditor(typeof(DateTime), ..., true)]` dla `DateTime` i `DateTime?`, a indywidualne pola, dla których scroll ma jednak działać (np. wewnętrzne pola serwisowe), są oznaczane atrybutem `[DateEditMouseWheel(false)]`. Domyślne zachowanie i tryb maski siedzą w sekcji `Options` modelu XAF (`IModelOptionsDateEditMouseWheel`), więc cała polityka aplikacji jest deklaratywna i widoczna w Model Editorze, a nie rozproszona po kodzie. Maski są dobierane do typu danych: pole `DateTime` traktowane jako data dostaje `dd.MM.yyyy`, a pole, które ma znaczenie czasu, dostaje `dd.MM.yyyy HH:mm`. JavaScript blokujący scroll wisi w fazie `capture`, identyfikuje edytory po własnej klasie CSS (`fleetman-dateedit-wheel-blocked`/`-allowed`) i ignoruje wewnętrzne klasy DevExpressa, dzięki czemu jest odporny na zmiany wersji DevExpress Blazor.
 

@@ -3,9 +3,9 @@ layout: post
 title: "XAF + EF Core + PostgreSQL krok po kroku"
 ---
 
-Masz aplikację XAF na EF Core. Działa na SQL Server. Chcesz ją przełączyć na PostgreSQL i nie utopić dwóch dni w poprawianiu głupot. To jest właśnie ten przypadek.
+Masz aplikację XAF na EF Core. Działa na SQL Server. Chcesz ją przełączyć na PostgreSQL i nie stracić czasu na poprawianie pobocznych błędów. Ten wpis jest o tym.
 
-Nie zaczynasz od connection stringa. To jest ostatnia rzecz, która wygląda niewinnie, a potem się okazuje, że worker dalej siedzi na SQL Server, migracje lecą przez zły provider, a testy w ogóle nie dotykają tej samej konfiguracji co aplikacja.
+Nie zaczynasz od connection stringa. Najpierw ustalasz, gdzie projekt wybiera provider bazy. Inaczej worker może nadal używać SQL Server, migracje pójdą przez zły provider, a testy ominą właściwą konfigurację.
 
 ## Najpierw znajdź, gdzie projekt naprawdę wybiera bazę
 

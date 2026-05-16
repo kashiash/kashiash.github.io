@@ -11,12 +11,12 @@ series_part: 4
 >
 > 1. [Obsługa języków: polski, angielski, niemiecki]({% post_url 2026-05-12-obsluga-jezykow-blazor %})
 > 2. [Branding: logo, splash screen i motywy]({% post_url 2026-05-12-branding-blazor %})
-> 3. [Custom DateEditor z parametrem modelowym do blokady kółka myszy]({% post_url 2026-05-12-xaf-blazor-date-editor-mouse-wheel %})
+> 3. [Globalny DateEditor w XAF Blazor: blokada scrolla, polskie maski i czas tylko tam, gdzie trzeba]({% post_url 2026-05-12-xaf-blazor-date-editor-mouse-wheel %})
 > 4. **Domknięcie polskiej lokalizacji: klasy, enumy i widoki** — ten wpis
 
 Samo dodanie `pl-PL` do aplikacji nie zamyka lokalizacji. To dopiero pierwszy etap. Problem wychodzi zwykle wtedy, gdy użytkownik zaczyna normalnie pracować w systemie i okazuje się, że menu jest po polsku, ale nazwa raportu, widok stanowisk albo część słowników dalej wraca do angielskiego.
 
-To nie jest błąd samego Blazora. To jest bardzo typowy niedomknięty model XAF.
+To nie jest błąd Blazora. To zwykle oznacza niedomknięty model XAF.
 
 ## Gdzie najczęściej zostaje angielski
 

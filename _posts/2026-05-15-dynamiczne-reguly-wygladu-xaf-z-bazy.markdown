@@ -5,9 +5,9 @@ series: "XAF Blazor: od aplikacji referencyjnej do gotowego produktu"
 series_part: 5
 ---
 
-Sam `[Appearance]` w klasie biznesowej wystarcza tylko wtedy, gdy reguła ma być stała. W prawdziwej aplikacji dość szybko pojawia się potrzeba, żeby administrator mógł zmieniać wygląd bez rekompilacji: podświetlenie rekordów po terminie, ukrycie pola dla konkretnego widoku, wyróżnienie statusu, ostrzeżenie kolorystyczne dla operatora. Wtedy appearance przestaje być tylko atrybutem w kodzie i staje się danymi konfiguracyjnymi.
+Sam `[Appearance]` w klasie biznesowej wystarcza wtedy, gdy reguła ma być stała. Gdy administrator ma zmieniać wygląd bez rekompilacji, reguły muszą stać się danymi.
 
-Właśnie taki wariant dodałem do `MainDemo.NET.EFCore`. Nie jako osobny silnik renderowania, tylko jako rozszerzenie standardowego `ConditionalAppearance` z XAF. Reguły siedzą w bazie jako encja `DynamicAppearanceRule`, są ładowane do prostego cache procesowego `DynamicAppearanceRuleStorage`, a kontroler `DynamicAppearanceRuleViewController` dokłada je do standardowego `AppearanceController` przez zdarzenie `CollectAppearanceRules`. Dzięki temu XAF dalej robi całą robotę z oceną kryteriów i nakładaniem stylu, a my tylko dokładamy dodatkowe źródło reguł.
+Taki wariant dodałem do `MainDemo.NET.EFCore`. To rozszerzenie standardowego `ConditionalAppearance` z XAF. Reguły siedzą w bazie jako `DynamicAppearanceRule`, są ładowane do cache `DynamicAppearanceRuleStorage`, a kontroler `DynamicAppearanceRuleViewController` dokłada je do `AppearanceController` przez `CollectAppearanceRules`.
 
 W praktyce wzorzec składa się z siedmiu kroków:
 
