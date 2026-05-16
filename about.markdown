@@ -1,18 +1,18 @@
 ---
 layout: page
-title: About
+title: O blogu
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+Piszę od ponad 30 lat. Pamięć zawodzi, notatki zostają.
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
+Ten blog to miejsce, gdzie lądują konkretne rzeczy z codziennej pracy: wzorce, decyzje techniczne, obejścia i rozwiązania, do których warto wrócić bez odtwarzania całego kontekstu od zera.
 
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
+Główne tematy: **C# / .NET**, **DevExpress XAF**, **SQL**, **Swift / iOS**, **AI w praktyce programisty**.
 
+Nie piszę o tym, co wiem — piszę o tym, czego szukałem i co znalazłem.
 
-[jekyll-organization]: https://github.com/jekyll
+---
+
+Kontakt: [kashiash@gmail.com](mailto:kashiash@gmail.com)
+GitHub: [github.com/kashiash](https://github.com/kashiash)

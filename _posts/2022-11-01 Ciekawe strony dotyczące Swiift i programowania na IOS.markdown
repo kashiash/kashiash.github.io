@@ -1,13 +1,24 @@
-Szybki kurs Swift (w ciagu ok 1 h ludek pokazuje podstawy Swift - dobre do odświeżenia wiedzy):
+---
+layout: post
+title: "Ciekawe strony dotyczące Swift i programowania na iOS"
+date: 2022-11-01
+categories: swift ios
+---
 
-https://youtu.be/n5X_V81OYnQ
+Zbiór materiałów i odnośników, które warto mieć zapisane zamiast szukać ich jeszcze raz.
 
-a tu to samo ale w wersji zwolnionej, jednoczesnie bardziej szczególowej:
-https://www.hackingwithswift.com/100/swiftui
+## Kursy Swift
 
+Szybki kurs Swift (ok. 1 h — pokazuje podstawy, dobre do odświeżenia wiedzy):
 
-Kruczki i sztuczki w XCode
+<https://youtu.be/n5X_V81OYnQ>
 
-https://youtu.be/40imnmzsmxk
+To samo, ale w wersji wolniejszej i bardziej szczegółowej — 100 dni SwiftUI od Hacking with Swift:
 
+<https://www.hackingwithswift.com/100/swiftui>
 
+## Xcode
+
+Kruczki i sztuczki w Xcode:
+
+<https://youtu.be/40imnmzsmxk>
