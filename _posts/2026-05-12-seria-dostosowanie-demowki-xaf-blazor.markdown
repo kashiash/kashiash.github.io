@@ -29,7 +29,7 @@ W aplikacji biznesowej kółko myszy w polu daty nie jest udogodnieniem — jest
 
 ### 4. [Domknięcie polskiej lokalizacji: klasy, enumy i widoki bez mieszanki PL/EN]({% post_url 2026-05-15-domkniecie-polskiej-lokalizacji-xaf %})
 
-Samo dodanie `pl-PL` nie kończy tematu lokalizacji. W prawdziwym wdrożeniu zostają jeszcze resztki angielskiego w modelu XAF: nazwy widoków, klasy frameworkowe, enumy i pozycje nawigacji. Ten odcinek domyka właśnie tę warstwę i pokazuje, jak doprowadzić model językowy do stanu, w którym użytkownik nie widzi już mieszanki polskiego z angielskim.
+Samo dodanie `pl-PL` nie kończy tematu lokalizacji. W prawdziwym wdrożeniu zostają jeszcze angielskie nazwy w modelu XAF: nazwy widoków, klasy frameworkowe, enumy i pozycje nawigacji. Ten odcinek pokazuje, jak uzupełnić model lokalizacji tak, aby użytkownik nie widział już mieszanki polskiego i angielskiego.
 
 ### 5. [Dynamiczne reguły wyglądu z bazy w XAF: encja, cache i `AppearanceController`]({% post_url 2026-05-15-dynamiczne-reguly-wygladu-xaf-z-bazy %})
 

@@ -14,7 +14,7 @@ series_part: 4
 > 3. [Custom DateEditor z parametrem modelowym do blokady kółka myszy]({% post_url 2026-05-12-xaf-blazor-date-editor-mouse-wheel %})
 > 4. **Domknięcie polskiej lokalizacji: klasy, enumy i widoki** — ten wpis
 
-Samo dodanie `pl-PL` do aplikacji nie zamyka lokalizacji. To dopiero pierwszy etap. Prawdziwy test przychodzi wtedy, kiedy użytkownik zaczyna normalnie klikać po systemie i nagle okazuje się, że menu jest po polsku, ale nazwa raportu, widok stanowisk albo część słowników dalej wraca do angielskiego.
+Samo dodanie `pl-PL` do aplikacji nie zamyka lokalizacji. To dopiero pierwszy etap. Problem wychodzi zwykle wtedy, gdy użytkownik zaczyna normalnie pracować w systemie i okazuje się, że menu jest po polsku, ale nazwa raportu, widok stanowisk albo część słowników dalej wraca do angielskiego.
 
 To nie jest błąd samego Blazora. To jest bardzo typowy niedomknięty model XAF.
 
@@ -36,9 +36,9 @@ Najczęstsze resztki:
 - wartości enumów,
 - nazwy list, nawigacji i teksty logowania.
 
-W efekcie dostajesz interfejs, który jest "prawie po polsku". A "prawie" w biznesowej aplikacji wygląda po prostu niedbale.
+W efekcie część interfejsu jest po polsku, a część pozostaje po angielsku. W aplikacji biznesowej taki stan jest po prostu niespójny.
 
-## Konkret z repo, nie teoria
+## Zakres zmian
 
 W repo:
 
@@ -48,7 +48,7 @@ dopisałem kolejną warstwę polskiej lokalizacji do pliku:
 
 - `CS/MainDemo.Module/Model.DesignedDiffs.Localization.pl.xafml`
 
-Nie ruszałem mechanizmu wyboru języka. Ten już działał. Domknąłem za to to, co użytkownik naprawdę widzi na ekranie:
+Nie zmieniałem mechanizmu wyboru języka, bo ten już działał. Uzupełniłem natomiast to, co użytkownik faktycznie widzi na ekranie:
 
 - `Position` -> `Stanowisko`,
 - `Resume` -> `CV`,
@@ -59,18 +59,16 @@ Nie ruszałem mechanizmu wyboru języka. Ten już działał. Domknąłem za to t
 
 Do tego dorzuciłem test regresyjny, który pyta Web API o nazwy wyświetlane dla tych typów w `pl-PL`, żeby przy kolejnej przeróbce modelu nie wrócić przypadkiem do angielskiego.
 
-## Dlaczego sam business object nie wystarcza
+## Dlaczego sama klasa biznesowa nie wystarcza
 
-To jest rzecz, którą łatwo przeoczyć.
-
-W XAF część ekranów nie składa się tylko z twoich klas domenowych. W praktyce użytkownik widzi miks:
+W XAF termin `Business Object` jest nazwą własną używaną przez framework dla klasy biznesowej widocznej w modelu i UI. Sama taka klasa nie zamyka jednak całej lokalizacji. W praktyce użytkownik widzi miks:
 
 - własnych obiektów biznesowych,
 - typów DevExpressa,
 - wpisów z modelu aplikacji,
 - tekstów wygenerowanych przez moduły raportów, audytu i bezpieczeństwa.
 
-Jeśli przetłumaczysz tylko `Employee`, `Department` i `DemoTask`, a zostawisz po angielsku `ReportDataV2`, `Event` albo listę ról, to użytkownik i tak od razu zobaczy pęknięcie.
+Jeśli przetłumaczysz tylko `Employee`, `Department` i `DemoTask`, a zostawisz po angielsku `ReportDataV2`, `Event` albo listę ról, użytkownik od razu zobaczy niespójność.
 
 Lokalizacja w XAF nie kończy się więc na klasach. Ona kończy się dopiero wtedy, kiedy cały przepływ po aplikacji wygląda spójnie językowo.
 
@@ -96,9 +94,9 @@ Ale nie kończysz na `BOModel`. Trzeba też zajrzeć do:
 
 Właśnie to odróżnia "mamy polski język" od "mamy polski interfejs".
 
-## Dobra praktyka: sprawdzaj to przez API, nie na oko
+## Test przez API
 
-Klikanie po UI jest potrzebne, ale ja wolę mieć jeszcze szybki test na poziomie HTTP.
+Sprawdzenie w UI jest potrzebne, ale warto mieć też szybki test na poziomie HTTP.
 
 Jeśli aplikacja ma endpoint lokalizacyjny, można to sprawdzić banalnie:
 
@@ -107,26 +105,56 @@ var result = await SendRequestAsync("pl-PL", "ClassCaption?classFullName=MainDem
 Assert.Equal("Stanowisko", result);
 ```
 
-To ma dwie zalety:
+W tym repo to nie jest pseudokod. Mamy realny test:
+
+```csharp
+public class LocalizationTests : BaseWebApiTest {
+    const string ApiUrl = "/api/Localization/";
+
+    [Fact]
+    public async Task GetAdditionalPolishClassCaptions() {
+        var result = await SendRequestAsync("pl-PL", "ClassCaption?classFullName=MainDemo.Module.BusinessObjects.Position");
+        Assert.Equal("Stanowisko", result);
+
+        result = await SendRequestAsync("pl-PL", "ClassCaption?classFullName=MainDemo.Module.BusinessObjects.Resume");
+        Assert.Equal("CV", result);
+
+        result = await SendRequestAsync("pl-PL", "ClassCaption?classFullName=DevExpress.Persistent.BaseImpl.EF.ReportDataV2");
+        Assert.Equal("Raporty", result);
+    }
+
+    protected async Task<string> SendRequestAsync(string locale, string url) {
+        var request = new HttpRequestMessage(HttpMethod.Get, ApiUrl + url);
+        request.Headers.Add("Accept-Language", locale);
+
+        var httpResponse = await WebApiClient.SendAsync(request);
+        return await httpResponse.Content.ReadAsStringAsync();
+    }
+}
+```
+
+To dobrze pokazuje, co się dzieje: test uderza w zwykły endpoint HTTP `api/Localization`, ustawia `Accept-Language: pl-PL` i sprawdza, czy aplikacja oddaje caption z modelu lokalizacji XAF.
+
+Taki test ma dwie praktyczne zalety:
 
 - test jest szybki,
-- łapie regresję dokładnie tam, gdzie model językowy faktycznie jest konsumowany.
+- łapie regresję dokładnie tam, gdzie aplikacja faktycznie konsumuje lokalizację z modelu XAF.
 
-Nie musisz odpalać całego UI, żeby zauważyć, że ktoś usunął albo nadpisał wpis w `.xafml`.
+Nie trzeba uruchamiać całego UI, żeby zauważyć, że ktoś usunął albo nadpisał wpis w `.xafml`.
 
-## Co bym zrobił za każdym razem przy nowym języku
+## Co trzeba zrobić przy dodawaniu kolejnego języka
 
-Moja checklista:
+Jeżeli do działającej aplikacji dodajesz następny język, na przykład polski albo niemiecki, warto przejść przez ten zestaw kroków:
 
-1. Włącz język w konfiguracji aplikacji.
-2. Ustaw wybór kultury w `RequestLocalizationOptions`.
-3. Dograj pliki lokalizacyjne DevExpress dla warstwy JavaScript.
-4. Przetłumacz podstawowe klasy i pola w modelu.
-5. Przejrzyj typy frameworkowe widoczne w UI.
-6. Uzupełnij enumy, nawigację, nazwy list i logowanie.
-7. Dodaj przynajmniej jeden test regresyjny po `Accept-Language`.
+1. Dodać nowy język do konfiguracji aplikacji.
+2. Dodać ten język do `RequestLocalizationOptions`, żeby aplikacja umiała przełączyć kulturę żądania.
+3. Dołożyć pliki lokalizacyjne DevExpress dla warstwy JavaScript, jeżeli dany język ma być widoczny także w komponentach klienckich.
+4. Uzupełnić tłumaczenia własnych klas biznesowych i ich pól w modelu XAF.
+5. Sprawdzić klasy frameworkowe widoczne w UI, na przykład raporty, role, audyt albo kalendarz, i także dodać im tłumaczenia.
+6. Uzupełnić wartości enumów, nazwy widoków, pozycje nawigacji i teksty logowania.
+7. Dodać przynajmniej jeden test regresyjny, który wysyła żądanie z nagłówkiem `Accept-Language` i sprawdza, czy aplikacja zwraca właściwe captiony.
 
-Bez punktów 5-7 zwykle kończysz z półproduktem.
+Jeżeli zrobisz tylko punkty 1-4, to język będzie formalnie dodany, ale użytkownik nadal zobaczy w różnych miejscach mieszankę nowego języka i angielskiego.
 
 ## Wersja repo
 
