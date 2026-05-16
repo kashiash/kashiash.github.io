@@ -3,6 +3,8 @@ layout: post
 title: "Koniec MAT. Co dalej z lokalizacją w aplikacjach DevExpress?"
 ---
 
+![Koniec MAT: Nagrobek i robot](/assets/images/end-of-mat.png)
+
 Microsoft zakończył wsparcie dla **Multilingual App Toolkit (MAT)** z dniem **15 października 2025 r.**. Dla zespołów, które używały MAT do tłumaczeń aplikacji .NET, oznacza to prostą rzecz: narzędzie nie będzie już miało gwarancji zgodności z nowymi wersjami toolingu i runtime'ów.
 
 Dobra wiadomość jest taka, że samo tłumaczenie nie przepada. MAT opierał się o standardowe formaty **XLIFF** i **RESX**, więc dotychczasowe zasoby można nadal wykorzystać. Trzeba jednak przejść na nowe narzędzia i uporządkować proces lokalizacji.

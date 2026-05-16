@@ -5,6 +5,8 @@ series: "XAF Blazor: od aplikacji referencyjnej do gotowego produktu"
 series_part: 6
 ---
 
+![PDF i skany: Góra papierów](/assets/images/pdf-preview.png)
+
 Ten wpis pokazuje, jak dodać dokumenty, upload wielu plików i podgląd PDF do aplikacji XAF Blazor + EF Core.
 
 Cel:

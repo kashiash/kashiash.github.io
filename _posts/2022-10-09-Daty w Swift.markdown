@@ -5,6 +5,8 @@ date: 2022-10-09
 categories: swift ios
 ---
 
+![Daty w Swift: Walka z budzikiem](/assets/images/swift-dates.png)
+
 Konwersja dat w Swift — praktyczne snippety do kopiowania: string↔Date, rozszerzenia, formaty i pułapka z UTC.
 
 Zamiana daty na string

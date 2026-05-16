@@ -5,6 +5,8 @@ series: "XAF Blazor: od aplikacji referencyjnej do gotowego produktu"
 series_part: 4
 ---
 
+![Polska lokalizacja: Gumka i ołówek](/assets/images/polish-localization.png)
+
 > **Część 4 serii: [XAF Blazor: od aplikacji referencyjnej do gotowego produktu]({% post_url 2026-05-12-seria-dostosowanie-demowki-xaf-blazor %})**
 >
 > Nie tworzymy aplikacji od zera — postawienie projektu XAF Blazor + EF Core jest krok po kroku opisane w [oficjalnej dokumentacji DevExpress](https://docs.devexpress.com/eXpressAppFramework/) i to jest miejsce, w którym każdy może (i powinien) zacząć. My ciągniemy ten temat dalej: bierzemy publiczny projekt referencyjny `MainDemo.NET.EFCore` i pokazujemy, co dochodzi w nim po stronie realnego wdrożenia.

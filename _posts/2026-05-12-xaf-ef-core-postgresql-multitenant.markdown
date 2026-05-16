@@ -3,6 +3,8 @@ layout: post
 title: "XAF + EF Core + PostgreSQL + multi-tenant"
 ---
 
+![PostgreSQL Multi-tenant: Słonie w kamienicy](/assets/images/postgresql-multitenant.png)
+
 Jeżeli jedna baza na PostgreSQL już działa, dopiero wtedy przechodzisz do multi-tenant.
 
 Tu kończy się zwykłe przełączenie providera. Zaczyna się projektowanie architektury.

@@ -5,6 +5,8 @@ date: 2022-10-10
 categories: swift ios
 ---
 
+![Lokalizacja po adresie: Detektyw i satelita](/assets/images/location-address.png)
+
 Geokodowanie w iOS — zamiana tekstowego adresu na współrzędne `CLLocationCoordinate2D` przy użyciu `CLGeocoder`.
 
 ``` Swift

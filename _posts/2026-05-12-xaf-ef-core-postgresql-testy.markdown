@@ -3,6 +3,8 @@ layout: post
 title: "Jak naprawdę testować XAF po przejściu na PostgreSQL"
 ---
 
+![Testowanie PostgreSQL: Programista w kitlu](/assets/images/postgresql-testing.png)
+
 Po zmianie providera bazy bardzo łatwo wpaść w tę samą pułapkę: aplikacja startuje, logowanie działa, więc wszyscy uznają temat za zamknięty.
 
 To jest za mało.

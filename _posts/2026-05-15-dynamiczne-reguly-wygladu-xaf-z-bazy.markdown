@@ -5,6 +5,8 @@ series: "XAF Blazor: od aplikacji referencyjnej do gotowego produktu"
 series_part: 5
 ---
 
+![Dynamiczny wygląd: Magiczna różdżka](/assets/images/dynamic-appearance.png)
+
 Sam `[Appearance]` w klasie biznesowej wystarcza wtedy, gdy reguła ma być stała. Gdy administrator ma zmieniać wygląd bez rekompilacji, reguły muszą stać się danymi.
 
 Taki wariant dodałem do `MainDemo.NET.EFCore`. To rozszerzenie standardowego `ConditionalAppearance` z XAF. Reguły siedzą w bazie jako `DynamicAppearanceRule`, są ładowane do cache `DynamicAppearanceRuleStorage`, a kontroler `DynamicAppearanceRuleViewController` dokłada je do `AppearanceController` przez `CollectAppearanceRules`.

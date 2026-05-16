@@ -5,6 +5,8 @@ date: 2022-11-01
 categories: swift ios
 ---
 
+![Ciekawe strony iOS: Skrzynia skarbów](/assets/images/interesting-links.png)
+
 Zbiór materiałów i odnośników, które warto mieć zapisane zamiast szukać ich jeszcze raz.
 
 ## Kursy Swift
