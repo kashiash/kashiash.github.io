@@ -7,9 +7,9 @@ series_part: 5
 
 ![Dynamiczny wygląd: Magiczna różdżka](/assets/images/dynamic-appearance.png)
 
-Atrybut `[Appearance]` w klasie biznesowej działa wtedy, gdy reguła jest stała — wpisuję ją raz przy kompilacji i tyle. Co jednak, gdy administrator ma sam zmieniać kolor wiersza, podświetlać zadania po terminie albo ukrywać kolumny, nie ruszając kodu? Reguły muszą trafić do bazy.
+Jeżeli chcesz, żeby administrator albo wdrożeniowiec mógł sam z poziomu UI dorobić regułę „zadania po terminie świećcie się na czerwono", „pracownicy na urlopie — szare tło", „kolumna `Cena` widoczna tylko dla działu finansów" — bez angażowania programisty i bez przebudowy aplikacji — musisz oddać mu kontrolę nad warstwą reguł wyglądu. Standardowy `ConditionalAppearance` w XAF tego nie daje: jego atrybuty `[Appearance]` siedzą w kodzie i każda zmiana wymaga deployu.
 
-Standardowy `ConditionalAppearance` z XAF nie ma takiej warstwy. Dokłada się ją trzema klasami: encją `DynamicAppearanceRule`, statycznym cache'em `DynamicAppearanceRuleStorage` i kontrolerem `DynamicAppearanceRuleViewController`. Kontroler podpina cache do standardowego `AppearanceController` przez zdarzenie `CollectAppearanceRules`. Reszta dzieje się w XAF jak dotąd — silnik wygląda na te same reguły co dla `[Appearance]`, tylko że źródło danych jest inne.
+Tę lukę domyka się trzema klasami: encją `DynamicAppearanceRule`, statycznym cache'em `DynamicAppearanceRuleStorage` i kontrolerem `DynamicAppearanceRuleViewController`. Kontroler podpina cache do standardowego `AppearanceController` przez zdarzenie `CollectAppearanceRules`. Silnik patrzy na te same reguły co dla `[Appearance]` — różni się tylko źródło danych.
 
 Tak to zrobiłem w `MainDemo.NET.EFCore`. Dalej cały kod plus krótki komentarz, co każdy fragment robi i dlaczego.
 
