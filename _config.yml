@@ -21,6 +21,7 @@
 title: Notatki zgredziałego programisty
 email: kashiash@gmail.com
 lang: pl_PL
+locale: "pl_PL"
 description: >- # this means to ignore newlines until "baseurl:"
   Po ponad 30 latach programowania, wiek zaczyna dawać we znaki. Pamięć zawodzi. Stwierdziłem, że trzeba gdzieś notować to i owo, aby nie szukać ponownie...
   Może być to też przydatne dla innych programistów, dlatego wrzucam to na github.io
