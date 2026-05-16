@@ -10,7 +10,7 @@ W aplikacji referencyjnej XAF bardzo szybko dochodzi się do ściany: pojedynczy
 Taki właśnie wzorzec dołożyłem do `MainDemo.NET.EFCore`. Nie jako nowy subsystem z osobną magią, tylko jako czytelny zestaw elementów XAF Blazor:
 
 1. encja `DocumentFileType` jako słownik typów dokumentów,
-2. encja `DocumentFile` z relacjami do właścicieli,
+2. encja `DocumentFile` jako sam dokument,
 3. interfejs `IHasDocumentFiles`, żeby jeden kontroler obsługiwał wiele typów,
 4. popup z `DxUpload` i multi-file uploadem,
 5. endpoint API zapisujący `FileData`,
@@ -55,20 +55,39 @@ public class DocumentFile : BaseObject {
     public virtual string Description { get; set; }
     public virtual DateTime UploadedAtUtc { get; set; }
 
-    public virtual Employee Employee { get; set; }
-    public virtual DemoTask DemoTask { get; set; }
-
     [NotMapped]
     [EditorAlias(EditorAliases.DocumentPreviewPropertyEditor)]
     public virtual DocumentFilePreview PreviewFile => new(File);
 }
 ```
 
-Jeżeli chcesz, żeby jeden kontroler obsługiwał wiele typów właścicieli, przydaje się mały interfejs:
+Sam dokument nie musi jeszcze mówić, kto jest jego właścicielem. Tu są dwa warianty.
+
+Wariant A, użyty w tym repo, prowadzi powiązanie od właściciela:
 
 ```csharp
 public interface IHasDocumentFiles {
     IList<DocumentFile> DocumentFiles { get; set; }
+}
+
+public class Employee : BaseObject, IHasDocumentFiles {
+    [Aggregated]
+    public virtual IList<DocumentFile> DocumentFiles { get; set; } = new ObservableCollection<DocumentFile>();
+}
+```
+
+To jest dobre rozwiązanie, gdy właścicieli jest mało.
+
+Wariant B, lepszy przy dużej liczbie właścicieli, używa osobnej klasy powiązania:
+
+```csharp
+public class DocumentBinding : BaseObject {
+    public virtual DocumentFile Document { get; set; }
+
+    [MaxLength(500)]
+    public virtual string OwnerType { get; set; }
+
+    public virtual Guid OwnerId { get; set; }
 }
 ```
 
@@ -91,7 +110,7 @@ modelBuilder.Entity<DocumentFile>()
     .WithMany(task => task.DocumentFiles);
 ```
 
-W tej iteracji właścicielami dokumentów są `Employee` i `DemoTask`. To wystarczy, żeby wzorzec był realny, a jednocześnie nie rozlewa zmian po całej demówce. Użytkownik wchodzi w zakładkę `Załączniki`, klika `Dodaj pliki`, wybiera typ dokumentu i od razu przeciąga kilka plików do strefy uploadu. Każdy plik zapisuje się jako osobny rekord `DocumentFile`, a po zamknięciu popupu lista się odświeża.
+W tej iteracji właścicielami dokumentów są `Employee` i `DemoTask`, więc użyłem wariantu A, czyli powiązania od właściciela. To wystarczy, żeby wzorzec był realny, a jednocześnie nie rozlewa zmian po całej demówce. Użytkownik wchodzi w zakładkę `Załączniki`, klika `Dodaj pliki`, wybiera typ dokumentu i od razu przeciąga kilka plików do strefy uploadu. Każdy plik zapisuje się jako osobny rekord `DocumentFile`, a po zamknięciu popupu lista się odświeża.
 
 Najważniejsza decyzja techniczna była taka, żeby **nie podmieniać globalnie standardowego edytora `FileData`**. Zamiast tego podgląd siedzi na osobnej właściwości `PreviewFile`, a Blazor-only property editor renderuje:
 
@@ -145,7 +164,7 @@ public class DocumentFileUploadController : ControllerBase {
             documentFile.File = fileData;
             documentFile.Type = documentType;
             documentFile.Description = description;
-            AttachToOwner(objectSpace, documentFile, ownerObjectType, ownerObjectId);
+            AddToOwnerDocuments(objectSpace, documentFile, ownerObjectType, ownerObjectId);
         }
 
         objectSpace.CommitChanges();
@@ -154,7 +173,7 @@ public class DocumentFileUploadController : ControllerBase {
 }
 ```
 
-Najważniejsza rzecz jest prosta: każdy przesłany plik staje się osobnym rekordem `DocumentFile`, przypiętym do jednego właściciela.
+Najważniejsza rzecz jest prosta: każdy przesłany plik staje się osobnym rekordem `DocumentFile`, a aplikacja przypina go do właściciela przez jego kolekcję dokumentów.
 
 Przy wdrożeniu wyszły też trzy drobne, ale typowe problemy:
 
