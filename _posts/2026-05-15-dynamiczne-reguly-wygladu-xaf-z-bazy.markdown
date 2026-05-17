@@ -7,11 +7,11 @@ series_part: 5
 
 ![Dynamiczny wygląd: Magiczna różdżka](/assets/images/dynamic-appearance.png)
 
-Jeżeli chcesz, żeby administrator albo wdrożeniowiec mógł sam z poziomu UI dorobić regułę „zadania po terminie świecą się na czerwono", „pracownicy na urlopie — szare tło", „kolumna `Cena` widoczna tylko dla działu finansów" — bez angażowania programisty i bez przebudowy aplikacji — musisz oddać mu kontrolę nad warstwą reguł wyglądu. Standardowy `ConditionalAppearance` w XAF tego nie daje: jego atrybuty `[Appearance]` siedzą w kodzie i każda zmiana wymaga wdrożenia nowej wersji aplikacji.
+Administrator chce dodać regułę: „zadania po terminie — czerwono", „pracownicy na urlopie — szare tło", „kolumna `Cena` tylko dla działu finansów". Bez programisty. Bez wdrożenia nowej wersji. Standardowy `ConditionalAppearance` tego nie daje — atrybuty `[Appearance]` siedzą w kodzie i każda zmiana wymaga nowego buildu.
 
-Tę lukę domyka się trzema klasami: encją `DynamicAppearanceRule`, statycznym cache'em `DynamicAppearanceRuleStorage` i kontrolerem `DynamicAppearanceRuleViewController`. Kontroler podpina cache do standardowego `AppearanceController` przez zdarzenie `CollectAppearanceRules`. Silnik patrzy na te same reguły co dla `[Appearance]` — różni się tylko źródło danych.
+Trzy klasy zamykają tę lukę: encja `DynamicAppearanceRule`, cache `DynamicAppearanceRuleStorage` i kontroler `DynamicAppearanceRuleViewController`. Kontroler podpina cache do `AppearanceController` przez zdarzenie `CollectAppearanceRules`. XAF traktuje reguły z bazy tak samo jak te z atrybutów — różni się tylko źródło.
 
-Tak to zrobiłem w `MainDemo.NET.EFCore`. Dalej cały kod plus krótki komentarz, co każdy fragment robi i dlaczego.
+Kod pochodzi z `MainDemo.NET.EFCore`.
 
 ## Jak to działa — schemat klas
 
@@ -256,13 +256,18 @@ public class DynamicAppearanceRule : BaseObject, IAppearanceRuleProperties {
 
 Encja implementuje `IAppearanceRuleProperties` — ten sam interfejs, z którego XAF czyta zwykłe reguły z atrybutów. Dzięki temu `AppearanceController` traktuje ją jak każdą inną regułę, bez specjalnych ścieżek.
 
-Pola dokładnie odpowiadają parametrom atrybutu `[Appearance]`: `Criteria`, `TargetItems`, `Context`, `AppearanceItemType`, `Priority`, `Visibility`, `Enabled`, `FontColor`, `BackColor`, `FontStyle`, `Method`. Dodatkowe są dwa: `ObjectTypeFullName` (po jakim typie filtrować) i `ViewId` (czy reguła dotyczy tylko jednego widoku, czy wszystkich).
+Pola odpowiadają parametrom atrybutu `[Appearance]`:
+
+- `Criteria`, `TargetItems`, `Context`, `AppearanceItemType`, `Priority`
+- `Visibility`, `Enabled`, `FontColor`, `BackColor`, `FontStyle`, `Method`
+
+Dwa dodatkowe: `ObjectTypeFullName` (po jakim typie filtrować) i `ViewId` (czy reguła dotyczy tylko jednego widoku, czy wszystkich).
 
 Kolory są dwojakie: w bazie hex CSS (`#FF0000`), w API .NET — `System.Drawing.Color`. Para `FontColorCss` / `FontColor` konwertuje jedno w drugie przez `ColorTranslator`. Pole CSS nie pokazuje się w UI (`[Browsable(false)]`) — administrator pracuje na `Color` przez color picker, baza dostaje string.
 
 `OnSaving` synchronizuje cache: po zapisie reguła trafia do `DynamicAppearanceRuleStorage`, po usunięciu — z niego znika. Bez tego użytkownik zapisałby zmianę, a UI dalej rysowałby starą wersję aż do restartu.
 
-`NormalizeTypeName` ucina sufiks `Proxy` z nazw klas. EF Core w trybie change tracking proxies pokazuje typ jako `EmployeeProxy`, nie `Employee` — bez tej korekty `Matches` nie znajdowałby żadnego pasującego rekordu.
+`NormalizeTypeName` ucina sufiks `Proxy` z nazw klas. EF Core w trybie change tracking proxies pokazuje typ jako `EmployeeProxy`, nie `Employee`. Bez tej korekty `Matches` nie znajdowałby żadnego pasującego rekordu.
 
 ## Cache: `DynamicAppearanceRuleStorage`
 
@@ -325,7 +330,7 @@ public static class DynamicAppearanceRuleStorage {
 }
 ```
 
-Cache jest globalny i statyczny. Reguły wczytuję raz przy starcie (`Initialize`), potem aktualizuję punktowo (`Put`/`Remove`). Trzymam wszystko pod jednym `lock` — operacji jest mało (zapisy robi administrator, czytanie idzie z listy w pamięci), więc nawet prosty zamek nie jest wąskim gardłem.
+Cache jest globalny i statyczny. Reguły wczytuję raz przy starcie (`Initialize`), potem aktualizuję punktowo (`Put`/`Remove`). Jeden `lock` obejmuje wszystkie operacje — administrator zapisuje rzadko, odczyty idą z listy w pamięci, więc `lock` nie jest wąskim gardłem.
 
 `GetRules(Type, string)` filtruje cache po typie i widoku — tę metodę wywołuje kontroler przy każdym aktywowaniu widoku.
 
@@ -374,7 +379,7 @@ public class DynamicAppearanceRuleViewController : ObjectViewController<ObjectVi
 
 Kontroler aktywuje się na każdym widoku obiektowym (`ObjectView, object`). Przy `OnActivated` zdobywa `AppearanceController`, resetuje jego cache reguł i podpina się pod zdarzenie `CollectAppearanceRules`. To zdarzenie jest oficjalnym punktem rozszerzenia: zwracam tu reguły z bazy, a XAF traktuje je tak samo jak te z atrybutów.
 
-`ResetRulesCache` jest istotne — bez niego, jeśli administrator zmieni regułę, a widok już był wcześniej otwarty, użytkownik zobaczy starą wersję cache `AppearanceController`. Reset i `Refresh` wymuszają ponowne zbieranie.
+`ResetRulesCache` jest istotne — bez niego, jeśli administrator zmieni regułę, a widok już był wcześniej otwarty, użytkownik zobaczy starą wersję cache `AppearanceController`. `ResetRulesCache` i `Refresh` każą XAF zebrać reguły od nowa.
 
 `OnDeactivated` odpina handler. Bez tego kroku dostaję klasyczny wyciek pamięci w XAF — kontroler zostaje, frame zostaje, frame trzyma referencję do widoku.
 
@@ -455,7 +460,7 @@ public class DynamicAppearanceRuleTests : BaseWebApiTest {
 }
 ```
 
-Dwa testy pokrywają to, na czym najłatwiej coś popsuć: seed faktycznie wpadł do bazy z prawidłowym kolorem (po refaktorze pól CSS), a cache zwraca tylko reguły pasujące do typu (po refaktorze `Matches` albo `NormalizeTypeName`).
+Dwa testy pokrywają to, na czym najłatwiej coś popsuć. Pierwszy sprawdza, czy seed wpadł do bazy z prawidłowym kolorem — regresja po zmianach w polach CSS. Drugi sprawdza, czy cache zwraca tylko reguły pasujące do typu — regresja po zmianach w `Matches` albo `NormalizeTypeName`.
 
 ## Dlaczego ten układ działa
 
