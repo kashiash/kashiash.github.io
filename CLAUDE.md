@@ -67,6 +67,24 @@ Dodaj jako **pierwszy** `<article class="post-item">` w `<main class="posts-col"
 
 Miniatura (`post-thumb`) to osobny plik `*-list.png` — różny od obrazka nagłówkowego wewnątrz posta.
 
+## Zasady tworzenia grafik (Styl "Doodle 4 Kredki")
+
+Aby utrzymać spójną, minimalistyczną tożsamość wizualną bloga podczas generowania nowych obrazków w AI (np. Midjourney, DALL-E, Imagen), trzymaj się następujących zasad w promptach:
+
+### 1. Baza Stylistyczna (dodaj to do każdego promptu)
+> *A hand-drawn minimalist ink doodle on slightly yellowed paper. High contrast, expressive black ink lines, very sketchy and simple. The drawing is mostly black ink, with sparse, messy color accents (scribbled red, blue, yellow, and green crayon). Humorous, minimalist style.*
+
+**Kluczowe detale:** Unikaj cieniowania 3D i pełnego wypełnienia kolorem. Kolor ma przypominać niechlujne maźnięcia czterema podstawowymi kredkami, a całość ma wyglądać jak szybki szkic w notatniku.
+
+### 2. Dwa typy obrazków
+**A. Główny obrazek wewnątrz posta (`assets/images/nazwa-wpisu.png`)**
+*   **Zawiera postać programisty.** W prompcie użyj stałego opisu: *A programmer character (stocky, curly hair, glasses, wearing a hoodie).*
+*   Programista najczęściej wchodzi w komiczną interakcję z fizyczną reprezentacją problemu technicznego.
+
+**B. Miniatura wpisu na listę (`assets/images/nazwa-wpisu-list.png`)**
+*   **BEZ LUDZI.** W prompcie dodaj absolutny zakaz: *No humans or characters.*
+*   Używaj pomysłowych metafor obiektowych: *Zamiast logo "PostgreSQL" zrób wielką szufladę na akta przedzieloną drutem kolczastym (multi-tenant)* albo *zamiast "Date Editor" zrób zablokowany drewnianym kołkiem kołowrotek*. Szukaj analogii w fizycznym świecie.
+
 ## Czego nie ruszać
 
 - Nie zmieniaj układu strony głównej bez wyraźnej prośby.
