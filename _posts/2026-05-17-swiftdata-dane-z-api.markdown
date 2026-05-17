@@ -11,7 +11,7 @@ Dane w aplikacji pobierasz z API. Gdy uruchamiasz ją po raz pierwszy — lista 
 
 Pierwsze rozwiązanie: zapisz odpowiedź do lokalnej bazy. SwiftData wydaje się oczywistym wyborem. Przy następnym starcie ładujesz z bazy — użytkownik widzi dane nawet bez sieci.
 
-Problem: API ma zawsze nowsze dane niż baza. Jak wiedzieć, które rekordy zaktualizować? Prosty insert duplikuje — SwiftData nie ma wbudowanego upsert. Wstawiasz ten sam produkt dwa razy, dostajesz dwa rekordy.
+Problem: API ma zawsze nowsze dane niż baza. Jak wiedzieć, które rekordy zaktualizować? Prosty insert duplikuje — SwiftData nie sprawdzi, czy rekord już istnieje, i nie zaktualizuje go zamiast wstawiać nowego. Wstawiasz ten sam produkt dwa razy, dostajesz dwa rekordy.
 
 Dochodzi skala. Sto rekordów naraz przez `modelContext` z `@MainActor` freezuje UI. Użytkownik widzi, że aplikacja się ścina.
 
@@ -23,7 +23,7 @@ Każdy z tych problemów ma rozwiązanie w jednym miejscu.
 
 **`@Model`** trwa między sesjami i obsługuje zapytania. Osobny `queryKey` izoluje kolekcję wyszukiwania od głównej listy — wyniki się nie mieszają.
 
-**`@ModelActor`** robi upsert poza `@MainActor`. Sto rekordów zapisuje w tle — UI nie mruga. Batch fetch przed insertem eliminuje duplikaty bez zewnętrznych bibliotek.
+**`@ModelActor`** dodaje lub aktualizuje dane z API we własnym `ModelContext` — SwiftUI go nie obserwuje, więc nie przerysowuje się przy każdym insercie. Sto rekordów zapisujesz jedną operacją, UI aktualizujesz raz. Batch fetch przed zapisem eliminuje duplikaty bez zewnętrznych bibliotek.
 
 ## Dwie struktury zamiast jednej
 
@@ -164,4 +164,4 @@ struct ProductsListView: View {
 
 ## Co dalej
 
-Ten wzorzec to podstawa dla paginacji. Przy infinite scroll wywołuję `upsertProducts` ze stronicowanym `offset`, a `queryKey` rozdziela kolekcje przy różnych zapytaniach. Opisuję to w następnym wpisie o infinite scroll z warm-up cache w tle.
+Ten wzorzec to podstawa dla paginacji. Przy infinite scroll wywołuję `upsertProducts` ze stronicowanym `offset`, a `queryKey` rozdziela kolekcje przy różnych zapytaniach. Szczegóły w [następnym wpisie](/2026/05/17/swiftui-infinite-scroll-swiftdata.html) o infinite scroll z warm-up cache w tle.

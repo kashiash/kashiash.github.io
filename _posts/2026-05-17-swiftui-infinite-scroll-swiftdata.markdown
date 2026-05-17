@@ -59,7 +59,7 @@ extension View {
 }
 ```
 
-`triggerDistance: 600` — wynik pomiaru w Instruments. Przy 300pt lista migała przy szybkim scrollowaniu. Dane nie zdążyły przyjść przed końcem listy.
+`triggerDistance: 600` — wynik pomiaru w Instruments. Przy 300pt i szybkim scrollowaniu lista migała — dane nie zdążały przyjść przed jej końcem.
 
 W widoku wystarczy jedna linia:
 
