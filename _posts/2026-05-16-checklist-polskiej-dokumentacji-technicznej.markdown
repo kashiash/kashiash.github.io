@@ -9,6 +9,8 @@ slug: polski-technical-writing-prosta-polszczyzna
 author: Jacek
 ---
 
+![Polski technical writing](/assets/images/technical-writing-pl.png)
+
 # Polski technical writing — jak pisać dokumentację, którą ktoś rzeczywiście przeczyta
 
 **Większość polskiej dokumentacji technicznej to ściana tekstu, której nikt nie czyta.** README zaczynają się od trzech akapitów filozofii, komentarze w kodzie powtarzają oczywistości, a release notes brzmią jak zażalenia urzędowe. Wszystko po polsku, wszystko gramatycznie, wszystko bezużyteczne.
