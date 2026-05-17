@@ -70,7 +70,7 @@ Decyzje warte zapamiętania:
 
 - **`@Attribute(.unique)` na `remoteID`** zapobiega duplikatom przy ponownym fetchu. SwiftData rzuci błąd przy konflikcie zamiast cicho wstawić duplikat.
 - **`sortIndex` zamiast sortowania po `remoteID`**. Kolejność stron z API nie zawsze pokrywa się z rosnącym ID. `sortIndex = pageOffset + indexInPage` zachowuje oryginalną kolejność serwera.
-- **`localThumbnailPath` jako `String?`**, nie `Data?`**. Obrazki zapisuję na dysk osobno, tu trzymam tylko ścieżkę. `@Attribute(.externalStorage)` jest alternatywą — opisałem ją w [poprzednim wpisie](/2026/05/16/swiftdata-store-large-files-pl.html).
+- **`localThumbnailPath` jako `String?`**, nie `Data?`**. Obrazki zapisuję na dysk osobno, tu trzymam tylko ścieżkę. `@Attribute(.externalStorage)` jest alternatywą — szczegóły w [poprzednim wpisie](/2026/05/16/swiftdata-store-large-files-pl.html).
 
 ## @ModelActor — upsert poza głównym wątkiem
 
