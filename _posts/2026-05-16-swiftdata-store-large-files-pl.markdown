@@ -7,11 +7,42 @@ categories: swift ios
 
 ![SwiftData i duże pliki: Wieloryb w walizce](/assets/images/swiftdata-large-files.png)
 
-Zdjęcia, podcasty, a nawet pliki wideo mogą być przechowywane w SwiftData. W tym artykule omówimy, jak przechowywać te treści w SwiftData i jak je wyświetlać, korzystając z atrybutu `.externalStorage`.
+Jeżeli chcesz, żeby użytkownik twojej aplikacji iOS oglądał zdjęcia, słuchał podcastów albo otwierał wideo bez połączenia z internetem — i robił to płynnie, bez sekundowych zamulień na każdym przewinięciu listy — musisz trzymać duże pliki lokalnie. Standardowo SwiftData wrzuca wszystkie pola do głównego pliku bazy, więc po kilkuset rekordach każde zapytanie zwalnia.
+
+Tego ratuje atrybut `@Attribute(.externalStorage)`. SwiftData zachowuje metadane w bazie, a sam binarny content trzyma jako osobne pliki obok. Dalej pokazuję model, pobieranie z API i wyświetlanie z cache.
+
+## Jak to działa — przepływ danych
+
+```mermaid
+sequenceDiagram
+    actor U as Użytkownik
+    participant App as Aplikacja
+    participant API as JSONPlaceholder API
+    participant Net as URLSession
+    participant SD as SwiftData (ModelContext)
+    participant Disk as Pliki externalStorage
+    Note over App,Disk: --- pierwsze uruchomienie ---
+    U->>App: otwiera widok galerii
+    App->>API: GET /photos
+    API-->>App: lista PhotoObject (bez binarki)
+    loop dla każdego zdjęcia
+        App->>Net: GET url do binarki
+        Net-->>App: Data
+        App->>SD: PhotoObject(photo: Data)
+        SD->>Disk: zapisuje binarkę osobno
+        SD->>SD: zapisuje metadane w bazie
+    end
+    Note over App,Disk: --- kolejne uruchomienia (offline) ---
+    U->>App: otwiera widok galerii
+    App->>SD: @Query PhotoObject
+    SD->>Disk: ładuje binarki na żądanie
+    SD-->>App: rekordy z polem photo
+    App-->>U: SwiftUI Image
+```
 
 ## Model SwiftData z obsługą zewnętrznego przechowywania
 
-Atrybut `@Attribute(.externalStorage)` informuje SwiftData, że dane powinny być przechowywane poza głównym plikiem bazy danych. To kluczowe dla wydajności przy dużych plikach.
+Atrybut `@Attribute(.externalStorage)` informuje SwiftData, że dane powinny być przechowywane poza głównym plikiem bazy. To kluczowe dla wydajności przy dużych plikach.
 
 ```swift
 @Model
