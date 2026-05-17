@@ -155,7 +155,7 @@ modelBuilder.Entity<SavedFilter>()
 
 ### 2. `SaveFilterParams` — popup z nazwą
 
-Obiekt tymczasowy — żyje wyłącznie w pamięci popupu, nie ma tabeli w bazie. Służy tylko do zebrania dwóch pól z popupa.
+Obiekt tymczasowy (w terminologii XAF: „NonPersistent"). Żyje wyłącznie w pamięci popupu, nie ma tabeli w bazie. Służy tylko do zebrania dwóch pól.
 
 ```csharp
 [DomainComponent]
