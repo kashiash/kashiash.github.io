@@ -14,7 +14,26 @@ series_part: 4
 > 3. [Globalny DateEditor w XAF Blazor: blokada scrolla, polskie maski i czas tylko tam, gdzie trzeba]({% post_url 2026-05-12-xaf-blazor-date-editor-mouse-wheel %})
 > 4. **Domknięcie polskiej lokalizacji: klasy, enumy i widoki** — ten wpis
 
-Ten wpis pokazuje dokładnie, co dopisałem do `Model.DesignedDiffs.Localization.pl.xafml`, żeby interfejs po polsku nie mieszał polskich i angielskich nazw.
+Jeżeli chcesz, żeby użytkownik klikający „polski" w przełączniku języków faktycznie widział interfejs po polsku — a nie mieszankę typu „Stanowisko / Position", „CV / Resume", „Reports / Raporty" — musisz domknąć cztery warstwy tłumaczeń, nie jedną. Sam plik z polskimi nazwami klas biznesowych nie wystarczy: XAF czerpie napisy w UI z czterech źródeł, a każde z nich trzeba uzupełnić osobno.
+
+Standardowy `Model.DesignedDiffs.Localization.pl.xafml` z demówki MainDemo pokrywa około 60% przypadków. Dalej pokazuję, co dopisałem, żeby dobić resztę.
+
+## Jak XAF rozkłada napisy w UI
+
+```mermaid
+flowchart LR
+    U[Użytkownik wybiera pl-PL] --> X[XAF składa interfejs]
+    X --> A[Klasy biznesowe<br/>Position, Resume, PortfolioFileData]
+    X --> B[Klasy frameworkowe<br/>ReportDataV2, AuditDataItemPersistent]
+    X --> C[Enumy<br/>Priority, TaskStatus, SecurityPermissionPolicy]
+    X --> D[Nawigacja i widoki<br/>Employee_ListView, AuthenticationStandardLogonParameters_DetailView_Demo]
+    A --> P[Model.DesignedDiffs.Localization.pl.xafml]
+    B --> P
+    C --> P
+    D --> P
+```
+
+Wszystko trafia do jednego pliku `Model.DesignedDiffs.Localization.pl.xafml`. Cała robota polega na pokryciu wszystkich czterech warstw — niżej fragmenty z repo dla każdej z nich.
 
 ## Zmienione pliki
 
@@ -24,8 +43,6 @@ CS/MainDemo.WebAPI.Tests/LocalizationTests.cs
 ```
 
 ## Klasy frameworkowe widoczne w UI
-
-To jest dokładny fragment z repo:
 
 ```xml
 <Class Name="DevExpress.Persistent.BaseImpl.EF.ReportDataV2" Caption="Raporty">
@@ -53,8 +70,6 @@ To jest dokładny fragment z repo:
 
 ## Brakujące klasy biznesowe
 
-To jest dokładny fragment z repo:
-
 ```xml
 <Class Name="MainDemo.Module.BusinessObjects.PortfolioFileData" Caption="Portfolio">
   <OwnMembers>
@@ -79,8 +94,6 @@ To jest dokładny fragment z repo:
 ```
 
 ## Enumy i komunikaty
-
-To jest dokładny fragment z repo:
 
 ```xml
 <LocalizationGroup Name="Enums">
@@ -129,8 +142,6 @@ To jest dokładny fragment z repo:
 ```
 
 ## Nawigacja i widoki
-
-To jest dokładny fragment z repo:
 
 ```xml
 <NavigationItems>
@@ -182,8 +193,6 @@ I końcówka widoków list:
 ```
 
 ## Test lokalizacji
-
-To jest pełny test z repo:
 
 ```csharp
 public class LocalizationTests : BaseWebApiTest {
