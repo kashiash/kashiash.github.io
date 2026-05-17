@@ -7,9 +7,9 @@ categories: swift ios swiftui swiftdata
 
 ![Lista produktów scrolluje się bez końca, wskaźnik synchronizacji w tle](/assets/images/infinite-scroll-cache.png)
 
-Lista pobiera 20 produktów. Użytkownik scrolluje. Aplikacja pobiera kolejne 20. Dane trafiają do SwiftData. Przy braku sieci lista działa z cache.
+Masz listę produktów z API. Ładujesz pierwszą stronę. Użytkownik scrolluje — czas na kolejną. Pierwsze podejście: `onAppear` na ostatniej komórce. Działa, aż użytkownik scrolluje szybko w górę i z powrotem. Task się anuluje, dane nie wracają, lista staje w miejscu. Dochodzi `AsyncImage` bez stałych wymiarów — gdy obrazek wróci z sieci, komórka rośnie i lista skacze. Dochodzi brak sieci — biały ekran zamiast poprzednich danych.
 
-Poniżej pełny wzorzec: trigger scrolla, stany ładowania, cache w SwiftData i miniatury w tle. Kod rozszerzyłem na bazie tutorialu Karin Prater o warstwę offline.
+Rozwiązanie mieści się w jednym `ViewModifier`, jednym enumie i `@ModelActor` ze SwiftData. Trigger oparty na geometrii scrolla zamiast `onAppear`. Enum ze stanami zastępuje rozsypane flagi boolowskie. Cache-first przy każdym fetchu — lista działa offline od drugiego uruchomienia. Komórki nie skaczą.
 
 DTO → `@Model` i `@ModelActor` opisałem w [poprzednim wpisie](/2026/05/17/swiftdata-dane-z-api.html).
 

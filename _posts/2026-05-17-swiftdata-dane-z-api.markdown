@@ -1,196 +1,153 @@
 ---
 layout: post
-title: "SwiftData: zapis danych z API do lokalnej bazy"
+title: "SwiftData: zapis danych z API — wzorzec DTO, upsert i @ModelActor"
 date: 2026-05-17
 categories: swift ios swiftdata
 ---
 
 ![Dane z serwera lądują w lokalnej bazie SwiftData](/assets/images/swiftdata-api.png)
 
-Otwierasz aplikację. Dane się ładują. Otwierasz znowu — te same dane się ładują od nowa. A przecież nic się nie zmieniło.
+Budujesz listę z danymi z API. Chcesz, żeby działała offline. Pierwsze podejście: `@Model` z `Codable`, `modelContext.insert` w `.task`. Działa — do momentu, gdy dochodzi paginacja i insert pięćdziesięciu rekordów freezuje UI. Dochodzi refresh — masz duplikaty, bo SwiftData nie ma wbudowanego upsert. Dochodzi wyszukiwanie — chcesz osobnej kolekcji w tej samej bazie, bez mieszania wyników.
 
-Zapisz odpowiedź API w SwiftData — i czytaj z lokalnej bazy. Bez sieci.
+Wszystko rozwiązują dwie struktury i jeden aktor: DTO do dekodowania, `@Model` do persystencji i `@ModelActor` do upsert poza głównym wątkiem. Bez zewnętrznych bibliotek. Działa tak samo przy 20 rekordach i przy 500.
 
----
+## Dwie struktury zamiast jednej
 
-## Czego potrzebujesz
+Nie dekoduję JSON bezpośrednio do `@Model`. Trzymam dwie osobne struktury.
 
-- Xcode 15+, iOS 17+
-- Podstawy SwiftUI: `@State`, `.task`
-- Dowolne API zwracające JSON — tu użyję [jsonplaceholder.typicode.com](https://jsonplaceholder.typicode.com)
+**DTO** — struct, `Decodable`, `Sendable`. Żyje przez jeden request, potem znika.
 
----
-
-## Wzorzec DTO → @Model
-
-Nie wrzucaj odpowiedzi API bezpośrednio do SwiftData. Podziel dane na dwie struktury.
-
-**DTO** (Data Transfer Object) — struct do dekodowania JSON. Żyje przez jeden request.
-
-**@Model** — klasa SwiftData. Trwa w bazie między sesjami.
+**@Model** — klasa SwiftData. Trwa w bazie między sesjami, ma własne pola cache (`sortIndex`, `updatedAt`, `localThumbnailPath`).
 
 ```swift
-// DTO — tylko do dekodowania JSON
-struct PhotoDTO: Identifiable, Codable {
-    let albumId: Int
+struct ProductDTO: Identifiable, Decodable, Sendable {
     let id: Int
     let title: String
-    let url: String
-    let thumbnailUrl: String
+    let description: String
+    let category: String
+    let price: Double
+    let thumbnail: String
 }
 
-// @Model — trwa między uruchomieniami
 @Model
-final class Photo {
+final class CachedProduct {
     @Attribute(.unique) var remoteID: Int
-    var albumId: Int
     var title: String
-    var url: String
-    var thumbnailUrl: String
+    var category: String
+    var price: Double
+    var thumbnail: String
+    var localThumbnailPath: String?
+    var sortIndex: Int
+    var updatedAt: Date
 
-    init(from dto: PhotoDTO) {
+    init(from dto: ProductDTO, sortIndex: Int) {
         self.remoteID = dto.id
-        self.albumId = dto.albumId
         self.title = dto.title
-        self.url = dto.url
-        self.thumbnailUrl = dto.thumbnailUrl
+        self.category = dto.category
+        self.price = dto.price
+        self.thumbnail = dto.thumbnail
+        self.sortIndex = sortIndex
+        self.updatedAt = Date()
     }
 }
 ```
 
-`@Attribute(.unique)` na `remoteID` zapobiega duplikatom. Gdy rekord już istnieje — SwiftData go zaktualizuje zamiast wstawić nowy.
+Decyzje warte zapamiętania:
 
----
+- **`@Attribute(.unique)` na `remoteID`** zapobiega duplikatom przy ponownym fetchu. SwiftData rzuci błąd przy konflikcie zamiast cicho wstawić duplikat.
+- **`sortIndex` zamiast sortowania po `remoteID`**. Kolejność stron z API nie zawsze pokrywa się z rosnącym ID. `sortIndex = pageOffset + indexInPage` zachowuje oryginalną kolejność serwera.
+- **`localThumbnailPath` jako `String?`**, nie `Data?`**. Obrazki zapisuję na dysk osobno, tu trzymam tylko ścieżkę. `@Attribute(.externalStorage)` jest alternatywą — opisałem ją w [poprzednim wpisie](/2026/05/16/swiftdata-store-large-files-pl.html).
 
-## Serwis sieciowy
+## @ModelActor — upsert poza głównym wątkiem
 
-Prosty aktor. Pobiera dane z API:
-
-```swift
-actor PhotoService {
-    func fetchPhotos() async throws -> [PhotoDTO] {
-        guard let url = URL(string: "https://jsonplaceholder.typicode.com/albums/1/photos") else {
-            throw URLError(.badURL)
-        }
-        let (data, response) = try await URLSession.shared.data(from: url)
-        guard let http = response as? HTTPURLResponse,
-              (200..<300).contains(http.statusCode) else {
-            throw URLError(.badServerResponse)
-        }
-        return try JSONDecoder().decode([PhotoDTO].self, from: data)
-    }
-}
-```
-
----
-
-## Zapis do SwiftData
-
-W widoku masz `modelContext` przez `@Environment`. Używasz go do wstawiania danych. `@Query` czyta je z bazy automatycznie.
-
-```swift
-struct PhotoListView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Photo.remoteID) private var photos: [Photo]
-
-    var body: some View {
-        List(photos) { photo in
-            VStack(alignment: .leading) {
-                Text(photo.title)
-                AsyncImage(url: URL(string: photo.thumbnailUrl)) { image in
-                    image.resizable().scaledToFit().frame(height: 60)
-                } placeholder: {
-                    Color.gray.opacity(0.2).frame(height: 60)
-                }
-            }
-        }
-        .overlay {
-            if photos.isEmpty { ProgressView() }
-        }
-        .task {
-            guard photos.isEmpty else { return }
-            await loadPhotos()
-        }
-        .refreshable {
-            await loadPhotos()
-        }
-    }
-
-    private func loadPhotos() async {
-        do {
-            let dtos = try await PhotoService().fetchPhotos()
-            for dto in dtos {
-                modelContext.insert(Photo(from: dto))
-            }
-        } catch {
-            print("Błąd: \(error)")
-        }
-    }
-}
-```
-
-`.task` uruchamia się raz — gdy `photos` jest puste. Gdy następnym razem otworzysz aplikację, `@Query` odczyta dane z bazy. Sieć nie jest potrzebna.
-
-`.refreshable` daje użytkownikowi ręczne odświeżenie.
-
----
-
-## Podpięcie kontenera w App
-
-```swift
-@main
-struct PhotoApp: App {
-    var body: some Scene {
-        WindowGroup {
-            PhotoListView()
-        }
-        .modelContainer(for: Photo.self)
-    }
-}
-```
-
-Jedna linia. SwiftData sam tworzy bazę i pilnuje schematu.
-
----
-
-## Kiedy użyć @ModelActor
-
-Powyższy wzorzec działa, gdy operacje na bazie są proste i krótkie. Gdy upsert obejmuje setki rekordów, `modelContext` z `@MainActor` zablokuje UI.
-
-Wtedy wydziel osobny aktor z własnym kontekstem:
+`modelContext` z `@MainActor` blokuje UI przy setkach insertów. Wydzielam osobny aktor z własnym kontekstem.
 
 ```swift
 @ModelActor
-actor PhotoStore {
-    func upsert(_ dtos: [PhotoDTO]) throws {
+actor ProductCacheStore {
+    private let queryKey: String
+
+    init(modelContainer: ModelContainer, queryKey: String = "products.default") {
+        let context = ModelContext(modelContainer)
+        self.modelExecutor = DefaultSerialModelExecutor(modelContext: context)
+        self.modelContainer = modelContainer
+        self.queryKey = queryKey
+    }
+
+    func upsertProducts(_ dtos: [ProductDTO], startingAt offset: Int) throws {
         let ids = dtos.map(\.id)
-        let existing = try fetchExisting(ids: ids)
+
+        // Jeden batch fetch zamiast N osobnych zapytań
+        let descriptor = FetchDescriptor<CachedProduct>(
+            predicate: #Predicate { ids.contains($0.remoteID) }
+        )
+        let existing = try modelContext.fetch(descriptor)
         let byID = Dictionary(uniqueKeysWithValues: existing.map { ($0.remoteID, $0) })
 
-        for dto in dtos {
-            if let photo = byID[dto.id] {
-                photo.title = dto.title          // aktualizuj istniejący
+        let now = Date()
+        for (index, dto) in dtos.enumerated() {
+            if let cached = byID[dto.id] {
+                cached.title = dto.title
+                cached.price = dto.price
+                cached.sortIndex = offset + index
+                cached.updatedAt = now
             } else {
-                modelContext.insert(Photo(from: dto))  // wstaw nowy
+                modelContext.insert(CachedProduct(from: dto, sortIndex: offset + index))
             }
         }
         try modelContext.save()
     }
 
-    private func fetchExisting(ids: [Int]) throws -> [Photo] {
-        let descriptor = FetchDescriptor<Photo>(
-            predicate: #Predicate { ids.contains($0.remoteID) }
+    func fetchProducts(limit: Int, offset: Int) throws -> [CachedProduct] {
+        var descriptor = FetchDescriptor<CachedProduct>(
+            sortBy: [SortDescriptor(\.sortIndex)]
         )
+        descriptor.fetchLimit = limit
+        descriptor.fetchOffset = offset
         return try modelContext.fetch(descriptor)
     }
 }
 ```
 
-`@ModelActor` tworzy aktor z własnym `ModelExecutor`. Operacje na bazie nie blokują głównego wątku. Wzorzec sprawdza się szczególnie przy paginacji i gdy pobierasz duże zbiory danych.
+Decyzje warte zapamiętania:
 
----
+- **Jeden `FetchDescriptor` z `ids.contains`** zamiast N osobnych zapytań po `remoteID`. Dla 50 rekordów to różnica między 50 a 1 tripen do SQLite.
+- **`DefaultSerialModelExecutor`** dostaje `ModelContext` stworzony w inicjalizatorze aktora. Nie używam `modelContext` przekazanego z zewnątrz — `@ModelActor` sam pilnuje wątku.
+- **`queryKey`** pozwala trzymać kilka niezależnych kolekcji w jednym kontenerze. Przy wyszukiwaniu lub filtrowaniu tworzę nowy `ProductCacheStore` z innym kluczem, stara kolekcja nie koliduje.
+
+## Podpięcie w widoku
+
+```swift
+struct ProductsListView: View {
+    @Environment(\.modelContext) private var modelContext
+    @State private var store: ProductCacheStore?
+
+    var body: some View {
+        Group {
+            if let store {
+                ProductsListContent(store: store)
+            } else {
+                ProgressView()
+            }
+        }
+        .task {
+            guard store == nil else { return }
+            store = ProductCacheStore(modelContainer: modelContext.container)
+        }
+    }
+}
+```
+
+`ProductCacheStore` nie jest `@StateObject` ani `@Observable` — to aktor. Tworzę go raz w `.task` i przekazuję dalej. `modelContext.container` daje dostęp do `ModelContainer` bez wstrzykiwania go osobno.
+
+## Pułapki
+
+**`@Attribute(.unique)` nie robi upsert za ciebie.** Jeśli wstawisz drugi rekord z tym samym `remoteID`, SwiftData rzuci błąd w `save()`. Musisz sam sprawdzić, czy rekord istnieje — stąd batch fetch w `upsertProducts`.
+
+**`modelContext.save()` w aktorze jest synchroniczne.** `@ModelActor` sprawia, że cały aktor działa na jednym wątku — ale nie blokuje `@MainActor`. To właśnie o to chodzi.
+
+**`#Predicate` nie akceptuje zmiennych lokalnych domknięcia.** `ids.contains($0.remoteID)` działa, bo `ids` to `[Int]` — typ obsługiwany przez SwiftData predykaty. Nie możesz tam przekazać własnego struct lub klasy.
 
 ## Co dalej
 
-- **Duże pliki (zdjęcia, wideo)** — użyj `@Attribute(.externalStorage)` dla `Data?`. Opisałem to w [poprzednim wpisie](/2026/05/16/swiftdata-store-large-files-pl.html).
-- **Paginacja i infinite scroll** — `@ModelActor` + `sortIndex` + warm-up w tle. O tym w następnym wpisie.
+Ten wzorzec to podstawa dla paginacji. Przy infinite scroll `upsertProducts` jest wywoływany ze stronicowanym `offset`, a `queryKey` rozdziela kolekcje przy różnych zapytaniach. Opisuję to w następnym wpisie o infinite scroll z warm-up cache w tle.
