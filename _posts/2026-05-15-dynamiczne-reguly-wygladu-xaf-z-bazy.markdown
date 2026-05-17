@@ -7,7 +7,7 @@ series_part: 5
 
 ![Dynamiczny wygląd: Magiczna różdżka](/assets/images/dynamic-appearance.png)
 
-Jeżeli chcesz, żeby administrator albo wdrożeniowiec mógł sam z poziomu UI dorobić regułę „zadania po terminie świećcie się na czerwono", „pracownicy na urlopie — szare tło", „kolumna `Cena` widoczna tylko dla działu finansów" — bez angażowania programisty i bez przebudowy aplikacji — musisz oddać mu kontrolę nad warstwą reguł wyglądu. Standardowy `ConditionalAppearance` w XAF tego nie daje: jego atrybuty `[Appearance]` siedzą w kodzie i każda zmiana wymaga deployu.
+Jeżeli chcesz, żeby administrator albo wdrożeniowiec mógł sam z poziomu UI dorobić regułę „zadania po terminie świecą się na czerwono", „pracownicy na urlopie — szare tło", „kolumna `Cena` widoczna tylko dla działu finansów" — bez angażowania programisty i bez przebudowy aplikacji — musisz oddać mu kontrolę nad warstwą reguł wyglądu. Standardowy `ConditionalAppearance` w XAF tego nie daje: jego atrybuty `[Appearance]` siedzą w kodzie i każda zmiana wymaga wdrożenia nowej wersji aplikacji.
 
 Tę lukę domyka się trzema klasami: encją `DynamicAppearanceRule`, statycznym cache'em `DynamicAppearanceRuleStorage` i kontrolerem `DynamicAppearanceRuleViewController`. Kontroler podpina cache do standardowego `AppearanceController` przez zdarzenie `CollectAppearanceRules`. Silnik patrzy na te same reguły co dla `[Appearance]` — różni się tylko źródło danych.
 
@@ -325,7 +325,7 @@ public static class DynamicAppearanceRuleStorage {
 }
 ```
 
-Cache jest globalny i statyczny. Reguły wczytuję raz przy starcie (`Initialize`), potem aktualizuję punktowo (`Put`/`Remove`). Trzymam wszystko pod jednym `lock` — operacji jest mało (zapisy są dziełem administratora, czytanie idzie z listy w pamięci), więc nawet prosty zamek nie jest wąskim gardłem.
+Cache jest globalny i statyczny. Reguły wczytuję raz przy starcie (`Initialize`), potem aktualizuję punktowo (`Put`/`Remove`). Trzymam wszystko pod jednym `lock` — operacji jest mało (zapisy robi administrator, czytanie idzie z listy w pamięci), więc nawet prosty zamek nie jest wąskim gardłem.
 
 `GetRules(Type, string)` filtruje cache po typie i widoku — tę metodę wywołuje kontroler przy każdym aktywowaniu widoku.
 
@@ -376,7 +376,7 @@ Kontroler aktywuje się na każdym widoku obiektowym (`ObjectView, object`). Prz
 
 `ResetRulesCache` jest istotne — bez niego, jeśli administrator zmieni regułę, a widok już był wcześniej otwarty, użytkownik zobaczy starą wersję cache `AppearanceController`. Reset i `Refresh` wymuszają ponowne zbieranie.
 
-`OnDeactivated` odpina handler. Pomijając ten krok, dostaję klasyczny wyciek pamięci w XAF — controller zostaje, frame zostaje, frame trzyma referencję do widoku.
+`OnDeactivated` odpina handler. Bez tego kroku dostaję klasyczny wyciek pamięci w XAF — kontroler zostaje, frame zostaje, frame trzyma referencję do widoku.
 
 ## Seed pierwszej reguły
 
@@ -400,9 +400,9 @@ private void EnsureDynamicAppearanceRules() {
 }
 ```
 
-Metoda siedzi w `Updater` i podświetla zaległe zadania na pomarańczowo. Idempotent — sprawdza po nazwie, czy reguła już istnieje, więc kolejne uruchomienia jej nie duplikują.
+Metoda siedzi w `Updater` i podświetla zaległe zadania na pomarańczowo. Można ją wywoływać wielokrotnie — najpierw sprawdza po nazwie, czy reguła już istnieje, i wychodzi bez duplikatów.
 
-Pełnoprawne wdrożenie pominie ten seed i da administratorowi `ListView` na `DynamicAppearanceRule` (encja ma `[DefaultClassOptions]`, więc XAF doda ją do nawigacji bez dodatkowej pracy). Pierwsza reguła powstaje wtedy ręcznie z poziomu UI.
+Na produkcji ten seed odpuszczasz. Dajesz administratorowi `ListView` na `DynamicAppearanceRule` — encja ma `[DefaultClassOptions]`, więc XAF doda ją do nawigacji bez dodatkowej pracy. Pierwszą regułę administrator zakłada wtedy ręcznie z poziomu UI.
 
 ## Testy
 
@@ -461,9 +461,9 @@ Dwa testy pokrywają to, na czym najłatwiej coś popsuć: seed faktycznie wpad�
 
 `AppearanceController` z XAF nie obchodzi, skąd pochodzą reguły. Pyta tylko, czy implementują `IAppearanceRuleProperties`. Atrybuty `[Appearance]` to jedno źródło, reguły z bazy — drugie. Oba trafiają do tej samej kolejki przez to samo zdarzenie `CollectAppearanceRules`.
 
-Cały koszt wdrożenia to jedna encja, jeden statyczny cache i jeden krótki kontroler. Nie powielam silnika reguł, nie pisze własnego parsera kryteriów, nie obchodzę logiki priorytetów. To wszystko leży po stronie XAF.
+Cały koszt wdrożenia to jedna encja, jeden statyczny cache i jeden krótki kontroler. Nie powielam silnika reguł, nie piszę własnego parsera kryteriów, nie obchodzę logiki priorytetów. To wszystko leży po stronie XAF.
 
-Co zyskuję: administrator może z UI dorobić regułę typu „pracownicy ze statusem urlop — szare tło, podświetlenie wiersza" bez angażowania programisty i bez redeploya.
+Co zyskuję: administrator może z poziomu UI dorobić regułę typu „pracownicy ze statusem urlop — szare tło, podświetlenie wiersza" bez angażowania programisty i bez wdrażania nowej wersji aplikacji.
 
 ## Pełna instrukcja w repo
 
