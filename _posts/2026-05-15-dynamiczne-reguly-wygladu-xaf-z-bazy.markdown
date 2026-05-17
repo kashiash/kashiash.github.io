@@ -13,6 +13,83 @@ Tę lukę domyka się trzema klasami: encją `DynamicAppearanceRule`, statycznym
 
 Tak to zrobiłem w `MainDemo.NET.EFCore`. Dalej cały kod plus krótki komentarz, co każdy fragment robi i dlaczego.
 
+## Jak to działa — schemat klas
+
+```mermaid
+classDiagram
+    class IAppearanceRuleProperties {
+        <<XAF interface>>
+        +Type DeclaringType
+        +string Criteria
+        +string TargetItems
+        +string Context
+        +Color? FontColor
+        +Color? BackColor
+    }
+    class DynamicAppearanceRule {
+        +Guid ID
+        +string Name
+        +Type DataType
+        +string ViewId
+        +int Priority
+        +string CssClass
+        +OnSaving()
+        +Matches(Type, viewId) bool
+    }
+    class DynamicAppearanceRuleStorage {
+        <<static cache>>
+        -List~DynamicAppearanceRule~ rules
+        +Initialize(rules)
+        +Put(rule)
+        +Remove(rule)
+        +GetRules(Type, viewId)
+    }
+    class DynamicAppearanceRuleViewController {
+        <<ObjectViewController>>
+        -AppearanceController appearanceController
+        +OnActivated()
+        +OnDeactivated()
+    }
+    class AppearanceController {
+        <<XAF>>
+        +event CollectAppearanceRules
+        +Refresh()
+        +ResetRulesCache()
+    }
+    DynamicAppearanceRule ..|> IAppearanceRuleProperties
+    DynamicAppearanceRule --> DynamicAppearanceRuleStorage : OnSaving Put/Remove
+    DynamicAppearanceRuleViewController --> DynamicAppearanceRuleStorage : GetRules
+    DynamicAppearanceRuleViewController --> AppearanceController : podpina CollectAppearanceRules
+```
+
+Klucz: `DynamicAppearanceRule` realizuje ten sam interfejs `IAppearanceRuleProperties`, na który patrzą atrybuty `[Appearance]`. `AppearanceController` traktuje obie reguły identycznie — nie potrzebujesz osobnego silnika.
+
+## Jak to działa — przepływ od zapisu reguły do narysowania widoku
+
+```mermaid
+sequenceDiagram
+    actor A as Administrator
+    actor U as Użytkownik
+    participant Edit as DetailView reguły
+    participant Rule as DynamicAppearanceRule
+    participant Cache as DynamicAppearanceRuleStorage
+    participant Ctrl as DynamicAppearanceRuleViewController
+    participant AC as AppearanceController
+    participant V as Widok (np. DemoTask)
+    A->>Edit: zapisuje regułę
+    Edit->>Rule: CommitChanges
+    Rule->>Cache: OnSaving → Put(this)
+    Note over U,V: --- użytkownik otwiera dowolny widok ---
+    U->>V: otwiera ListView / DetailView
+    V->>Ctrl: OnActivated
+    Ctrl->>AC: ResetRulesCache + subscribe CollectAppearanceRules
+    AC->>Ctrl: emituje CollectAppearanceRules
+    Ctrl->>Cache: GetRules(Type, View.Id)
+    Cache-->>Ctrl: lista pasujących reguł
+    Ctrl-->>AC: dorzuca do e.AppearanceRules
+    AC->>V: rysuje wygląd na bazie wszystkich reguł (atrybuty + z bazy)
+```
+
 ## Encja: `DynamicAppearanceRule`
 
 ```csharp
