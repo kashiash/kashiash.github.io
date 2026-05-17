@@ -10,6 +10,76 @@ Wszystko mieści się w jednej encji EF Core, jednym kontrolerze widoku, jednym 
 
 Mechanizm daje cztery rzeczy: zapisz aktualny filtr pod nazwą, wczytaj go z listy, wyczyść, oznacz jako domyślny dla widoku. Filtr może być prywatny (tylko mój) albo publiczny (dla wszystkich).
 
+## Jak to działa — schemat klas
+
+```mermaid
+classDiagram
+    class SavedFilter {
+        +Guid ID
+        +string Name
+        +string ViewId
+        +string Criteria
+        +ApplicationUser Owner
+        +bool IsDefault
+        +DateTime CreatedOn
+        +DateTime ModifiedOn
+    }
+    class ApplicationUser {
+        +Guid ID
+        +string UserName
+    }
+    class SaveFilterParams {
+        <<DomainComponent / tymczasowy>>
+        +string Name
+        +bool IsPublic
+    }
+    class SavedFiltersController {
+        <<ViewController~ListView~>>
+        -CriteriaKey "SavedFilter"
+        -Guid? lastLoadedFilterId
+        +PopupWindowShowAction Zapisz
+        +SingleChoiceAction Wczytaj
+        +SimpleAction Wyczysc
+        +SimpleAction UstawDomyslny
+        +OnActivated()
+    }
+    class ListView {
+        <<XAF>>
+        +CollectionSource.Criteria
+        +Id
+    }
+    SavedFilter "*" --> "0..1" ApplicationUser : Owner (null = publiczny)
+    SavedFiltersController ..> SavedFilter : czyta i zapisuje
+    SavedFiltersController ..> SaveFilterParams : pokazuje w popupie
+    SavedFiltersController ..> ListView : nakłada filtr
+```
+
+`Owner = null` oznacza filtr publiczny. Słownik kryteriów na liście (`CollectionSource.Criteria`) jest indeksowany kluczem `"SavedFilter"` — kontroler nie nadpisuje innych filtrów (np. z paska wyszukiwania).
+
+## Jak to działa — przepływ zapisu i wczytania
+
+```mermaid
+sequenceDiagram
+    actor U as Użytkownik
+    participant V as ListView
+    participant C as SavedFiltersController
+    participant P as Popup z SaveFilterParams
+    participant DB as Baza (SavedFilter)
+    U->>V: ustawia filtr w kolumnach
+    U->>C: klika "Zapisz filtr"
+    C->>P: tworzy SaveFilterParams w obj. tymczasowym
+    U->>P: podaje nazwę, zaznacza prywatny/publiczny
+    P->>C: Execute
+    C->>V: GetCurrentCriteriaString z CollectionSource.Criteria
+    C->>DB: CreateObject SavedFilter, CommitChanges
+    Note over U,DB: --- później ---
+    U->>V: wchodzi na listę
+    C->>DB: szuka IsDefault dla (ViewId, currentUser)
+    DB-->>C: SavedFilter
+    C->>V: CollectionSource.Criteria["SavedFilter"] = parsed
+    V-->>U: lista przefiltrowana automatycznie
+```
+
 ## Co użytkownik widzi
 
 Cztery akcje w sekcji "Search" na pasku listy:
