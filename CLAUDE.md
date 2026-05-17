@@ -1,4 +1,6 @@
-# kashiash.github.io — instrukcja dla AI
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Zasady bezwzględne
 
@@ -8,17 +10,47 @@ git pull origin main
 ```
 Bez tego możesz nadpisać zmiany wprowadzone przez inną sesję.
 
-## Struktura strony
+## Uruchamianie lokalnie
 
-- `index.html` — strona główna, **dwukolumnowy układ** (lewa: sticky intro 280px, prawa: lista wpisów). Nie zamieniaj na stary layout z hero/manifestem.
-- `xaf.html` — podstrona XAF, statyczny HTML
-- `_posts/` — posty Jekyll (.markdown)
-- `assets/images/` — obrazki do postów
-- `update_posts.py` — skrypt do aktualizacji front matter postów; **nie modyfikuje index.html**
+```bash
+bundle exec jekyll serve        # serwer dev na http://localhost:4000
+bundle exec jekyll build        # jednorazowy build do _site/
+```
 
-## Dodawanie nowego wpisu do index.html
+Strona jest hostowana na GitHub Pages — push do `main` wdraża automatycznie.
 
-Nowy post dodaj jako `<article class="post-item">` na początku listy w `<main class="posts-col">`, zachowując format:
+## Architektura
+
+Hybryda: `index.html` i `xaf.html` to ręcznie utrzymywane pliki statyczne (poza Jekyll). Posty w `_posts/` są przetwarzane przez Jekyll i generowane do `_site/`.
+
+- `index.html` — strona główna, **dwukolumnowy układ** (sticky intro 280px | lista wpisów). CSS inline w `<head>`. Nie zamieniaj na stary layout z hero/manifestem.
+- `xaf.html` — podstrona XAF, statyczny HTML poza Jekyll
+- `_posts/` — posty Jekyll (.markdown), `permalink: /:year/:month/:day/:title.html`
+- `assets/images/` — miniatury do wpisów; dwa warianty na wpis: `*-list.png` (miniatura w `index.html`) i wersja bez sufiksu (obrazek nagłówkowy wewnątrz posta)
+- `_includes/head.html` — dodatkowe tagi `<head>` wstrzykiwane przez motyw minima
+- `update_posts.py` — skrypt jednorazowy do wstawiania miniatur do front matter postów; **nie modyfikuje `index.html`**
+
+## Dodawanie nowego wpisu
+
+### 1. Plik posta `_posts/`
+
+Front matter:
+```markdown
+---
+layout: post
+title: "Tytuł"
+date: RRRR-MM-DD
+categories: kategoria1 kategoria2
+---
+
+![Alt text](/assets/images/nazwa-wpisu.png)
+
+Treść...
+```
+
+### 2. Wpis w `index.html`
+
+Dodaj jako **pierwszy** `<article class="post-item">` w `<main class="posts-col">`:
 
 ```html
 <article class="post-item">
@@ -27,17 +59,20 @@ Nowy post dodaj jako `<article class="post-item">` na początku listy w `<main c
     <span class="post-kicker">Kategoria</span>
     <h3 class="post-title">Tytuł</h3>
     <p class="post-desc">Jedno zdanie opisu.</p>
-    <a class="post-link" href="/link/do/wpisu.html">Czytaj wpis →</a>
+    <a class="post-link" href="/RRRR/MM/DD/slug-wpisu.html">Czytaj wpis →</a>
   </div>
+  <img src="/assets/images/nazwa-wpisu-list.png" alt="Opis obrazka" class="post-thumb" loading="lazy">
 </article>
 ```
 
-## Email i kontakt
-
-Jedyny adres email: **kashiash@gmail.com** — wszędzie spójny.
+Miniatura (`post-thumb`) to osobny plik `*-list.png` — różny od obrazka nagłówkowego wewnątrz posta.
 
 ## Czego nie ruszać
 
 - Nie zmieniaj układu strony głównej bez wyraźnej prośby.
 - Nie dodawaj sekcji hero, manifest, kafelki kategorii — zostały celowo usunięte.
 - Nie commituj bez `git pull` na początku.
+
+## Email i kontakt
+
+Jedyny adres email: **kashiash@gmail.com** — wszędzie spójny.
