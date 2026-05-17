@@ -7,9 +7,21 @@ categories: swift ios swiftui swiftdata
 
 ![Lista produktów scrolluje się bez końca, wskaźnik synchronizacji w tle](/assets/images/infinite-scroll-cache.png)
 
-Masz listę produktów z API. Ładujesz pierwszą stronę. Użytkownik scrolluje — czas na kolejną. Pierwsze podejście: `onAppear` na ostatniej komórce. Działa, aż użytkownik scrolluje szybko w górę i z powrotem. Task się anuluje, dane nie wracają, lista staje w miejscu. Dochodzi `AsyncImage` bez stałych wymiarów — gdy obrazek wróci z sieci, komórka rośnie i lista skacze. Dochodzi brak sieci — biały ekran zamiast poprzednich danych.
+Budujesz listę z API. Każda strona to 20 elementów. Użytkownik scrolluje — czas na kolejną.
 
-Rozwiązanie mieści się w jednym `ViewModifier`, jednym enumie i `@ModelActor` ze SwiftData. Trigger oparty na geometrii scrolla zamiast `onAppear`. Enum ze stanami zastępuje rozsypane flagi boolowskie. Cache-first przy każdym fetchu — lista działa offline od drugiego uruchomienia. Komórki nie skaczą.
+Pierwsze podejście: `onAppear` na ostatnim elemencie. Gdy element pojawi się na ekranie, startujesz fetch. Problem: `onAppear` działa tylko wtedy, gdy SwiftUI wyrenderuje ten element. Gdy scrollujesz szybko, SwiftUI może go nie wyrenderować ponownie — task się nie odpali. Albo odpali, ale system anuluje go w połowie, bo element zniknie z ekranu zanim dane wrócą.
+
+Dochodzi `AsyncImage`. SwiftUI nie zna wymiarów obrazka, dopóki go nie pobierze. Rezerwuje minimalną przestrzeń, a gdy obrazek wróci z sieci — komórka rośnie, lista skacze.
+
+Dochodzi brak sieci. Nie ma danych z API — pokazujesz pusty ekran, choć poprzednia sesja miała dane.
+
+Trzy problemy, trzy rozwiązania.
+
+`onScrollGeometryChange` (iOS 18+) śledzi offset całego scroll view — nie poszczególnych komórek. Odpala się raz, gdy offset zbliży się do końca zawartości. Nie zależy od tego, które komórki SwiftUI aktualnie renderuje.
+
+Enum `LoadingState` zastępuje osobne flagi `Bool`. Nie możesz mieć jednocześnie `loading = true` i `refreshing = true` — enum gwarantuje jeden aktywny stan w danej chwili.
+
+SwiftData jako cache przechowuje dane między sesjami. Przy starcie pokazujesz to, co masz w bazie — zanim sieć odpowie. Przy braku sieci lista nadal działa.
 
 DTO → `@Model` i `@ModelActor` opisałem w [poprzednim wpisie](/2026/05/17/swiftdata-dane-z-api.html).
 
@@ -17,9 +29,7 @@ DTO → `@Model` i `@ModelActor` opisałem w [poprzednim wpisie](/2026/05/17/swi
 
 ## Kiedy ładować więcej — NearBottomTrigger
 
-Pierwsza myśl: `onAppear` na ostatniej komórce. Problem: komórka może zniknąć z ekranu gdy użytkownik scrolluje szybko w górę i z powrotem. Task się anuluje. Dane nie wracają.
-
-Lepsze rozwiązanie: `onScrollGeometryChange` (iOS 18+). Śledzi geometrię scroll view — nie poszczególne komórki. Wyzwala akcję raz, gdy offset zbliży się do końca zawartości.
+`onScrollGeometryChange` (iOS 18+) śledzi geometrię scroll view — nie poszczególne komórki. Wyzwala akcję raz, gdy offset zbliży się do końca zawartości.
 
 ```swift
 struct NearBottomTrigger: ViewModifier {
@@ -309,9 +319,9 @@ private func warmUpCache() async {
 }
 ```
 
-`fetchMore()` na wejściu wywołuje `pauseWarmUpSync()`. Po skończeniu wywołuje `startWarmUpSync()`. Gdy użytkownik scrolluje — sync odpuszcza. Gdy zatrzymuje się — wznawia.
+`fetchMore()` na wejściu wywołuje `pauseWarmUpSync()`. Gdy skończy, wywołuje `startWarmUpSync()`. Gdy użytkownik scrolluje — sync odpuszcza. Gdy zatrzymuje się — wznawia.
 
-Stan sync widoczny jest w toolbarze:
+Stan sync widzisz w toolbarze:
 
 ```swift
 case .syncing:

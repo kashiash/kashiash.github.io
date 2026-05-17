@@ -7,9 +7,17 @@ categories: swift ios swiftdata
 
 ![Dane z serwera lądują w lokalnej bazie SwiftData](/assets/images/swiftdata-api.png)
 
-Budujesz listę z danymi z API. Chcesz, żeby działała offline. Pierwsze podejście: `@Model` z `Codable`, `modelContext.insert` w `.task`. Działa — do momentu, gdy dochodzi paginacja i insert pięćdziesięciu rekordów freezuje UI. Dochodzi refresh — masz duplikaty, bo SwiftData nie ma wbudowanego upsert. Dochodzi wyszukiwanie — chcesz osobnej kolekcji w tej samej bazie, bez mieszania wyników.
+Dane w aplikacji pobierasz z API. Gdy uruchamiasz ją po raz pierwszy — lista się ładuje. Użytkownik wychodzi z zasięgu i wraca. Dane znikają. Biały ekran.
 
-Wszystko rozwiązują dwie struktury i jeden aktor: DTO do dekodowania, `@Model` do persystencji i `@ModelActor` do upsert poza głównym wątkiem. Bez zewnętrznych bibliotek. Działa tak samo przy 20 rekordach i przy 500.
+Pierwsze rozwiązanie: zapisz odpowiedź do lokalnej bazy. SwiftData wydaje się oczywistym wyborem. Przy następnym starcie ładujesz z bazy — użytkownik widzi dane nawet bez sieci.
+
+Problem: API ma zawsze nowsze dane niż baza. Jak wiedzieć, które rekordy zaktualizować? Prosty insert duplikuje — SwiftData nie ma wbudowanego upsert. Wstawiasz ten sam produkt dwa razy, dostajesz dwa rekordy.
+
+Dochodzi skala. Sto rekordów naraz przez `modelContext` z `@MainActor` freezuje UI. Użytkownik widzi, że aplikacja się ścina.
+
+Dochodzi wyszukiwanie. Chcesz osobnej kolekcji wyników w tej samej bazie. Wyniki nie mogą się mieszać z główną listą.
+
+Rozwiązanie mieści się w dwóch strukturach i jednym aktorze: DTO do dekodowania, `@Model` do persystencji i `@ModelActor` do upsert poza głównym wątkiem. Bez zewnętrznych bibliotek. Działa tak samo przy 20 rekordach i przy 500.
 
 ## Dwie struktury zamiast jednej
 
@@ -111,9 +119,9 @@ actor ProductCacheStore {
 
 Decyzje warte zapamiętania:
 
-- **Jeden `FetchDescriptor` z `ids.contains`** zamiast N osobnych zapytań po `remoteID`. Dla 50 rekordów to różnica między 50 a 1 tripen do SQLite.
-- **`DefaultSerialModelExecutor`** dostaje `ModelContext` stworzony w inicjalizatorze aktora. Nie używam `modelContext` przekazanego z zewnątrz — `@ModelActor` sam pilnuje wątku.
-- **`queryKey`** pozwala trzymać kilka niezależnych kolekcji w jednym kontenerze. Przy wyszukiwaniu lub filtrowaniu tworzę nowy `ProductCacheStore` z innym kluczem, stara kolekcja nie koliduje.
+- **Jeden `FetchDescriptor` z `ids.contains`** zamiast N osobnych zapytań po `remoteID`. Dla 50 rekordów to różnica między 50 a 1 zapytaniem do SQLite.
+- **`DefaultSerialModelExecutor`** dostaje `ModelContext`, który tworzę w inicjalizatorze aktora. Nie używam `modelContext` przekazanego z zewnątrz — `@ModelActor` sam pilnuje wątku.
+- **`queryKey`** pozwala trzymać kilka niezależnych kolekcji w jednym kontenerze. Gdy szukam lub filtruję, tworzę nowy `ProductCacheStore` z innym kluczem — stara kolekcja nie koliduje.
 
 ## Podpięcie w widoku
 
@@ -138,7 +146,7 @@ struct ProductsListView: View {
 }
 ```
 
-`ProductCacheStore` nie jest `@StateObject` ani `@Observable` — to aktor. Tworzę go raz w `.task` i przekazuję dalej. `modelContext.container` daje dostęp do `ModelContainer` bez wstrzykiwania go osobno.
+`ProductCacheStore` nie jest `@StateObject` ani `@Observable` — to aktor. Tworzę go raz w `.task` i przekazuję dalej. `modelContext.container` daje dostęp do `ModelContainer` — nie wstrzykuję go osobno.
 
 ## Pułapki
 
@@ -146,8 +154,8 @@ struct ProductsListView: View {
 
 **`modelContext.save()` w aktorze jest synchroniczne.** `@ModelActor` sprawia, że cały aktor działa na jednym wątku — ale nie blokuje `@MainActor`. To właśnie o to chodzi.
 
-**`#Predicate` nie akceptuje zmiennych lokalnych domknięcia.** `ids.contains($0.remoteID)` działa, bo `ids` to `[Int]` — typ obsługiwany przez SwiftData predykaty. Nie możesz tam przekazać własnego struct lub klasy.
+**`#Predicate` nie akceptuje zmiennych lokalnych domknięcia.** `ids.contains($0.remoteID)` działa, bo `ids` to `[Int]` — SwiftData obsługuje ten typ w predykatach. Nie możesz tam przekazać własnego struct lub klasy.
 
 ## Co dalej
 
-Ten wzorzec to podstawa dla paginacji. Przy infinite scroll `upsertProducts` jest wywoływany ze stronicowanym `offset`, a `queryKey` rozdziela kolekcje przy różnych zapytaniach. Opisuję to w następnym wpisie o infinite scroll z warm-up cache w tle.
+Ten wzorzec to podstawa dla paginacji. Przy infinite scroll wywołuję `upsertProducts` ze stronicowanym `offset`, a `queryKey` rozdziela kolekcje przy różnych zapytaniach. Opisuję to w następnym wpisie o infinite scroll z warm-up cache w tle.
