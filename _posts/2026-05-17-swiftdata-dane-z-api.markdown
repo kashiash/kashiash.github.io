@@ -17,7 +17,13 @@ Dochodzi skala. Sto rekordów naraz przez `modelContext` z `@MainActor` freezuje
 
 Dochodzi wyszukiwanie. Chcesz osobnej kolekcji wyników w tej samej bazie. Wyniki nie mogą się mieszać z główną listą.
 
-Rozwiązanie mieści się w dwóch strukturach i jednym aktorze: DTO do dekodowania, `@Model` do persystencji i `@ModelActor` do upsert poza głównym wątkiem. Bez zewnętrznych bibliotek. Działa tak samo przy 20 rekordach i przy 500.
+Każdy z tych problemów ma rozwiązanie w jednym miejscu.
+
+**DTO** to lekka struktura do dekodowania JSON — żyje przez jeden request, potem znika. Nie blokujesz nią bazy.
+
+**`@Model`** trwa między sesjami i obsługuje zapytania. Osobny `queryKey` izoluje kolekcję wyszukiwania od głównej listy — wyniki się nie mieszają.
+
+**`@ModelActor`** robi upsert poza `@MainActor`. Sto rekordów zapisuje w tle — UI nie mruga. Batch fetch przed insertem eliminuje duplikaty bez zewnętrznych bibliotek.
 
 ## Dwie struktury zamiast jednej
 
