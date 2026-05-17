@@ -9,7 +9,7 @@ series_part: 6
 
 Jeżeli chcesz, żeby użytkownik mógł wrzucić do pracownika, sprawy albo dowolnego innego obiektu skany, faktury i CV — naraz, przeciągając całą paczkę z dysku — a potem otworzyć każdy plik i zobaczyć podgląd PDF bez pobierania, musisz dorobić to do XAF samodzielnie. Standardowo aplikacja przyjmuje jeden plik na raz i nie pokazuje PDF inline. Tę lukę domyka się jedną encją załącznika, kontrolerem z popupem i endpointem API.
 
-Dalej pokazuję konkretną realizację w `MainDemo.NET.EFCore` (XAF Blazor + EF Core). Wariant działa też po podpięciu pod inne klasy, nie tylko `Employee`. PDF rysuje wbudowana w przeglądarkę przeglądarka — bez własnego silnika renderującego i bez bibliotek zewnętrznych.
+Dalej pokazuję konkretną realizację w `MainDemo.NET.EFCore` (XAF Blazor + EF Core). Wariant działa też po podpięciu pod inne klasy, nie tylko `Employee`. PDF rysuje sama przeglądarka swoim wbudowanym czytnikiem — bez dokładania bibliotek zewnętrznych.
 
 ## Jak to działa — schemat klas
 
@@ -161,7 +161,7 @@ Na `Employee` i `DemoTask`:
 public virtual IList<DocumentFile> DocumentFiles { get; set; } = new ObservableCollection<DocumentFile>();
 ```
 
-`[Aggregated]` mówi XAF, że dokumenty są częścią właściciela. Usuwasz pracownika — znikają jego dokumenty.
+Atrybut `[Aggregated]` mówi XAF, że dokumenty są częścią właściciela. Usuwasz pracownika — znikają jego dokumenty.
 
 ## Krok 4. `DbContext`
 
@@ -328,7 +328,7 @@ Endpoint odbiera listę plików, tworzy dla każdego nowy `DocumentFile` z `File
 
 ## Krok 9. Podgląd PDF
 
-PDF nie wymaga własnego silnika renderującego. Przeglądarka ma swój.
+Nie musisz pisać własnego silnika rysującego PDF — robi to przeglądarka.
 
 ```razor
 @if (Extension == "pdf") {
@@ -336,7 +336,7 @@ PDF nie wymaga własnego silnika renderującego. Przeglądarka ma swój.
 }
 ```
 
-Komponent przygotowuje URL do pliku, `<object>` go osadza, a renderowanie wykonuje wbudowana w przeglądarkę przeglądarka PDF. To samo działa od strony użytkownika tak samo na Chrome, Edge i Firefox.
+Komponent przygotowuje URL do pliku, `<object>` go osadza, a samo rysowanie obsługuje wbudowany w przeglądarkę czytnik PDF. Działa identycznie na Chrome, Edge i Firefoksie.
 
 Dla obrazów (`png`, `jpg`) używam zwykłego `<img src="@ContentUrl" />`. Pozostałe rozszerzenia pokazuję jako link do pobrania.
 
@@ -349,10 +349,6 @@ Bez tego użytkownik w ogóle nie zobaczy listy dokumentów ani nie kliknie „D
 ## Krok 11. Detail view dokumentu
 
 `DocumentFile_DetailView` ma cztery pola: `File`, `Type`, `Description`, `PreviewFile`. Trzy pierwsze są edytowalne. `PreviewFile` renderuje się komponentem `DocumentPreviewRenderer` — tym samym `FileData`, ale z drugim aliasem edytora.
-
-## Cały przepływ od kliknięcia do podglądu
-
-Użytkownik otwiera `Employee`, przechodzi do zakładki „Załączniki" i klika „Dodaj pliki". Popup z `DxUpload` otwiera się od razu w trybie pełnoekranowym. Użytkownik przeciąga 20 PDF-ów. `DxUpload` wysyła każdy plik osobno na `/api/document-files/upload` w trybie `Instant`. Endpoint w jednym `IObjectSpace` tworzy 20 rekordów `DocumentFile`, przypina je do pracownika i commituje. Po zamknięciu popupu kontroler odświeża listę — wszystkie 20 dokumentów pojawia się od razu. Po kliknięciu w którykolwiek z nich detail view pokazuje PDF inline.
 
 ## Wariant dla CV (`Resume`) — drobna różnica
 
