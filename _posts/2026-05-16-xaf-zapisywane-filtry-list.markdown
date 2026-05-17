@@ -4,6 +4,8 @@ title: "XAF: zapisywane filtry list w jednym kontrolerze"
 date: 2026-05-16
 ---
 
+![Zapisywane filtry w XAF](/assets/images/xaf-filters.png)
+
 Jeżeli chcesz, żeby użytkownik mógł raz ustawić filtr na liście, zapisać go pod nazwą i wracać do niego później — albo udostępniać filtry zespołowi — musisz dorobić to do XAF samodzielnie. Standardowo framework filtrów nie zapamiętuje; po wyjściu z widoku znikają. To samo trzeba zaproponować dla domyślnego filtra, który nakłada się automatycznie po wejściu na listę.
 
 Wszystko mieści się w jednej encji EF Core, jednym kontrolerze widoku, jednym popupie i obiekcie tymczasowym. Bez bibliotek zewnętrznych. Działa identycznie w Blazor Server i WinForms.
