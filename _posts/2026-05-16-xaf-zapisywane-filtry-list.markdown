@@ -6,11 +6,9 @@ date: 2026-05-16
 
 ![Zapisywane filtry w XAF](/assets/images/xaf-filters.png)
 
-Jeżeli chcesz, żeby użytkownik mógł raz ustawić filtr na liście, zapisać go pod nazwą i wracać do niego później — albo udostępniać filtry zespołowi — musisz dorobić to do XAF samodzielnie. Standardowo framework filtrów nie zapamiętuje; po wyjściu z widoku znikają. To samo trzeba zaproponować dla domyślnego filtra, który nakłada się automatycznie po wejściu na listę.
+Użytkownik ustawia filtr na liście, wychodzi z widoku, wraca — filtr znikł. XAF filtrów nie zapamiętuje.
 
-Wszystko mieści się w jednej encji EF Core, jednym kontrolerze widoku, jednym popupie i obiekcie tymczasowym. Bez bibliotek zewnętrznych. Działa identycznie w Blazor Server i WinForms.
-
-Mechanizm daje cztery rzeczy: zapisz aktualny filtr pod nazwą, wczytaj go z listy, wyczyść, oznacz jako domyślny dla widoku. Filtr może być prywatny (tylko mój) albo publiczny (dla wszystkich).
+Jedna encja i jeden kontroler rozwiązują ten problem. Cztery operacje: zapisz filtr pod nazwą, wczytaj z listy, wyczyść, ustaw jako domyślny — przy następnym wejściu nakłada się automatycznie. Filtr może być prywatny (tylko autor) albo publiczny (cały zespół). Bez zewnętrznych bibliotek. Działa identycznie w Blazor i WinForms.
 
 ## Jak to działa — schemat klas
 
@@ -56,7 +54,7 @@ classDiagram
     SavedFiltersController ..> ListView : nakłada filtr
 ```
 
-`Owner = null` oznacza filtr publiczny. Słownik kryteriów na liście (`CollectionSource.Criteria`) jest indeksowany kluczem `"SavedFilter"` — kontroler nie nadpisuje innych filtrów (np. z paska wyszukiwania).
+`Owner = null` oznacza filtr publiczny. Kontroler zapisuje własne kryterium pod kluczem `"SavedFilter"` w słowniku `CollectionSource.Criteria` — i nie rusza innych filtrów (np. z paska wyszukiwania).
 
 ## Jak to działa — przepływ zapisu i wczytania
 
@@ -178,7 +176,7 @@ To samo robi wbudowana akcja "Save Layout" w XAF — popup z `DomainComponent` i
 
 ### 3. ViewController
 
-Centralny kawałek. Cztery akcje plus auto-nałożenie domyślnego filtra w `OnActivated`.
+Cztery akcje. W `OnActivated` kontroler nakłada domyślny filtr.
 
 ```csharp
 public class SavedFiltersController : ViewController<ListView> {
@@ -235,8 +233,6 @@ public class SavedFiltersController : ViewController<ListView> {
     }
 }
 ```
-
-Najważniejsze fragmenty.
 
 **Wczytywanie listy zapisanych filtrów dla bieżącego widoku:**
 
@@ -298,7 +294,7 @@ private void ApplyCriteria(SavedFilter filter) {
 }
 ```
 
-`View.CollectionSource.Criteria` to słownik z nazwanymi kryteriami. Wszystkie aktywne wpisy są łączone operatorem AND. Klucz `"SavedFilter"` to nasz wpis — możemy go nadpisać albo usunąć, nie ruszając pozostałych filtrów (np. z paska wyszukiwania).
+`View.CollectionSource.Criteria` to słownik z nazwanymi kryteriami. XAF łączy wszystkie aktywne wpisy operatorem AND. Klucz `"SavedFilter"` to nasz wpis — możemy go nadpisać albo usunąć. Pozostałe filtry (np. z paska wyszukiwania) nie zmieniają się.
 
 **Odczyt aktualnie aktywnych kryteriów do zapisu:**
 
@@ -356,7 +352,7 @@ dotnet ef migrations add AddSavedFilter -p MainDemo.Module
 
 ## Pułapki
 
-**`View.CollectionSource.Criteria` to słownik, nie kolekcja `CriteriaOperator`.** Iterujesz przez `.Keys` i pobierasz po kluczu, albo używasz `.Values.Aggregate(CriteriaOperator.And)`. Bezpośrednie `foreach (var x in Criteria)` nie skompiluje się tak, jak myślisz — typ elementu to `KeyValuePair<string, CriteriaOperator>`, ale enumerator zwraca samo `CriteriaOperator`. Trzymaj się dostępu przez klucz.
+**`View.CollectionSource.Criteria` to słownik, nie kolekcja `CriteriaOperator`.** Iterujesz przez `.Keys` i pobierasz po kluczu, albo używasz `.Values.Aggregate(CriteriaOperator.And)`. Bezpośrednie `foreach (var x in Criteria)` nie działa tak, jak myślisz. Enumerator zwraca samo `CriteriaOperator`, nie `KeyValuePair<string, CriteriaOperator>`. Trzymaj się dostępu przez klucz.
 
 **Nie ma `FilterController.GetCombinedCriteria()`.** Wszystkie aktywne filtry (filtr kolumnowy w gridzie, full-text search, ręcznie ustawione kryteria) trafiają do tego samego słownika `View.CollectionSource.Criteria`. Iterujesz go i łączysz operatorem AND.
 
@@ -366,10 +362,10 @@ dotnet ef migrations add AddSavedFilter -p MainDemo.Module
 
 ## Co przetestować
 
-- Zapis filtra prywatnego — widoczny tylko dla autora.
-- Zapis filtra publicznego — widoczny dla wszystkich.
-- Wczytanie filtra — kryterium aplikuje się na listę.
-- Wyczyszczenie filtra — lista wraca do pełnego zbioru.
+- Zapisz filtr prywatny — widoczny tylko dla autora.
+- Zapisz filtr publiczny — widoczny dla wszystkich.
+- Wczytaj filtr — kryterium nakłada się na listę.
+- Wyczyść filtr — lista wraca do pełnego zbioru.
 - Domyślny dla użytkownika A nie wpływa na widok użytkownika B.
 - Restart aplikacji — domyślny filtr nakłada się automatycznie.
 
