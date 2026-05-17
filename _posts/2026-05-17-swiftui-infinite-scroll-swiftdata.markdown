@@ -23,7 +23,7 @@ Enum `LoadingState` zastępuje osobne flagi `Bool`. Nie możesz mieć jednocześ
 
 SwiftData jako cache przechowuje dane między sesjami. Przy starcie pokazujesz to, co masz w bazie — zanim sieć odpowie. Przy braku sieci lista nadal działa.
 
-DTO → `@Model` i `@ModelActor` opisałem w [poprzednim wpisie](/2026/05/17/swiftdata-dane-z-api.html).
+Wzorzec DTO → `@Model` → `@ModelActor` — [poprzedni wpis](/2026/05/17/swiftdata-dane-z-api.html).
 
 ---
 
@@ -215,7 +215,7 @@ private func appendUnique(_ newProducts: [Product]) {
 
 ## Miniatury bez blokowania UI
 
-Miniatury pobieramy asynchronicznie — po tym jak zapiszemy metadane produktu do cache. Maksymalnie 4 równolegle, żeby nie przeciążyć sieci.
+Gdybyś czekał na każdy obrazek przed pokazaniem listy, użytkownik stałby z pustym ekranem. Pobieramy miniatury osobno — lista pojawia się od razu, obrazki dochodzą stopniowo. Maksymalnie 4 równolegle, żeby nie przeciążyć sieci.
 
 ```swift
 private func hydrateThumbnails(for products: [Product]) async {
