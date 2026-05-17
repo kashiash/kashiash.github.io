@@ -86,7 +86,7 @@ sequenceDiagram
 
 ## Co dochodzi do projektu
 
-Model danych: słownik typów dokumentów (`DocumentFileType`), encja dokumentu (`DocumentFile`), interfejs `IHasDocumentFiles` znaczący „ta klasa może mieć załączniki", kolekcja `DocumentFiles` na właścicielu i obiekt tymczasowy `DocumentFileUploadParameters` dla popupu.
+Model danych: słownik typów dokumentów (`DocumentFileType`), encja dokumentu (`DocumentFile`), interfejs `IHasDocumentFiles` znaczący „ta klasa może mieć załączniki", kolekcja `DocumentFiles` na właścicielu oraz obiekt tymczasowy `DocumentFileUploadParameters` dla popupu (w terminologii XAF: „NonPersistent").
 
 Baza: dwa `DbSet` w `DbContext` plus relacje od `DocumentFile` do właścicieli (`Employee`, `DemoTask`).
 
