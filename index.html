@@ -211,8 +211,8 @@
 
     .post-item {
       display: grid;
-      grid-template-columns: 116px 1fr;
-      gap: 16px;
+      grid-template-columns: 116px 1fr 120px;
+      gap: 20px;
       padding: 22px 24px;
       border-bottom: 1px solid var(--line);
       background: rgba(255,255,255,0.22);
@@ -220,6 +220,15 @@
     }
 
     .post-item:hover { background: rgba(255,255,255,0.46); }
+
+    .post-thumb {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background-color: var(--paper);
+    }
 
     .post-date {
       font-size: 0.83rem;
@@ -288,8 +297,13 @@
 
       .post-item {
         grid-template-columns: 1fr;
-        gap: 6px;
+        gap: 12px;
         padding: 18px 16px;
+      }
+      
+      .post-thumb {
+        height: 180px;
+        margin-top: 12px;
       }
 
       .site-header { padding: 14px 16px; }
@@ -353,6 +367,7 @@
           <p class="post-desc">Standardowy XAF nie zapamiętuje filtra po wyjściu z widoku. Jedna encja EF Core, jeden ViewController, jeden popup — i użytkownik zapisuje, wczytuje i oznacza filtr jako domyślny.</p>
           <a class="post-link" href="/2026/05/16/xaf-zapisywane-filtry-list.html">Czytaj wpis →</a>
         </div>
+        <img src="/assets/images/xaf-filters-list.png" alt="Filtrowanie danych" class="post-thumb" loading="lazy">
       </article>
 
       <article class="post-item">
