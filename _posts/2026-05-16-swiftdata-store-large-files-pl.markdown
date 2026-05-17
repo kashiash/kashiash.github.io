@@ -7,9 +7,9 @@ categories: swift ios
 
 ![SwiftData i duże pliki: Wieloryb w walizce](/assets/images/swiftdata-large-files.png)
 
-Jeżeli chcesz, żeby użytkownik twojej aplikacji iOS oglądał zdjęcia, słuchał podcastów albo otwierał wideo bez połączenia z internetem — i robił to płynnie, bez sekundowych zamulień na każdym przewinięciu listy — musisz trzymać duże pliki lokalnie. Standardowo SwiftData wrzuca wszystkie pola do głównego pliku bazy, więc po kilkuset rekordach każde zapytanie zwalnia.
+Aplikacja ma pokazywać zdjęcia, grać podcasty albo otwierać wideo bez internetu — płynnie, bez zawieszania się przy scrollowaniu. SwiftData domyślnie wrzuca wszystkie pola do jednego pliku bazy. Po kilkuset rekordach każde zapytanie zwalnia.
 
-Tego ratuje atrybut `@Attribute(.externalStorage)`. SwiftData zachowuje metadane w bazie, a sam binarny content trzyma jako osobne pliki obok. Dalej pokazuję model, pobieranie z API i wyświetlanie z cache.
+`@Attribute(.externalStorage)` rozwiązuje ten problem. SwiftData zachowuje metadane w bazie, a same dane binarne trzyma jako osobne pliki obok.
 
 ## Jak to działa — przepływ danych
 
@@ -42,7 +42,7 @@ sequenceDiagram
 
 ## Model SwiftData z obsługą zewnętrznego przechowywania
 
-Atrybut `@Attribute(.externalStorage)` informuje SwiftData, że dane powinny być przechowywane poza głównym plikiem bazy. To kluczowe dla wydajności przy dużych plikach.
+`@Attribute(.externalStorage)` każe SwiftData trzymać dane poza głównym plikiem bazy. To kluczowe dla wydajności przy dużych plikach.
 
 ```swift
 @Model
@@ -67,7 +67,7 @@ class PhotoObject {
 
 ## Pobieranie i zapisywanie danych binarnych
 
-W `WebService` pobieramy dane obrazu asynchronicznie i przypisujemy je do encji przed zapisem w `ModelContext`.
+W `WebService` pobieramy dane obrazu asynchronicznie i przypisujemy je do encji, zanim zapiszemy do `ModelContext`.
 
 ```swift
 private func getDataFrom(url: String) async -> Data? {
@@ -95,4 +95,4 @@ if let imageData = item.photo,
 }
 ```
 
-Dzięki temu Twoja aplikacja może działać w pełni offline po początkowym pobraniu danych.
+Po pierwszym uruchomieniu z siecią aplikacja działa offline.
