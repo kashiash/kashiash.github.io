@@ -11,6 +11,79 @@ Jeżeli chcesz, żeby użytkownik mógł wrzucić do pracownika, sprawy albo dow
 
 Dalej pokazuję konkretną realizację w `MainDemo.NET.EFCore` (XAF Blazor + EF Core). Wariant działa też po podpięciu pod inne klasy, nie tylko `Employee`. PDF rysuje wbudowana w przeglądarkę przeglądarka — bez własnego silnika renderującego i bez bibliotek zewnętrznych.
 
+## Jak to działa — schemat klas
+
+```mermaid
+classDiagram
+    class IHasDocumentFiles {
+        <<interface>>
+        +IList~DocumentFile~ DocumentFiles
+    }
+    class Employee {
+        +Guid ID
+        +string FirstName
+        +string LastName
+    }
+    class DemoTask {
+        +Guid ID
+        +string Subject
+    }
+    class DocumentFile {
+        +Guid ID
+        +FileData File
+        +DocumentFileType Type
+        +string Description
+        +DateTime UploadedAtUtc
+        +Employee Employee
+        +DemoTask DemoTask
+        +DocumentFilePreview PreviewFile
+    }
+    class DocumentFileType {
+        +Guid ID
+        +string Code
+        +string Name
+        +bool IsActive
+    }
+    class FileData {
+        <<DevExpress>>
+        +string FileName
+        +byte[] Content
+    }
+    Employee ..|> IHasDocumentFiles
+    DemoTask ..|> IHasDocumentFiles
+    Employee "1" o-- "*" DocumentFile : DocumentFiles
+    DemoTask "1" o-- "*" DocumentFile : DocumentFiles
+    DocumentFile "*" --> "1" DocumentFileType : Type
+    DocumentFile "1" o-- "1" FileData : File
+```
+
+`IHasDocumentFiles` to umowa: „ta klasa może mieć załączniki". Akcja „Dodaj pliki" pokazuje się tylko nad listą zagnieżdżoną dla właściciela, który tę umowę spełnia. `DocumentFile` jest aggregowane przez właściciela, więc usunięcie pracownika usuwa też jego dokumenty.
+
+## Jak to działa — przepływ uploadu
+
+```mermaid
+sequenceDiagram
+    actor U as Użytkownik
+    participant Owner as Employee / DemoTask
+    participant Ctrl as DocumentFileNestedListViewController
+    participant Pop as Popup z DxUpload
+    participant Api as DocumentFileUploadController
+    participant DB as DbContext
+    U->>Owner: otwiera detail view, klika "Dodaj pliki"
+    Owner->>Ctrl: aktywuje akcję na nested ListView
+    Ctrl->>Pop: tworzy DocumentFileUploadParameters, otwiera popup
+    U->>Pop: przeciąga 20 PDF-ów
+    loop dla każdego pliku
+        Pop->>Api: POST /api/document-files/upload
+        Api->>DB: CreateObject DocumentFile + FileData
+        Api->>DB: AddToOwnerDocuments(owner)
+    end
+    Api->>DB: CommitChanges (1 transakcja)
+    U->>Pop: klika "Zamknij"
+    Ctrl->>Owner: View.ObjectSpace.Refresh
+    Owner-->>U: lista pokazuje 20 nowych rekordów
+```
+
 ## Co dochodzi do projektu
 
 Model danych: słownik typów dokumentów (`DocumentFileType`), encja dokumentu (`DocumentFile`), interfejs `IHasDocumentFiles` znaczący „ta klasa może mieć załączniki", kolekcja `DocumentFiles` na właścicielu i obiekt tymczasowy `DocumentFileUploadParameters` dla popupu.
