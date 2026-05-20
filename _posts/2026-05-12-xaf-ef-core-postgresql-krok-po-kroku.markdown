@@ -333,9 +333,9 @@ PostgreSQL domyślnie rozróżnia wielkość liter w tekstach. SQL Server tego n
 CREATE EXTENSION IF NOT EXISTS citext;
 ```
 
-Nie umieszczaj tego polecenia w kodzie startowym aplikacji (np. w `UpdateDatabaseBeforeUpdateSchema`). Jeśli użytkownik aplikacji spróbuje wykonać `CREATE EXTENSION` przy starcie, baza zwróci błąd `permission denied`, a aplikacja się nie uruchomi.
+Nie umieszczaj tego polecenia w kodzie startowym wprost, bez odpowiedniej obsługi błędów. Jeśli użytkownik aplikacji nie ma praw superusera i spróbuje wykonać `CREATE EXTENSION` przy starcie, baza zwróci błąd `permission denied`, a aplikacja się nie uruchomi. Sposób z bezpiecznym blokiem `try-catch` (który pozwala na ignorowanie tego błędu na produkcji) opisuję w sekcji z konfiguracją poniżej.
 
-W usługach zarządzanych PostgreSQL (AWS RDS, Azure Database for PostgreSQL, Supabase) obowiązuje lista dozwolonych rozszerzeń (whitelist). Musisz włączyć `citext` in-panelu zarządzania lub ustawić parametr `rds.allowed_extensions` przed instalacją.
+W usługach zarządzanych PostgreSQL (AWS RDS, Azure Database for PostgreSQL, Supabase) obowiązuje lista dozwolonych rozszerzeń (whitelist). Musisz włączyć `citext` w panelu zarządzania lub ustawić parametr `rds.allowed_extensions` przed instalacją.
 
 Po instalacji rozszerzenia zmapuj pola tekstowe, aby projekt korzystał z typu `citext`.
 
@@ -402,7 +402,7 @@ Typ `citext` zapewnia porównywanie bez uwzględniania wielkości liter (case-in
 
 ### 2. Updater — zainstaluj rozszerzenie przed poleceniami DDL
 
-XAF korzysta z własnego mechanizmu synchronizacji schematu (schema syncer) — nie uruchamia migracji EF Core bezpośrednio, lecz porównuje model z bazą i wysyła polecenia DDL. Jeśli rozszerzenie `citext` nie istnieje w bazie przed wysłaniem przez XAF instrukcji `ALTER COLUMN ... TYPE citext`, system zgłosi błąd. Dlatego zainstaluj je w metodzie `UpdateDatabaseBeforeUpdateSchema`:
+XAF korzysta z własnego mechanizmu synchronizacji schematu (schema syncer) — nie uruchamia migracji EF Core bezpośrednio, lecz porównuje model z bazą i wysyła polecenia DDL. Jeśli rozszerzenie `citext` nie istnieje w bazie przed wysłaniem przez XAF instrukcji `ALTER COLUMN ... TYPE citext`, system zgłosi błąd. Dlatego zainstaluj je w metodzie `UpdateDatabaseBeforeUpdateSchema`, przechwytując błąd braku uprawnień:
 
 ```csharp
 // Module/DatabaseUpdate/Updater.cs
@@ -415,15 +415,23 @@ public override void UpdateDatabaseBeforeUpdateSchema()
     if (ObjectSpace is DevExpress.ExpressApp.EFCore.EFCoreObjectSpace efCoreObjectSpace
         && efCoreObjectSpace.DbContext.Database.IsNpgsql())
     {
-        efCoreObjectSpace.DbContext.Database.ExecuteSqlRaw(
-            "CREATE EXTENSION IF NOT EXISTS citext;");
+        try
+        {
+            efCoreObjectSpace.DbContext.Database.ExecuteSqlRaw(
+                "CREATE EXTENSION IF NOT EXISTS citext;");
+        }
+        catch (Npgsql.PostgresException ex) when (ex.SqlState == "42501") // Insufficient Privilege
+        {
+            // Ignorujemy brak uprawnień. Jeśli rozszerzenie zostało już zainstalowane
+            // przez DBA, aplikacja pomyślnie przejdzie do aktualizacji schematu.
+        }
     }
 }
 ```
 
-Klauzula `IF NOT EXISTS` zapewnia idempotentność kodu. Możesz pozostawić go w aplikacji na stałe.
+Klauzula `IF NOT EXISTS` zapewnia idempotentność kodu.
 
-**Ważne:** ten kod zadziała tylko wtedy, gdy użytkownik bazy danych ma uprawnienia do uruchomienia `CREATE EXTENSION`. Jeśli aplikacja łączy się z uprawnieniami zwykłego użytkownika aplikacji, administrator bazy danych (DBA) musi zainstalować rozszerzenie ręcznie. W takim wypadku powyższy kod nie wykona żadnej operacji (no-op).
+**Ważne:** dzięki filtrowi `when (ex.SqlState == "42501")` kod staje się odporny na brak uprawnień superusera na produkcji. Jeśli aplikacja łączy się z uprawnieniami zwykłego użytkownika, a administrator bazy danych (DBA) wdrożył już rozszerzenie ręcznie, program zignoruje ten błąd i przejdzie dalej do wykonywania poleceń DDL.
 
 ### 3. Migracja EF Core — zaktualizuj snapshot
 
