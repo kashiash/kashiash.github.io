@@ -10,6 +10,27 @@ Użytkownik ustawia filtr na liście, wychodzi z widoku, wraca — filtr znikł.
 
 Jedna encja i jeden kontroler rozwiązują ten problem. Cztery operacje: zapisz filtr pod nazwą, wczytaj z listy, wyczyść, ustaw jako domyślny — przy następnym wejściu nakłada się automatycznie. Filtr może być prywatny (tylko autor) albo publiczny (cały zespół). Bez zewnętrznych bibliotek. Działa identycznie w Blazor i WinForms.
 
+## Aktualizacja po wdrożeniu w DataDrive
+
+W naszym wdrożeniu nie dodałem nowej encji `SavedFilter` obok istniejących mechanizmów, tylko rozbudowałem już obecny byt `ViewFilter`.
+
+To znaczy, że finalnie w kodzie doszły do `ViewFilter` pola:
+
+- `Owner`
+- `AllowPublic`
+- `Default`
+- `ViewId`
+
+I to jest ważna decyzja architektoniczna. Jeżeli aplikacja ma już własny mechanizm filtrów, lepiej go rozwinąć niż utrzymywać dwa równoległe modele zapisanych filtrów.
+
+Druga ważna decyzja: **nowy filtr tworzony przez użytkownika jest prywatny domyślnie**. W praktyce wygląda to tak:
+
+1. użytkownik klika `Save Filter`,
+2. filtr dostaje `AllowPublic = false`,
+3. jeżeli chce go udostępnić zespołowi, musi sam zaznaczyć checkbox publiczności.
+
+To jest bezpieczniejsze niż odwrotny wariant. Nie ma ryzyka, że użytkownik przez przypadek wystawi zespołowi własny roboczy filtr.
+
 ## Jak to działa — schemat klas
 
 ```mermaid
@@ -55,6 +76,13 @@ classDiagram
 ```
 
 `Owner = null` oznacza filtr publiczny. Kontroler zapisuje własne kryterium pod kluczem `"SavedFilter"` w słowniku `CollectionSource.Criteria` — i nie rusza innych filtrów (np. z paska wyszukiwania).
+
+W `DataDrive` finalna wersja jest lekko inna:
+
+1. używany jest istniejący `ViewFilter`,
+2. filtry systemowe seedowane przez `Updater` są jawnie publiczne,
+3. filtry użytkownika tworzone z UI startują jako prywatne,
+4. `ViewId` ogranicza filtr do konkretnego widoku, a nie tylko typu encji.
 
 ## Jak to działa — przepływ zapisu i wczytania
 
@@ -133,6 +161,12 @@ public class SavedFilter : BaseObject {
     public override string ToString() => Name;
 }
 ```
+
+Jeżeli masz już w projekcie coś w rodzaju `ViewFilter`, praktyczniejszy wariant jest taki jak u nas:
+
+1. nie tworzysz nowej encji `SavedFilter`,
+2. rozszerzasz istniejącą encję filtrów o `Owner`, `AllowPublic`, `Default`, `ViewId`,
+3. zachowujesz kompatybilność z dotychczasowym UI i seedami.
 
 Decyzje warte zapamiętania:
 
@@ -243,7 +277,7 @@ private void PopulateLoadFilterItems() {
     CriteriaOperator criteria = CriteriaOperator.Parse(
         "ViewId = ? AND (Owner is null OR Owner.ID = ?)",
         View.Id, currentUserId);
-    IList<SavedFilter> filters = ObjectSpace.GetObjects<SavedFilter>(criteria);
+IList<SavedFilter> filters = ObjectSpace.GetObjects<SavedFilter>(criteria);
     foreach(SavedFilter filter in filters) {
         string caption = filter.Owner == null ? $"{filter.Name} (publiczny)" : filter.Name;
         loadFilterAction.Items.Add(new ChoiceActionItem(caption, filter.ID));
@@ -251,6 +285,8 @@ private void PopulateLoadFilterItems() {
     loadFilterAction.Active.SetItemValue("HasItems", loadFilterAction.Items.Count > 0);
 }
 ```
+
+W adaptacji do `DataDrive` ten warunek został dodatkowo rozszerzony o dopasowanie do `ViewId`, żeby filtr zapisany dla jednego `ListView` tej samej encji nie wpadał automatycznie na inny widok.
 
 **Zapis aktualnego filtra:**
 
@@ -273,15 +309,23 @@ private void SaveFilterAction_Execute(object sender, PopupWindowShowActionExecut
     filter.Name = parameters.Name;
     filter.ViewId = View.Id;
     filter.Criteria = criteriaString;
-    if(!parameters.IsPublic) {
-        Guid currentUserId = SecuritySystem.CurrentUserId is Guid id ? id : Guid.Empty;
-        filter.Owner = os.GetObjectByKey<ApplicationUser>(currentUserId);
-    }
-    os.CommitChanges();
+if(!parameters.IsPublic) {
+    Guid currentUserId = SecuritySystem.CurrentUserId is Guid id ? id : Guid.Empty;
+    filter.Owner = os.GetObjectByKey<ApplicationUser>(currentUserId);
+}
+os.CommitChanges();
 
     PopulateLoadFilterItems();
 }
 ```
+
+W realnym wdrożeniu warto ustawić to jeszcze bardziej jednoznacznie:
+
+```csharp
+filter.AllowPublic = false;
+```
+
+I dopiero checkbox w formularzu powinien to zmienić. Właśnie tak zostało to ustawione u nas.
 
 **Aplikowanie filtra na listę:**
 
@@ -364,9 +408,11 @@ dotnet ef migrations add AddSavedFilter -p MainDemo.Module
 
 - Zapisz filtr prywatny — widoczny tylko dla autora.
 - Zapisz filtr publiczny — widoczny dla wszystkich.
+- Nowy filtr bez zaznaczenia checkboxa publiczności — zostaje prywatny.
 - Wczytaj filtr — kryterium nakłada się na listę.
 - Wyczyść filtr — lista wraca do pełnego zbioru.
 - Domyślny dla użytkownika A nie wpływa na widok użytkownika B.
+- Filtr zapisany dla jednego `ViewId` nie pojawia się automatycznie na innym widoku tej samej encji.
 - Restart aplikacji — domyślny filtr nakłada się automatycznie.
 
 ## Co zostawić na drugą iterację
