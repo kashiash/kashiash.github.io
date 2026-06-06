@@ -3,6 +3,7 @@ layout: post
 title: "Tagi w XAF Blazor — ręczne, regułowe i automatyczne"
 ---
 
+
 Jeżeli chcesz, żeby użytkownik oznaczał rekordy etykietami i filtrował po nich listy, musisz dorobić kilka rzeczy. Część etykiet ma się nadawać sama, według warunku. Razem to encja tagu, relacja wiele-do-wielu, kontroler akcji i silnik reguł. Standardowy XAF nie daje tego z pudełka. Dalej pokazuję działający komplet na EF Core i PostgreSQL.
 
 ## Po co to użytkownikowi
@@ -30,7 +31,7 @@ Encje, które chcesz tagować, dostają wspólny interfejs. To on pozwala napisa
 ```csharp
 public interface ITaggable {
     IList<Tag> Tags { get; set; }
-    string TagWarning { get; set; }
+    string Markers { get; set; }   // „Znaczniki" — zagregowany tekst z tagów
 }
 ```
 
@@ -79,7 +80,7 @@ listView.CollectionSource.Criteria[FilterKey] =
     CriteriaOperator.Parse("Archival = False And (Global = True Or ObjectTypeName = ?)", targetTypeName);
 ```
 
-Po wyborze tag ląduje na zaznaczonych rekordach, a jego ostrzeżenie dopina się do pola `TagWarning`. Filtr listy używa składni kolekcyjnej XAF:
+Po wyborze tag ląduje na zaznaczonych rekordach, a tekst z jego pola `Warning` dopina się do pola `Markers` („Znaczniki"). To pole pokazujesz domyślnie jako pierwszą kolumnę listy — przez `[ModelDefault("Index","0")]` i `[VisibleInListView(true)]`. Filtr listy używa składni kolekcyjnej XAF:
 
 ```csharp
 View.CollectionSource.Criteria[FilterKey] = CriteriaOperator.Parse("Tags[ID = ?]", tag.ID);
