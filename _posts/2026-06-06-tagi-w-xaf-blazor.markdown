@@ -3,6 +3,7 @@ layout: post
 title: "Tagi w XAF Blazor — ręczne, regułowe i automatyczne"
 ---
 
+![Tagi w XAF Blazor](/assets/images/xaf-tags.png)
 
 Jeżeli chcesz, żeby użytkownik oznaczał rekordy etykietami i filtrował po nich listy, musisz dorobić kilka rzeczy. Część etykiet ma się nadawać sama, według warunku. Razem to encja tagu, relacja wiele-do-wielu, kontroler akcji i silnik reguł. Standardowy XAF nie daje tego z pudełka. Dalej pokazuję działający komplet na EF Core i PostgreSQL.
 

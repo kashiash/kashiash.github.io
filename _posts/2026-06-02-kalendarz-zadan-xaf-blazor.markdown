@@ -3,6 +3,8 @@ layout: post
 title: "Kalendarz zadań w XAF Blazor — przez interfejs IEvent"
 ---
 
+![Kalendarz zadań w XAF Blazor](/assets/images/task-calendar.png)
+
 > **TL;DR**
 > - Chcesz pokazać zadania jako kalendarz? Dodaj encji interfejs `IEvent` — XAF użyje `SchedulerListEditor`.
 > - `IEvent` zmienia domyślny edytor **wszystkich** list tego typu na scheduler. Tabele przypnij jawnie do `DxGridListEditor`.
