@@ -13,12 +13,15 @@
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('pre > code.language-mermaid').forEach(function(block) {
-        var pre = block.parentNode;
+      var seen = [];
+      document.querySelectorAll('code.language-mermaid, .language-mermaid').forEach(function(block) {
+        var wrapper = block.closest('div.language-mermaid') || block.closest('pre') || block;
+        if (seen.indexOf(wrapper) !== -1) return;
+        seen.push(wrapper);
         var div = document.createElement('div');
         div.className = 'mermaid';
         div.textContent = block.textContent;
-        pre.parentNode.replaceChild(div, pre);
+        wrapper.parentNode.replaceChild(div, wrapper);
       });
       if (typeof mermaid !== 'undefined') {
         mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose' });

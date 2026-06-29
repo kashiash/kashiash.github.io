@@ -12,7 +12,7 @@ Jedna encja i jeden kontroler rozwiązują ten problem. Cztery operacje: zapisz 
 
 ## Aktualizacja po wdrożeniu w DataDrive
 
-W naszym wdrożeniu nie dodałem nowej encji `SavedFilter` obok istniejących mechanizmów, tylko rozbudowałem już obecny byt `ViewFilter`.
+W naszym wdrożeniu nie dodałem nowej encji `SavedFilter` obok istniejących mechanizmów. Rozbudowałem istniejący `ViewFilter`.
 
 To znaczy, że finalnie w kodzie doszły do `ViewFilter` pola:
 
@@ -21,7 +21,7 @@ To znaczy, że finalnie w kodzie doszły do `ViewFilter` pola:
 - `Default`
 - `ViewId`
 
-I to jest ważna decyzja architektoniczna. Jeżeli aplikacja ma już własny mechanizm filtrów, lepiej go rozwinąć niż utrzymywać dwa równoległe modele zapisanych filtrów.
+To ważna decyzja architektoniczna. Jeżeli aplikacja ma już własny mechanizm filtrów, lepiej go rozwinąć, niż utrzymywać dwa równoległe modele zapisanych filtrów.
 
 Druga ważna decyzja: **nowy filtr tworzony przez użytkownika jest prywatny domyślnie**. W praktyce wygląda to tak:
 
@@ -29,9 +29,11 @@ Druga ważna decyzja: **nowy filtr tworzony przez użytkownika jest prywatny dom
 2. filtr dostaje `AllowPublic = false`,
 3. jeżeli chce go udostępnić zespołowi, musi sam zaznaczyć checkbox publiczności.
 
-To jest bezpieczniejsze niż odwrotny wariant. Nie ma ryzyka, że użytkownik przez przypadek wystawi zespołowi własny roboczy filtr.
+To bezpieczniejsze niż odwrotny wariant. Nie ma ryzyka, że użytkownik przez przypadek wystawi zespołowi własny roboczy filtr.
 
 ## Jak to działa — schemat klas
+
+Zanim wejdziesz w kod, zobacz, z czego składa się rozwiązanie. Diagram pokazuje cztery klasy i ich powiązania: encję filtra, użytkownika, obiekt popupu i kontroler. Odczytasz z niego, kto co trzyma i kto kogo woła.
 
 ```mermaid
 classDiagram
@@ -86,6 +88,8 @@ W `DataDrive` finalna wersja jest lekko inna:
 
 ## Jak to działa — przepływ zapisu i wczytania
 
+Diagram klas mówi, *co* jest w grze. Ten pokazuje *kiedy* — kolejność zdarzeń od kliknięcia użytkownika po nałożony filtr. Najpierw ścieżka zapisu, niżej (za linią „później") automatyczne wczytanie przy następnym wejściu na listę.
+
 ```mermaid
 sequenceDiagram
     actor U as Użytkownik
@@ -110,7 +114,7 @@ sequenceDiagram
 
 ## Co użytkownik widzi
 
-Cztery akcje w sekcji "Search" na pasku listy:
+Cztery akcje w sekcji „Search" na pasku listy:
 
 - **Zapisz filtr** — popup z nazwą i przełącznikiem prywatny/publiczny.
 - **Wczytaj filtr** — lista filtrów dla bieżącego widoku.
@@ -171,7 +175,7 @@ Jeżeli masz już w projekcie coś w rodzaju `ViewFilter`, praktyczniejszy waria
 Decyzje warte zapamiętania:
 
 - **`Criteria` jako string.** `CriteriaOperator` nie jest serializowalny. Standardowy zapis to `criteria.ToString()` plus `CriteriaOperator.Parse(...)` przy odczycie. Dzięki temu filtr przeżyje restart i przeniesie się między procesami.
-- **`Owner` jako nullowalne FK do `ApplicationUser`.** `Owner == null` znaczy "publiczny". Jedna kolumna mniej i naturalne SQL.
+- **`Owner` jako nullowalne FK do `ApplicationUser`.** `Owner == null` znaczy „publiczny". Jedna kolumna mniej i naturalne SQL.
 - **`ViewId` jako string.** `View.Id` w XAF to stringowy identyfikator z modelu (`"Employee_ListView"`). Trzymamy go dosłownie, bez enuma.
 
 Rejestracja w `DbContext`:
@@ -206,7 +210,7 @@ public class SaveFilterParams : NonPersistentBaseObject {
 }
 ```
 
-To samo robi wbudowana akcja "Save Layout" w XAF — popup z `DomainComponent` i `PopupWindowShowAction`.
+To samo robi wbudowana akcja „Save Layout" w XAF — popup z `DomainComponent` i `PopupWindowShowAction`.
 
 ### 3. ViewController
 
@@ -268,7 +272,7 @@ public class SavedFiltersController : ViewController<ListView> {
 }
 ```
 
-**Wczytywanie listy zapisanych filtrów dla bieżącego widoku:**
+**Wczytywanie listy zapisanych filtrów.** Metoda `PopulateLoadFilterItems` zasila rozwijaną akcję „Wczytaj filtr". Pobiera filtry przypisane do bieżącego widoku i widoczne dla użytkownika — własne plus publiczne — i z każdego robi pozycję menu:
 
 ```csharp
 private void PopulateLoadFilterItems() {
@@ -286,9 +290,9 @@ IList<SavedFilter> filters = ObjectSpace.GetObjects<SavedFilter>(criteria);
 }
 ```
 
-W adaptacji do `DataDrive` ten warunek został dodatkowo rozszerzony o dopasowanie do `ViewId`, żeby filtr zapisany dla jednego `ListView` tej samej encji nie wpadał automatycznie na inny widok.
+W adaptacji do `DataDrive` rozszerzyłem ten warunek o dopasowanie do `ViewId`, żeby filtr zapisany dla jednego `ListView` tej samej encji nie wpadał automatycznie na inny widok.
 
-**Zapis aktualnego filtra:**
+**Zapis aktualnego filtra.** Po zatwierdzeniu popupu kod bierze aktywne kryterium z listy, tworzy obiekt `SavedFilter` i zapisuje go. Filtr prywatny dostaje właściciela, publiczny zostaje bez:
 
 ```csharp
 private void SaveFilterAction_CustomizePopupWindowParams(object sender, CustomizePopupWindowParamsEventArgs e) {
@@ -319,15 +323,15 @@ os.CommitChanges();
 }
 ```
 
-W realnym wdrożeniu warto ustawić to jeszcze bardziej jednoznacznie:
+W realnym wdrożeniu ustaw to jeszcze jednoznaczniej:
 
 ```csharp
 filter.AllowPublic = false;
 ```
 
-I dopiero checkbox w formularzu powinien to zmienić. Właśnie tak zostało to ustawione u nas.
+Dopiero checkbox w formularzu to zmienia. Właśnie tak zrobiłem u nas.
 
-**Aplikowanie filtra na listę:**
+**Nałożenie filtra na listę.** To jeden wpis do słownika kryteriów pod własnym kluczem. XAF dołoży go operatorem AND do pozostałych aktywnych filtrów i odświeży widok:
 
 ```csharp
 private void ApplyCriteria(SavedFilter filter) {
@@ -340,7 +344,7 @@ private void ApplyCriteria(SavedFilter filter) {
 
 `View.CollectionSource.Criteria` to słownik z nazwanymi kryteriami. XAF łączy wszystkie aktywne wpisy operatorem AND. Klucz `"SavedFilter"` to nasz wpis — możemy go nadpisać albo usunąć. Pozostałe filtry (np. z paska wyszukiwania) nie zmieniają się.
 
-**Odczyt aktualnie aktywnych kryteriów do zapisu:**
+**Odczyt aktywnych kryteriów.** Zanim zapiszesz filtr, trzeba zebrać to, co użytkownik naprawdę ustawił. Kod łączy wszystkie aktywne kryteria w jeden string i pomija własny klucz, żeby nie zapisać filtra wewnątrz filtra:
 
 ```csharp
 private string GetCurrentCriteriaString() {
@@ -363,7 +367,7 @@ private string GetCurrentCriteriaString() {
 
 Pomijamy własny klucz `"SavedFilter"` — gdyby został w słowniku z poprzedniej operacji, doszłoby do zapisu kryterium wewnątrz kryterium.
 
-**Auto-aplikacja domyślnego przy wejściu na widok:**
+**Automatyczne nałożenie domyślnego filtra.** Przy wejściu na listę kontroler szuka filtra oznaczonego jako domyślny dla pary (widok, użytkownik) i od razu go nakłada. Użytkownik dostaje swój zestaw bez klikania:
 
 ```csharp
 private void ApplyDefaultFilter() {
@@ -422,10 +426,8 @@ dotnet ef migrations add AddSavedFilter -p MainDemo.Module
 - `DashboardView` i `LookupListView` (działa tylko na zwykłym `ListView`).
 - Zapis sortowania razem z filtrem.
 
-To nie są krytyczne braki. Pierwsza iteracja ma rozwiązać problem "filtr przepada po wyjściu z widoku" — i tyle robi.
+To nie są krytyczne braki. Pierwsza iteracja ma rozwiązać problem „filtr przepada po wyjściu z widoku" — i tyle robi.
 
 ## Kiedy ten wzorzec się sprawdza
 
-Wszędzie tam, gdzie użytkownik wraca do tej samej listy z tym samym zestawem filtrów. Lista zadań do zrobienia "moje, otwarte, na ten tydzień". Lista zamówień "po terminie, niezafakturowane". Lista pracowników "z mojego działu, na urlopie w tym miesiącu".
-
-Trzy linijki kodu w kontrolerze, jedna encja w bazie i tabela `SavedFilter` ma sens przez kolejne dwa lata życia projektu.
+Wszędzie tam, gdzie użytkownik wraca do tej samej listy z tym samym zestawem filtrów. Lista zadań do zrobienia: „moje, otwarte, na ten tydzień". Lista zamówień: „po terminie, niezafakturowane". Lista pracowników: „z mojego działu, na urlopie w tym miesiącu".

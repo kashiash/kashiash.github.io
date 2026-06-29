@@ -7,17 +7,19 @@ series_part: 3
 
 ![DateEditor: Blokada scrolla](/assets/images/date-editor-lock.png)
 
+> **EDIT (29.06.2026):** Od DevExpress 26.1 zrobisz to natywnie, bez JavaScriptu — jedną właściwością `AllowMouseWheel`, też na polach liczbowych. Opisałem to w nowszym wpisie: [Wyłącz kółko myszy i strzałki w edytorach DevExpress Blazor (v26.1)]({% post_url 2026-06-29-blokada-kolka-edytory-devexpress-blazor %}). Ten wpis zostaje jako wersja sprzed 26.1 — ręczny guard w JavaScripcie.
+
 > **Część 3 serii: [XAF Blazor: od aplikacji referencyjnej do gotowego produktu]({% post_url 2026-05-12-seria-dostosowanie-demowki-xaf-blazor %})**
 >
 > 1. [Obsługa języków: polski, angielski, niemiecki]({% post_url 2026-05-12-obsluga-jezykow-blazor %})
 > 2. [Branding: logo, splash screen i motywy]({% post_url 2026-05-12-branding-blazor %})
 > 3. **Globalny DateEditor w XAF Blazor: blokada scrolla, polskie maski i czas tylko tam, gdzie trzeba** — ten wpis
 
-Ten wpis pokazuje dokładnie, jak działa nasz globalny editor daty w `MainDemo.Blazor.Server`.
+Edytor daty w DevExpress reaguje na kółko myszy: kiedy kursor jest nad polem, obrót kółka zmienia datę zamiast przewinąć formularz. W aplikacji biznesowej to cichy błąd — operator przewija długi formularz, mija pole daty i przestawia wartość, bez kliknięcia i bez ostrzeżenia. Ten wpis pokazuje globalny edytor daty, który blokuje kółko we wszystkich polach dat, dokłada polskie maski i włącza czas tylko tam, gdzie jest potrzebny. Zyskujesz pola dat odporne na przypadkowe zmiany i spójne w całej aplikacji.
 
 ## Co robi ta zmiana
 
-Editor robi cztery rzeczy:
+Edytor robi cztery rzeczy:
 
 1. przejmuje wszystkie pola `DateTime` i `DateTime?`,
 2. blokuje zmianę wartości przez kółko myszy,
@@ -35,7 +37,7 @@ public sealed class DateEditMouseWheelAttribute(bool blockMouseWheel) : Attribut
 }
 ```
 
-## Alias editora
+## Alias edytora
 
 ```csharp
 namespace MainDemo.Module.Editors;
@@ -48,7 +50,7 @@ public static class EditorAliases {
 }
 ```
 
-## Editor dla `DateTime`
+## Edytor dla `DateTime`
 
 ```csharp
 using DevExpress.Blazor;
@@ -81,7 +83,7 @@ public class MainDemoDateTimeEditor(Type objectType, IModelMemberViewItem model)
 }
 ```
 
-## Editor dla `DateTime?`
+## Edytor dla `DateTime?`
 
 ```csharp
 using DevExpress.Blazor;
@@ -207,12 +209,12 @@ namespace MainDemo.Blazor.Server.Editors.Date;
 
 public interface IModelOptionsDateEditMouseWheel {
     [Category("Behavior")]
-    [Description("Globalne ustawienie domyślne. Gdy True, przewijanie kółkiem myszy wewnątrz edytorów daty nie zmienia wartości pola.")]
+    [Description("Global default. When True, scrolling the mouse wheel inside date editors does not change the field value.")]
     [DefaultValue(true)]
     bool BlockDateEditMouseWheelByDefault { get; set; }
 
     [Category("Behavior")]
-    [Description("Globalny tryb przesuwania kursora w maskach edytorów daty. Advancing oznacza, że kursor sam przeskakuje do następnej sekcji po wpisaniu maksymalnej liczby znaków.")]
+    [Description("Global caret mode in date editor masks. Advancing means the caret jumps to the next section after the maximum number of characters is entered.")]
     [DefaultValue(MaskCaretMode.Advancing)]
     MaskCaretMode DateEditMaskCaretMode { get; set; }
 }
@@ -228,7 +230,7 @@ namespace MainDemo.Blazor.Server.Editors.Date;
 
 public interface IModelMemberViewItemMouseWheel : IModelMemberViewItem {
     [Category("Behavior")]
-    [Description("Opcjonalne ustawienie dla konkretnego pola. Null oznacza: użyj wartości z Options.BlockDateEditMouseWheelByDefault.")]
+    [Description("Optional per-field setting. Null means: use the value from Options.BlockDateEditMouseWheelByDefault.")]
     bool? BlockMouseWheel { get; set; }
 }
 ```
@@ -333,7 +335,7 @@ public virtual DateTime? Birthday { get; set; }
 
 ## Kolejność decyzji
 
-Blokada kółka jest wyliczana w tej kolejności:
+Blokadę kółka wyliczasz w tej kolejności:
 
 1. atrybut na właściwości,
 2. ustawienie `BlockMouseWheel` w modelu widoku,
