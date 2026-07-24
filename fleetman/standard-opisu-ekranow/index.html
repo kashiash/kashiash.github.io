@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Standard opisu ekranów — Fleetman</title>
+<meta name="description" content="Standard opisu list, detali i pól w podręczniku użytkownika Fleetman.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/fleetman/assets/manual.css">
+</head>
+<body>
+<header class="top">
+  <button class="navtoggle" type="button" aria-label="Otwórz menu">☰</button>
+  <a class="brand" href="/fleetman/" aria-label="Strona główna podręcznika Fleetman">
+    <span class="mark">FM</span> Fleetman <small>Podręcznik</small>
+  </a>
+</header>
+
+<div class="wrap">
+  <aside aria-label="Działy podręcznika">
+    <div class="grp">Podręcznik</div>
+    <a href="/fleetman/">🏠 Start</a>
+    <a href="/fleetman/pierwsze-kroki/">🚀 Pierwsze kroki</a>
+    <a href="/fleetman/standard-opisu-ekranow/" class="active" aria-current="page">📐 Standard ekranów</a>
+    <a href="/fleetman/inwentarz-ekranow/">🗂️ Inwentarz ekranów</a>
+    <div class="grp">Działy</div>
+    <span class="navi">🚗 Pojazdy <span class="soon">wkrótce</span></span>
+    <span class="navi">👥 Klienci <span class="soon">wkrótce</span></span>
+    <span class="navi">🔑 Wynajem <span class="soon">wkrótce</span></span>
+    <span class="navi">🛠️ Szkody <span class="soon">wkrótce</span></span>
+    <span class="navi">🧾 Faktury i koszty <span class="soon">wkrótce</span></span>
+    <span class="navi">📎 Dokumenty <span class="soon">wkrótce</span></span>
+    <span class="navi">📊 Raporty <span class="soon">wkrótce</span></span>
+    <span class="navi">⚙️ Administracja <span class="soon">wkrótce</span></span>
+  </aside>
+
+  <main>
+    <article class="content">
+      <div class="crumb"><a href="/fleetman/">Podręcznik Fleetman</a> › Standard ekranów</div>
+      <h1>Standard opisu ekranów</h1>
+      <p class="lead">Każdy ekran listy opisujemy razem z detalem tego samego obiektu i pełnym opisem pól.</p>
+
+      <div class="callout warn">
+        <strong>Zasada:</strong> nie publikuj samej listy bez detalu. Użytkownik musi widzieć, co oznaczają kolumny na liście i pola w karcie rekordu.
+      </div>
+
+      <h2>Lista, detal i pola</h2>
+      <dl class="fields">
+        <div><dt>Opis ekranu</dt><dd>Napisz, do czego służy ekran i kiedy użytkownik go otwiera.</dd></div>
+        <div><dt>Zrzut listy</dt><dd>Pokaż siatkę danych. Pod podpisem opisz każdą kolumnę w `dl.fields`.</dd></div>
+        <div><dt>Zrzut detalu</dt><dd>Pokaż kartę albo okno detalu tego samego rekordu, którego używasz na liście.</dd></div>
+        <div><dt>Pola detalu</dt><dd>Opisz każde pole. Użyj dokładnej etykiety z interfejsu jako `dt`.</dd></div>
+        <div><dt>Procedura</dt><dd>Zacznij od zdania „Aby…, wykonaj następujące kroki:”. Każdy krok zaczynaj od działania.</dd></div>
+        <div><dt>Rezultat</dt><dd>Zakończ zdaniem, po czym użytkownik pozna poprawny wynik.</dd></div>
+      </dl>
+
+      <h2>Pola wymagane i wyliczane</h2>
+      <p>Pole wymagane oznacz komunikatem „Ważne”. Opis pola ma mówić, co użytkownik wpisuje i kiedy brak wartości blokuje zapis.</p>
+      <p>Pole wyliczane opisz słowami „Aplikacja wylicza”. Nie każ użytkownikowi wpisywać danych w takim polu.</p>
+
+      <h2>Listy zagnieżdżone</h2>
+      <p>Listę zagnieżdżoną opisujemy tak samo jak główną listę. Otwórz detal wiersza podwójnym kliknięciem, ikoną edycji albo adresem `/{Class}_DetailView/{GUID}`.</p>
+      <p>Jeśli lista używa akcji „Dodaj X”, zrzutem detalu jest okno tej akcji.</p>
+
+      <h2>Kolejność w artykule</h2>
+      <ol class="steps">
+        <li>Opisz ekran.</li>
+        <li>Pokaż listę i opisz kolumny.</li>
+        <li>Pokaż detal i opisz pola.</li>
+        <li>Podaj procedurę.</li>
+        <li>Napisz rezultat.</li>
+      </ol>
+
+      <h2>Rezultat</h2>
+      <p>Autor manuala ma jeden format opisu ekranów. Użytkownik nie musi zgadywać, co oznacza kolumna lub pole.</p>
+
+      <div class="pager">
+        <a href="/fleetman/pierwsze-kroki/"><span class="lbl">Poprzednia strona</span><br><span class="ttl">← Pierwsze kroki</span></a>
+        <a class="next" href="/fleetman/inwentarz-ekranow/"><span class="lbl">Następna strona</span><br><span class="ttl">Inwentarz ekranów →</span></a>
+      </div>
+
+      <p><small>Ostatnia weryfikacja: 24 lipca 2026</small></p>
+    </article>
+  </main>
+</div>
+
+<footer>
+  <span>Fleetman · podręcznik użytkownika</span><span class="dot">·</span>
+  <a href="/fleetman/">Wszystkie rozdziały</a>
+</footer>
+<script src="/fleetman/assets/manual.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inwentarz ekranów — Fleetman</title>
+<meta name="description" content="Inwentarz ekranów Fleetman do opisania w podręczniku użytkownika.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/fleetman/assets/manual.css">
+</head>
+<body>
+<header class="top">
+  <button class="navtoggle" type="button" aria-label="Otwórz menu">☰</button>
+  <a class="brand" href="/fleetman/" aria-label="Strona główna podręcznika Fleetman">
+    <span class="mark">FM</span> Fleetman <small>Podręcznik</small>
+  </a>
+</header>
+
+<div class="wrap">
+  <aside aria-label="Działy podręcznika">
+    <div class="grp">Podręcznik</div>
+    <a href="/fleetman/">🏠 Start</a>
+    <a href="/fleetman/pierwsze-kroki/">🚀 Pierwsze kroki</a>
+    <a href="/fleetman/standard-opisu-ekranow/">📐 Standard ekranów</a>
+    <a href="/fleetman/inwentarz-ekranow/" class="active" aria-current="page">🗂️ Inwentarz ekranów</a>
+    <div class="grp">Działy</div>
+    <span class="navi">🚗 Pojazdy <span class="soon">wkrótce</span></span>
+    <span class="navi">👥 Klienci <span class="soon">wkrótce</span></span>
+    <span class="navi">🔑 Wynajem <span class="soon">wkrótce</span></span>
+    <span class="navi">🛠️ Szkody <span class="soon">wkrótce</span></span>
+    <span class="navi">🧾 Faktury i koszty <span class="soon">wkrótce</span></span>
+    <span class="navi">📎 Dokumenty <span class="soon">wkrótce</span></span>
+    <span class="navi">📊 Raporty <span class="soon">wkrótce</span></span>
+    <span class="navi">⚙️ Administracja <span class="soon">wkrótce</span></span>
+  </aside>
+
+  <main>
+    <article class="content">
+      <div class="crumb"><a href="/fleetman/">Podręcznik Fleetman</a> › Inwentarz ekranów</div>
+      <h1>Inwentarz ekranów do opisania</h1>
+      <p class="lead">Ta lista pokazuje główne ekrany z menu Fleetman. Każdy `ListView` wymaga opisu listy, detalu i pól.</p>
+
+      <div class="callout note">
+        <strong>Źródło:</strong> inwentarz powstał na podstawie `Fleetman.Module/Model.DesignedDiffs.xafml`, sekcji `NavigationItems`.
+      </div>
+
+      <h2>Zadania</h2>
+      <dl class="fields">
+        <div><dt>TaskWithNotifications_ListView</dt><dd>Zadania.</dd></div>
+        <div><dt>TaskActivity_ListView</dt><dd>Aktywności zadań.</dd></div>
+        <div><dt>TaskWithNotifications_ListView_Schedule</dt><dd>Kalendarz zadań.</dd></div>
+      </dl>
+
+      <h2>RAC</h2>
+      <dl class="fields">
+        <div><dt>ZleceniaPAZ_ListView</dt><dd>Zlecenia.</dd></div>
+        <div><dt>ZleceniaPAZ_ListView_Rezerwacja</dt><dd>Rezerwacje.</dd></div>
+        <div><dt>Najmy_ListView</dt><dd>Najmy.</dd></div>
+        <div><dt>Transport_ListView</dt><dd>Transport.</dd></div>
+        <div><dt>ControlCards_ListView</dt><dd>Control Cards.</dd></div>
+        <div><dt>ControlCards_ListView_Schedule</dt><dd>Wydania pojazdów w kalendarzu.</dd></div>
+        <div><dt>ZdarzeniaPojazdu_ListView</dt><dd>Zdarzenia pojazdu.</dd></div>
+        <div><dt>NotatkaZlecenia_ListView</dt><dd>Notatki zlecenia.</dd></div>
+        <div><dt>PrzekazanieNajmu_ListView</dt><dd>Przekazania najmu.</dd></div>
+        <div><dt>HistoriaLikwidacjiSzkody_ListView</dt><dd>Historia likwidacji szkody.</dd></div>
+      </dl>
+
+      <h2>CRM</h2>
+      <dl class="fields">
+        <div><dt>Podmiot_ListView</dt><dd>Podmioty.</dd></div>
+        <div><dt>Kontrahenci_ListView</dt><dd>Kontrahenci.</dd></div>
+        <div><dt>Osoby_ListView</dt><dd>Osoby.</dd></div>
+        <div><dt>Sprzedawca_ListView</dt><dd>Sprzedawcy.</dd></div>
+        <div><dt>KontrahenciPodsumowanie_ListView</dt><dd>Wykaz zmian kontrahentów.</dd></div>
+        <div><dt>OsobyPodsumowanie_ListView</dt><dd>Wykaz zmian osób.</dd></div>
+      </dl>
+
+      <h2>Flota</h2>
+      <dl class="fields">
+        <div><dt>Pojazdy_ListView</dt><dd>Pojazdy.</dd></div>
+        <div><dt>SerwisPojazdu_ListView</dt><dd>Serwis pojazdów.</dd></div>
+        <div><dt>KartyPaliwowe_ListView</dt><dd>Karty paliwowe.</dd></div>
+        <div><dt>Polisy_ListView</dt><dd>Polisy.</dd></div>
+        <div><dt>WyposazeniePojazdu_ListView</dt><dd>Wyposażenie pojazdu.</dd></div>
+        <div><dt>EfektywnoscWarsztatu_ListView</dt><dd>Efektywność warsztatów.</dd></div>
+        <div><dt>InwentaryzacjaPojazdu_ListView</dt><dd>Inwentaryzacja pojazdu.</dd></div>
+        <div><dt>ZamowienieSzczegolowo_ListView</dt><dd>Zamówienia.</dd></div>
+        <div><dt>ZapotrzebowanieSumaryczne_ListView</dt><dd>Zapotrzebowanie sumaryczne.</dd></div>
+        <div><dt>VehicleAvaiability_ListView</dt><dd>Dostępność pojazdów.</dd></div>
+        <div><dt>DeviceLocation_ListView</dt><dd>Lokalizacje urządzeń.</dd></div>
+        <div><dt>Mandaty_ListView</dt><dd>Mandaty.</dd></div>
+        <div><dt>MonitoringPojazdu_ListView</dt><dd>Monitoring pojazdu.</dd></div>
+        <div><dt>ObslugaTechniczna_ListView</dt><dd>Obsługa techniczna.</dd></div>
+        <div><dt>Opony_ListView</dt><dd>Opony.</dd></div>
+        <div><dt>RataPolisy_ListView</dt><dd>Raty polis.</dd></div>
+        <div><dt>Szkody_ListView</dt><dd>Szkody.</dd></div>
+        <div><dt>KorektaLicznika_ListView</dt><dd>Korekty licznika.</dd></div>
+        <div><dt>PodstawoweWyposazeniePojazdu_ListView</dt><dd>Podstawowe wyposażenie pojazdu.</dd></div>
+      </dl>
+
+      <h2>Księgowe</h2>
+      <p>Ten dział obejmuje faktury, kasę, koszty, windykację, finansowanie, transakcje, przelewy bankowe i płatności. Pełna lista ekranów jest w źródłowym pliku inwentarza w repo Fleetman.</p>
+
+      <h2>Dokumenty, wydruki i administracja</h2>
+      <p>Te działy obejmują skany, wiadomości, raporty, dashboardy, słowniki, użytkowników, role, automaty, Azure, audyt i telematykę. Każdy ekran z listą zostanie opisany w odpowiednim issue z epika manuala.</p>
+
+      <h2>Status pracy</h2>
+      <dl class="fields">
+        <div><dt>Standard opisu ekranów</dt><dd>Gotowy.</dd></div>
+        <div><dt>Inwentarz głównej nawigacji</dt><dd>Gotowy.</dd></div>
+        <div><dt>Zrzuty ekranów</dt><dd>Do wykonania w kolejnych issue.</dd></div>
+        <div><dt>Opisy kolumn i pól</dt><dd>Do wykonania po sprawdzeniu ekranów w działającym Fleetman.</dd></div>
+      </dl>
+
+      <h2>Rezultat</h2>
+      <p>Autor manuala wie, które ekrany wymagają opisu. Kolejne rozdziały mogą powstawać bez pomijania detali i pól.</p>
+
+      <div class="pager">
+        <a href="/fleetman/standard-opisu-ekranow/"><span class="lbl">Poprzednia strona</span><br><span class="ttl">← Standard ekranów</span></a>
+        <a class="next" href="/fleetman/"><span class="lbl">Następna strona</span><br><span class="ttl">Strona główna →</span></a>
+      </div>
+
+      <p><small>Ostatnia weryfikacja: 24 lipca 2026</small></p>
+    </article>
+  </main>
+</div>
+
+<footer>
+  <span>Fleetman · podręcznik użytkownika</span><span class="dot">·</span>
+  <a href="/fleetman/">Wszystkie rozdziały</a>
+</footer>
+<script src="/fleetman/assets/manual.js"></script>
+</body>
+</html>
