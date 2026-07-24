@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Faktury sprzedaży — podręcznik DataDrive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/datadrive/assets/manual.css">
+</head>
+<body>
+<header class="top">
+  <button class="navtoggle" aria-label="Menu">☰</button>
+  <a class="brand" href="/datadrive/"><span class="mark">DD</span> DataDrive <small>Podręcznik</small></a>
+  <div class="search">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.5-1.5-5-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+    <input id="q" type="search" placeholder="Szukaj…" autocomplete="off" aria-label="Szukaj" disabled>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside>
+    <div class="grp">Podręcznik</div>
+    <a href="/datadrive/">🏠 Start</a>
+    <div class="grp">Moduły</div>
+    <a href="/datadrive/parkingi/">🅿️ Parkingi i dostęp</a>
+    <a href="/datadrive/klienci/">👥 Klienci (CRM)</a>
+    <a href="/datadrive/faktury/" class="active">🧾 Faktury sprzedaży</a>
+    <div class="sub">
+      <a href="#o-module">O module</a>
+      <a href="#produkty">Produkty i usługi</a>
+      <a href="#lista">Lista faktur</a>
+      <a href="#naglowek">Nagłówek faktury</a>
+      <a href="#pozycje">Pozycje faktury</a>
+      <a href="#wystawienie">Wystawienie faktury</a>
+    </div>
+    <a href="/datadrive/korekty/">↩️ Korekty sprzedaży</a>
+    <span class="navi">🚚 Flota <span class="soon">wkrótce</span></span>
+    <span class="navi">🧑‍✈️ Kierowcy <span class="soon">wkrótce</span></span>
+    <span class="navi">⛽ Karty paliwowe <span class="soon">wkrótce</span></span>
+    <span class="navi">🔑 Wynajem (RAC) <span class="soon">wkrótce</span></span>
+    <span class="navi">📊 Raporty <span class="soon">wkrótce</span></span>
+  </aside>
+
+  <main>
+    <div class="content">
+      <div class="crumb"><a href="/datadrive/">Podręcznik</a> › Faktury sprzedaży</div>
+      <h1>Faktury sprzedaży</h1>
+      <p class="lead">Moduł sprzedaży pozwala wystawić fakturę dla klienta i policzyć ją za Ciebie: numer nadaje się sam, pozycje pobierasz z katalogu produktów, a kwoty netto, VAT i brutto liczą się automatycznie. Fakturę tworzysz jako szkic, sprawdzasz, a potem wystawiasz jednym ustawieniem statusu.</p>
+
+      <h2 id="o-module">O module sprzedaży</h2>
+      <p>Faktury znajdziesz w lewym menu, w grupie <span class="ui">Finansowe → Sprzedażowe → Faktury sprzedaży</span>. Każda faktura składa się z dwóch części: nagłówka z danymi stron i płatności oraz listy pozycji z tym, co sprzedajesz. Powtarzalne usługi i towary trzymasz w katalogu <span class="ui">Produkty i usługi</span> w grupie <span class="ui">Słowniki</span>, dzięki czemu nie przepisujesz za każdym razem ceny ani stawki VAT.</p>
+      <div class="callout note"><strong>Uwaga:</strong> faktura żyje w dwóch stanach. <strong>Szkic</strong> możesz dowolnie zmieniać i usuwać, a <strong>Wystawiony</strong> zamyka dokument — od tej chwili numeru nie zmienisz, a błąd poprawisz już tylko korektą.</div>
+
+      <h2 id="produkty">Produkty i usługi</h2>
+      <p>Katalog produktów to Twój cennik. Raz opisany produkt podstawia na pozycję faktury nazwę, cenę i stawkę VAT, więc wystawianie idzie szybciej i bez pomyłek w kwotach.</p>
+      <figure>
+        <img src="img/01-produkty.png" alt="Lista produktów i usług z kolumnami nazwy, opisu, ceny jednostkowej, stawki VAT i dostępności">
+        <figcaption>Katalog produktów i usług — nazwa, opis, cena netto, stawka VAT i dostępność.</figcaption>
+      </figure>
+      <p>Aby dodać produkt do katalogu, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Przejdź do <span class="ui">Słowniki → Produkty i usługi</span> i kliknij <span class="ui">Nowy</span>.</li>
+        <li>Wpisz <span class="ui">Nazwę</span> oraz <span class="ui">Cenę jednostkową</span> netto.</li>
+        <li>Wybierz <span class="ui">Stawkę VAT</span> i — jeśli prowadzisz sprzedaż objętą kodami GTU — uzupełnij <span class="ui">Kod GTU</span>.</li>
+        <li>Zapisz produkt.</li>
+      </ol>
+      <p>Produkt pojawi się na liście i od razu można go wskazać na pozycji faktury.</p>
+      <dl class="fields">
+        <div><dt>Nazwa</dt><dd>Nazwa produktu lub usługi, która trafi na pozycję faktury.</dd></div>
+        <div><dt>Cena jednostkowa</dt><dd>Domyślna cena netto za jednostkę. Podstawia się na pozycję, ale na samej fakturze możesz ją nadpisać.</dd></div>
+        <div><dt>Stawka VAT</dt><dd>Domyślna stawka podatku, na przykład 23%. Razem z ceną decyduje o kwocie VAT pozycji.</dd></div>
+        <div><dt>Kod GTU</dt><dd>Oznaczenie grupy towarowo-usługowej wymagane w niektórych rodzajach sprzedaży. Zostaw puste, jeśli produktu nie dotyczy.</dd></div>
+        <div><dt>Dostępny</dt><dd>Odznacz, gdy wycofujesz produkt ze sprzedaży. Niedostępne pozycje aplikacja pokazuje przekreślone.</dd></div>
+      </dl>
+
+      <h2 id="lista">Lista faktur</h2>
+      <p>Ekran zbiera wszystkie faktury sprzedaży z ich numerami, datami, stronami i kwotami. Stąd otwierasz istniejący dokument albo zakładasz nowy.</p>
+      <figure>
+        <img src="img/02-lista.png" alt="Lista faktur sprzedaży z numerami, datami wystawienia i sprzedaży, terminem płatności, sprzedawcą i nabywcą">
+        <figcaption>Lista faktur sprzedaży — kolejne dokumenty z datami, sprzedawcą i nabywcą.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Numer</dt><dd>Numer faktury nadany według serii numeracji. Aplikacja tworzy go sama przy pierwszym zapisie.</dd></div>
+        <div><dt>Data wystawienia, Data sprzedaży, Termin płatności</dt><dd>Trzy daty dokumentu. Domyślnie wystawienie i sprzedaż to dzisiaj, a termin płatności wypada dwa tygodnie później.</dd></div>
+        <div><dt>Sprzedawca i Nabywca</dt><dd>Strony transakcji — Twoja firma jako sprzedawca oraz klient jako nabywca.</dd></div>
+        <div><dt>Kwota brutto</dt><dd>Wartość faktury z podatkiem. Liczy się z pozycji, nie wpisujesz jej ręcznie.</dd></div>
+      </dl>
+
+      <h2 id="naglowek">Wystawienie faktury — nagłówek</h2>
+      <p>Fakturę zaczynasz od nagłówka: wskazujesz strony, ustalasz daty i sposób zapłaty. Większość pól aplikacja podpowiada, więc zwykle wystarczy wskazać nabywcę i sprawdzić daty.</p>
+      <figure>
+        <img src="img/03-detal.png" alt="Nagłówek faktury sprzedaży z rodzajem faktury, numerem, datami, sprzedawcą, nabywcą, płatnikiem i sposobem płatności">
+        <figcaption>Nagłówek faktury — rodzaj, numer, daty oraz strony transakcji i sposób płatności.</figcaption>
+      </figure>
+      <p>Aby założyć fakturę, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Na liście faktur kliknij <span class="ui">Nowy</span>.</li>
+        <li>W polu <span class="ui">Rodzaj faktury</span> zostaw <span class="ui">Sprzedaż zwykła</span> albo wybierz właściwy rodzaj — od niego zależy seria numeracji.</li>
+        <li>Wskaż <span class="ui">Nabywcę</span>, czyli klienta z kartoteki. <span class="ui">Płatnik</span> ustawi się na tego samego kontrahenta; zmień go tylko wtedy, gdy płaci ktoś inny.</li>
+        <li>Sprawdź daty i w razie potrzeby popraw <span class="ui">Termin płatności</span>.</li>
+        <li>Ustaw <span class="ui">Sposób płatności</span> i — przy przelewie — <span class="ui">Konto do zapłaty</span>.</li>
+        <li>Zapisz. Numer nada się automatycznie.</li>
+      </ol>
+      <p>Faktura zapisze się jako <span class="ui">Szkic</span> i dostanie numer z bieżącej serii, na przykład <span class="ui">FV/2026/07/000001</span>. Teraz możesz dodać pozycje.</p>
+      <div class="callout note"><strong>Uwaga:</strong> na tym etapie aplikacja rozlicza faktury w złotych. Pole <span class="ui">Rabat handlowy (%)</span> obniża całą fakturę, a rabaty na pojedynczych pozycjach ustawiasz osobno w wierszu.</div>
+
+      <h2 id="pozycje">Pozycje faktury</h2>
+      <p>Pozycje to lista tego, co sprzedajesz. Wybór produktu z katalogu wypełnia większość pól wiersza, a kwoty netto, VAT i brutto oraz podsumowanie faktury liczą się na bieżąco.</p>
+      <figure>
+        <img src="img/04-pozycje.png" alt="Zakładka Pozycje faktury z wierszem produktu oraz sekcją Podsumowanie z kwotami netto, VAT i brutto">
+        <figcaption>Pozycje faktury i podsumowanie — wartości netto, VAT i brutto liczą się automatycznie.</figcaption>
+      </figure>
+      <p>Aby dodać pozycję, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Przejdź na zakładkę <span class="ui">Pozycje</span> i kliknij <span class="ui">Kliknij tutaj, aby dodać nowy wiersz</span>.</li>
+        <li>W polu <span class="ui">Produkt</span> wybierz pozycję z katalogu — nazwa, cena netto i stawka VAT podstawią się same.</li>
+        <li>Podaj <span class="ui">Ilość</span> i w razie potrzeby popraw <span class="ui">Cenę jedn. netto</span> lub <span class="ui">Rabat (%)</span>.</li>
+        <li>Zapisz wiersz.</li>
+      </ol>
+      <p>Wartość netto, kwota VAT i wartość brutto wyliczą się dla pozycji, a sekcja <span class="ui">Podsumowanie</span> zaktualizuje kwoty całej faktury: netto, VAT, brutto oraz pozostało do zapłaty.</p>
+      <dl class="fields">
+        <div><dt>Produkt</dt><dd>Pozycja z katalogu. Jej wybór podstawia opis, cenę i stawkę VAT, więc reszty pól zwykle nie ruszasz.</dd></div>
+        <div><dt>Opis</dt><dd>Treść pozycji drukowana na fakturze. Podpowiada się z produktu, ale możesz ją doprecyzować.</dd></div>
+        <div><dt>Ilość i Cena jedn. netto</dt><dd>Liczba jednostek oraz cena za jednostkę. Ich iloczyn daje wartość netto pozycji.</dd></div>
+        <div><dt>Stawka VAT</dt><dd>Stawka podatku pozycji. Wraz z wartością netto wyznacza kwotę VAT.</dd></div>
+        <div><dt>Rabat (%)</dt><dd>Upust liczony od wartości pozycji. Zostaw pusty, jeśli nie udzielasz rabatu.</dd></div>
+      </dl>
+
+      <h2 id="wystawienie">Wystawienie faktury</h2>
+      <p>Gotową fakturę wystawiasz, zmieniając jej status. To domyka dokument i nadaje mu moc obowiązującego.</p>
+      <p>Aby wystawić fakturę, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Otwórz szkic faktury i sprawdź strony, daty oraz pozycje.</li>
+        <li>W polu <span class="ui">Status</span> wybierz <span class="ui">Wystawiony</span>.</li>
+        <li>Zapisz.</li>
+      </ol>
+      <p>Faktura przejdzie w stan <span class="ui">Wystawiony</span> i od tej chwili będzie gotowa do rozliczenia oraz do ewentualnej korekty.</p>
+      <div class="callout warn"><strong>Ważne:</strong> po wystawieniu <strong>numeru faktury nie da się już zmienić</strong>. Przy płatności przelewem dokument wymaga też wskazanego konta do zapłaty.</div>
+      <div class="callout danger"><strong>Anulować</strong> możesz tylko fakturę w statusie <strong>Szkic</strong>. Dokument już wystawiony poprawiasz wyłącznie <a href="/datadrive/korekty/">korektą sprzedaży</a> — nie usuwaj go i nie wystawiaj „na nowo”.</div>
+
+      <div class="pager">
+        <a href="/datadrive/klienci/" class="prev"><div class="lbl">‹ Poprzedni</div><div class="ttl">Klienci (CRM)</div></a>
+        <a href="/datadrive/korekty/" class="next"><div class="lbl">Następny ›</div><div class="ttl">Korekty sprzedaży</div></a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<footer>
+  <span>DataDrive · podręcznik użytkownika</span><span class="dot">·</span>
+  <span>Data Drive Sp. z o.o.</span>
+</footer>
+<script src="/datadrive/assets/manual.js"></script>
+</body>
+</html>

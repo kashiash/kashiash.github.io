@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Korekty sprzedaży — podręcznik DataDrive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/datadrive/assets/manual.css">
+</head>
+<body>
+<header class="top">
+  <button class="navtoggle" aria-label="Menu">☰</button>
+  <a class="brand" href="/datadrive/"><span class="mark">DD</span> DataDrive <small>Podręcznik</small></a>
+  <div class="search">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.5-1.5-5-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+    <input id="q" type="search" placeholder="Szukaj…" autocomplete="off" aria-label="Szukaj" disabled>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside>
+    <div class="grp">Podręcznik</div>
+    <a href="/datadrive/">🏠 Start</a>
+    <div class="grp">Moduły</div>
+    <a href="/datadrive/parkingi/">🅿️ Parkingi i dostęp</a>
+    <a href="/datadrive/klienci/">👥 Klienci (CRM)</a>
+    <a href="/datadrive/faktury/">🧾 Faktury sprzedaży</a>
+    <a href="/datadrive/korekty/" class="active">↩️ Korekty sprzedaży</a>
+    <div class="sub">
+      <a href="#o-module">O module</a>
+      <a href="#kiedy">Kiedy korekta</a>
+      <a href="#akcja">Wystaw korektę</a>
+      <a href="#okno">Okno korekty</a>
+      <a href="#lista">Lista korekt</a>
+    </div>
+    <span class="navi">🚚 Flota <span class="soon">wkrótce</span></span>
+    <span class="navi">🧑‍✈️ Kierowcy <span class="soon">wkrótce</span></span>
+    <span class="navi">⛽ Karty paliwowe <span class="soon">wkrótce</span></span>
+    <span class="navi">🔑 Wynajem (RAC) <span class="soon">wkrótce</span></span>
+    <span class="navi">📊 Raporty <span class="soon">wkrótce</span></span>
+  </aside>
+
+  <main>
+    <div class="content">
+      <div class="crumb"><a href="/datadrive/">Podręcznik</a> › Korekty sprzedaży</div>
+      <h1>Korekty sprzedaży</h1>
+      <p class="lead">Korekta poprawia wystawioną fakturę bez jej kasowania. Wskazujesz dokument, podajesz powód i zmieniasz wartości, a aplikacja tworzy osobny dokument korygujący, który pokazuje stan przed korektą, po korekcie i samą różnicę. Faktura pierwotna zostaje nietknięta, a ślad zmiany jest jawny.</p>
+
+      <h2 id="o-module">O module korekt</h2>
+      <p>Korekty znajdziesz w lewym menu, w grupie <span class="ui">Finansowe → Sprzedażowe → Korekty sprzedaży</span>. Korekty nie zakładasz jednak od zera — wystawiasz ją wprost z faktury, którą chcesz poprawić. Dokument korygujący dostaje własny numer z serii <span class="ui">KOR</span> i trwale wskazuje fakturę, której dotyczy.</p>
+      <div class="callout note"><strong>Uwaga:</strong> korektę wystawisz tylko dla faktury w statusie <strong>Wystawiony</strong>. Szkicu się nie koryguje — dopóki faktura jest szkicem, po prostu ją popraw i zapisz.</div>
+
+      <h2 id="kiedy">Kiedy wystawiasz korektę</h2>
+      <p>Po korektę sięgasz zawsze, gdy wystawiona już faktura przestała odpowiadać rzeczywistości. Typowe sytuacje to:</p>
+      <ul>
+        <li>klient zwrócił część usługi lub towaru i trzeba obniżyć ilość albo wartość,</li>
+        <li>udzieliłeś rabatu już po wystawieniu faktury,</li>
+        <li>na fakturze trafił się zły nabywca lub błędna cena,</li>
+        <li>zmieniła się data sprzedaży.</li>
+      </ul>
+      <p>W każdym z tych przypadków faktura pierwotna zostaje, a różnicę dokumentuje korekta.</p>
+
+      <h2 id="akcja">Wystawienie korekty z faktury</h2>
+      <p>Korektę uruchamiasz jedną akcją z poziomu faktury. W przykładzie poprawiamy fakturę <span class="ui">DEMO/2026/FS/003</span>, wystawioną omyłkowo na niewłaściwego nabywcę.</p>
+      <figure>
+        <img src="img/01-akcja.png" alt="Karta wystawionej faktury sprzedaży z przyciskiem Wystaw korektę na górnym pasku">
+        <figcaption>Wystawiona faktura z akcją Wystaw korektę na górnym pasku.</figcaption>
+      </figure>
+      <div class="callout note"><strong>Zanim zaczniesz:</strong> upewnij się, że faktura jest już <strong>wystawiona</strong>. Przy szkicu przycisk <span class="ui">Wystaw korektę</span> się nie pojawi.</div>
+      <p>Aby rozpocząć korektę, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Otwórz wystawioną fakturę z listy <span class="ui">Faktury sprzedaży</span> albo zaznacz ją na liście.</li>
+        <li>Na górnym pasku kliknij <span class="ui">Wystaw korektę</span>.</li>
+      </ol>
+      <p>Otworzy się okno <span class="ui">Wystawienie korekty faktury</span> z pozycjami przepisanymi z faktury.</p>
+
+      <h2 id="okno">Okno korekty</h2>
+      <p>Okno korekty pokazuje trzy widoki tych samych pozycji: <span class="ui">Przed korektą</span> (wartości z faktury, tylko do odczytu), <span class="ui">Po korekcie</span> (wartości docelowe, które edytujesz) oraz <span class="ui">Różnica</span> (to, o co zmienia się dokument). Na górze podajesz powód, a w razie potrzeby nową datę sprzedaży.</p>
+      <figure>
+        <img src="img/02-popup.png" alt="Okno Wystawienie korekty faktury z polem Powód korekty oraz siatkami Przed korektą i Po korekcie, gdzie wartości Po korekcie są wyzerowane">
+        <figcaption>Okno korekty — pozycja „Przed korektą” warta 2 386,20 zł zostaje wyzerowana w „Po korekcie” po użyciu korekty całkowitej.</figcaption>
+      </figure>
+      <p>Aby wystawić korektę, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>W polu <span class="ui">Powód korekty</span> wpisz, dlaczego poprawiasz fakturę. To pole jest wymagane.</li>
+        <li>W siatce <span class="ui">Po korekcie</span> popraw wartości docelowe — na przykład zmniejsz <span class="ui">Ilość</span> albo <span class="ui">Cenę</span> pozycji. Aby wycofać całą fakturę, kliknij <span class="ui">Korekta całkowita</span>, a wszystkie pozycje wyzerują się naraz.</li>
+        <li>Jeśli korygujesz tylko datę sprzedaży, ustaw ją w polu <span class="ui">Data sprzedaży (po korekcie)</span> i nie ruszaj pozycji.</li>
+        <li>Kliknij <span class="ui">Wystaw korektę</span>.</li>
+      </ol>
+      <p>Aplikacja utworzy dokument korygujący, nada mu numer z serii KOR i zapisze różnicę względem faktury pierwotnej. Siatka <span class="ui">Różnica</span> pokazuje tę zmianę jeszcze przed zapisem, więc widzisz, o ile realnie zmienia się dokument.</p>
+      <div class="callout tip"><strong>Wskazówka:</strong> zaznacz <span class="ui">Nie przeliczaj wartości</span>, gdy chcesz wpisać kwoty po korekcie wprost, bez automatycznego przeliczania z ilości i ceny. Przy zwykłej zmianie ilości zostaw to pole puste.</div>
+
+      <h2 id="lista">Lista korekt</h2>
+      <p>Wystawione korekty zbiera ekran <span class="ui">Korekty sprzedaży</span>. Każdy wiersz wskazuje fakturę, której dotyczy, oraz kwoty zmiany — przy zmniejszeniu wartości są one ujemne.</p>
+      <figure>
+        <img src="img/03-lista.png" alt="Lista korekt sprzedaży z jednym dokumentem KOR odwołującym się do faktury DEMO/2026/FS/003, z ujemnymi kwotami netto i VAT">
+        <figcaption>Lista korekt — dokument KOR do faktury DEMO/2026/FS/003 z ujemnymi kwotami korekty całkowitej.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Numer</dt><dd>Numer korekty z osobnej serii, na przykład <span class="ui">KOR/2026/07/000001</span>. Nie miesza się z numeracją faktur.</dd></div>
+        <div><dt>Dokument korygowany</dt><dd>Faktura, której dotyczy korekta. Wiąże oba dokumenty na stałe.</dd></div>
+        <div><dt>Powód korekty</dt><dd>Uzasadnienie zmiany, które wpisałeś w oknie korekty.</dd></div>
+        <div><dt>Kwota netto, Kwota VAT</dt><dd>Wartość korekty, czyli różnica względem faktury. Przy obniżeniu lub wycofaniu sprzedaży kwoty są ujemne.</dd></div>
+      </dl>
+
+      <div class="pager">
+        <a href="/datadrive/faktury/" class="prev"><div class="lbl">‹ Poprzedni</div><div class="ttl">Faktury sprzedaży</div></a>
+        <a href="/datadrive/" class="next"><div class="lbl">Następny ›</div><div class="ttl">Start podręcznika</div></a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<footer>
+  <span>DataDrive · podręcznik użytkownika</span><span class="dot">·</span>
+  <span>Data Drive Sp. z o.o.</span>
+</footer>
+<script src="/datadrive/assets/manual.js"></script>
+</body>
+</html>

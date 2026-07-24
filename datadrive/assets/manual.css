@@ -102,6 +102,15 @@ dl.fields>div:first-child{border-top:0;}
 dl.fields dt{font-weight:700;color:var(--text);margin-bottom:2px;}
 dl.fields dd{margin:0;color:var(--text-2);}
 
+/* ---------- Tables (dane tabelaryczne, np. pozycje faktury) ---------- */
+.tblwrap{overflow-x:auto;margin:1.2em 0;border:1px solid var(--border);border-radius:10px;}
+table.tbl{border-collapse:collapse;width:100%;font-size:.9rem;min-width:520px;}
+table.tbl th,table.tbl td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);}
+table.tbl thead th{background:var(--sidebar);font-weight:700;color:var(--text);font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;}
+table.tbl tbody tr:last-child td{border-bottom:0;}
+table.tbl td.num,table.tbl th.num{text-align:right;font-variant-numeric:tabular-nums;}
+table.tbl tfoot td{font-weight:700;border-top:2px solid var(--rule);background:var(--sidebar);}
+
 /* ---------- Cards (landing) ---------- */
 .section-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;color:var(--text-2);font-weight:700;margin:36px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
@@ -151,5 +160,5 @@ footer .dot{opacity:.5;}
 }
 @media print{
   header.top,aside,.pager,footer,.navtoggle{display:none!important;}
-  main{padding:0;} figure{break-inside:avoid;} h2{break-after:avoid;} dl.fields>div{break-inside:avoid;}
+  main{padding:0;} figure{break-inside:avoid;} h2{break-after:avoid;} dl.fields>div{break-inside:avoid;} .tblwrap{break-inside:avoid;}
 }
