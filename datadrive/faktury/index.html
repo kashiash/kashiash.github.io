@@ -35,6 +35,7 @@
       <a href="#naglowek">Nagłówek faktury</a>
       <a href="#pozycje">Pozycje faktury</a>
       <a href="#wystawienie">Wystawienie faktury</a>
+      <a href="#drukowanie">Drukowanie faktury</a>
     </div>
     <a href="/datadrive/korekty/">↩️ Korekty sprzedaży</a>
     <a href="/datadrive/rozliczanie-kosztow/">💰 Rozliczanie kosztów</a>
@@ -56,9 +57,16 @@
 
       <h2 id="produkty">Produkty i usługi</h2>
       <p>Katalog produktów to Twój cennik. Raz opisany produkt podstawia na pozycję faktury nazwę, cenę i stawkę VAT, więc wystawianie idzie szybciej i bez pomyłek w kwotach.</p>
+      <p>Katalog demonstracyjny zawiera kilkanaście pozycji typowych dla firmy flotowej i wynajmu, pogrupowanych według tego, co realnie fakturujesz:</p>
+      <ul>
+        <li><strong>Wynajem pojazdów</strong> — dobowe stawki dla samochodu osobowego, osobowego premium, dostawczego i ciężarowego,</li>
+        <li><strong>Usługi serwisowe</strong> — przegląd okresowy, naprawa mechaniczna, wymiana oleju, wymiana opon, geometria zawieszenia i mycie pojazdu,</li>
+        <li><strong>Opłaty i dodatki</strong> — obsługa karty paliwowej, opłata administracyjna, ubezpieczenie GAP, assistance drogowy i holowanie.</li>
+      </ul>
+      <p>Wszystkie pozycje mają stawkę 23%, a ceny netto wpisujesz raz — na fakturze wystarczy wskazać produkt i podać ilość.</p>
       <figure>
-        <img src="img/01-produkty.png" alt="Lista produktów i usług z kolumnami nazwy, opisu, ceny jednostkowej, stawki VAT i dostępności">
-        <figcaption>Katalog produktów i usług — nazwa, opis, cena netto, stawka VAT i dostępność.</figcaption>
+        <img src="img/01-produkty.png" alt="Lista szesnastu produktów i usług — wynajem pojazdów, usługi serwisowe i opłaty — z ceną netto i stawką VAT 23%">
+        <figcaption>Katalog produktów i usług — wynajem pojazdów różnych klas, usługi serwisowe i opłaty dodatkowe, każda z ceną netto i stawką VAT.</figcaption>
       </figure>
       <p>Aby dodać produkt do katalogu, wykonaj następujące kroki:</p>
       <ol class="steps">
@@ -108,11 +116,12 @@
       <div class="callout note"><strong>Uwaga:</strong> na tym etapie aplikacja rozlicza faktury w złotych. Pole <span class="ui">Rabat handlowy (%)</span> obniża całą fakturę, a rabaty na pojedynczych pozycjach ustawiasz osobno w wierszu.</div>
 
       <h2 id="pozycje">Pozycje faktury</h2>
-      <p>Pozycje to lista tego, co sprzedajesz. Wybór produktu z katalogu wypełnia większość pól wiersza, a kwoty netto, VAT i brutto oraz podsumowanie faktury liczą się na bieżąco.</p>
+      <p>Pozycje to lista tego, co sprzedajesz. Jedna faktura mieści dowolnie wiele wierszy, więc na jednym dokumencie rozliczysz cały miesiąc obsługi pojazdu — najem, przegląd, wymianę oleju, opony, assistance i opłatę administracyjną naraz. Wybór produktu z katalogu wypełnia większość pól wiersza, a kwoty netto, VAT i brutto oraz podsumowanie faktury liczą się na bieżąco.</p>
       <figure>
-        <img src="img/04-pozycje.png" alt="Zakładka Pozycje faktury z wierszem produktu oraz sekcją Podsumowanie z kwotami netto, VAT i brutto">
-        <figcaption>Pozycje faktury i podsumowanie — wartości netto, VAT i brutto liczą się automatycznie.</figcaption>
+        <img src="img/04-pozycje.png" alt="Zakładka Pozycje faktury z siedmioma wierszami produktów oraz sekcją Podsumowanie z kwotami netto 4570 zł, VAT 1051,10 zł i brutto 5621,10 zł">
+        <figcaption>Faktura z siedmioma pozycjami — po każdym wierszu sekcja <span class="ui">Podsumowanie</span> aktualizuje kwotę netto, VAT, brutto oraz pozostało do zapłaty.</figcaption>
       </figure>
+      <p>Licznik przy zakładce <span class="ui">Pozycje</span> pokazuje, ile wierszy ma faktura — na przykładzie widnieje <span class="ui">Pozycje (7)</span>. Kwoty w sekcji <span class="ui">Podsumowanie</span> to suma wszystkich wierszy, więc każdy dodany produkt od razu podnosi wartość dokumentu.</p>
       <p>Aby dodać pozycję, wykonaj następujące kroki:</p>
       <ol class="steps">
         <li>Przejdź na zakładkę <span class="ui">Pozycje</span> i kliknij <span class="ui">Kliknij tutaj, aby dodać nowy wiersz</span>.</li>
@@ -140,6 +149,32 @@
       <p>Faktura przejdzie w stan <span class="ui">Wystawiony</span> i od tej chwili będzie gotowa do rozliczenia oraz do ewentualnej korekty.</p>
       <div class="callout warn"><strong>Ważne:</strong> po wystawieniu <strong>numeru faktury nie da się już zmienić</strong>. Przy płatności przelewem dokument wymaga też wskazanego konta do zapłaty.</div>
       <div class="callout danger"><strong>Anulować</strong> możesz tylko fakturę w statusie <strong>Szkic</strong>. Dokument już wystawiony poprawiasz wyłącznie <a href="/datadrive/korekty/">korektą sprzedaży</a> — nie usuwaj go i nie wystawiaj „na nowo”.</div>
+
+      <h2 id="drukowanie">Drukowanie faktury</h2>
+      <p>Gotową fakturę wydrukujesz i zapiszesz jako PDF przez raport <span class="ui">Faktura sprzedaży</span>. Wydruk zbiera w jednym miejscu dane obu stron, wszystkie pozycje, zestawienie VAT i kwotę do zapłaty słownie — dostajesz dokument gotowy do wysłania klientowi.</p>
+      <p>Aby wydrukować fakturę, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>W lewym menu przejdź do <span class="ui">Raporty → Raporty</span>.</li>
+        <li>Na liście zaznacz raport <span class="ui">Sales Invoices — wzór</span> (Faktura sprzedaży).</li>
+        <li>Na górnym pasku kliknij <span class="ui">Wykonaj raport</span>.</li>
+        <li>W podglądzie przejrzyj kolejne strony — każda faktura zajmuje osobną stronę.</li>
+        <li>Kliknij <span class="ui">Eksport do</span> i wybierz <span class="ui">PDF</span>, aby pobrać plik.</li>
+      </ol>
+      <p>Otworzy się podgląd wydruku, a wybór formatu PDF pobierze gotowy plik na dysk.</p>
+      <figure>
+        <img src="img/05-wydruk.png" alt="Podgląd wydruku faktury DEMO/2026/FS/001 z danymi sprzedawcy i nabywcy, siedmioma pozycjami, zestawieniem VAT i kwotą do zapłaty">
+        <figcaption>Podgląd wydruku faktury — nagłówek ze stronami transakcji, tabela pozycji, zestawienie VAT oraz kwota do zapłaty słownie.</figcaption>
+      </figure>
+      <p>Co zawiera wydruk faktury:</p>
+      <dl class="fields">
+        <div><dt>Nagłówek</dt><dd>Numer i daty faktury oraz dane sprzedawcy, nabywcy i płatnika wraz z numerami NIP.</dd></div>
+        <div><dt>Sposób i termin płatności</dt><dd>Forma zapłaty, termin oraz konto do przelewu.</dd></div>
+        <div><dt>Tabela pozycji</dt><dd>Każdy wiersz faktury z ilością, ceną netto, stawką i kwotą VAT oraz wartością brutto, a pod nią wiersz <span class="ui">RAZEM</span>.</dd></div>
+        <div><dt>Zestawienie VAT</dt><dd>Podstawa opodatkowania i kwota podatku w rozbiciu na stawki.</dd></div>
+        <div><dt>Do zapłaty</dt><dd>Kwota brutto cyframi i słownie oraz miejsca na podpisy wystawiającego i odbierającego.</dd></div>
+      </dl>
+      <p>Przykładowy wydruk pobierzesz tutaj: <a href="faktury.pdf">faktura sprzedaży (PDF)</a>.</p>
+      <div class="callout tip"><strong>Wskazówka:</strong> ten sam podgląd pozwala wysłać dokument wprost na drukarkę przyciskiem <span class="ui">Drukuj</span> oraz zapisać go w innych formatach, na przykład <span class="ui">XLSX</span> lub <span class="ui">DOCX</span>.</div>
 
       <div class="pager">
         <a href="/datadrive/klienci/" class="prev"><div class="lbl">‹ Poprzedni</div><div class="ttl">Klienci (CRM)</div></a>

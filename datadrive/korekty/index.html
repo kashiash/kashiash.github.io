@@ -34,6 +34,7 @@
       <a href="#kiedy">Kiedy korekta</a>
       <a href="#akcja">Wystaw korektę</a>
       <a href="#okno">Okno korekty</a>
+      <a href="#detal">Dokument korekty</a>
       <a href="#lista">Lista korekt</a>
     </div>
     <a href="/datadrive/rozliczanie-kosztow/">💰 Rozliczanie kosztów</a>
@@ -64,10 +65,10 @@
       <p>W każdym z tych przypadków faktura pierwotna zostaje, a różnicę dokumentuje korekta.</p>
 
       <h2 id="akcja">Wystawienie korekty z faktury</h2>
-      <p>Korektę uruchamiasz jedną akcją z poziomu faktury. W przykładzie poprawiamy fakturę <span class="ui">DEMO/2026/FS/003</span>, wystawioną omyłkowo na niewłaściwego nabywcę.</p>
+      <p>Korektę uruchamiasz jedną akcją z poziomu faktury. W przykładzie poprawiamy wielopozycyjną fakturę <span class="ui">DEMO/2026/FS/002</span>, z której klient zwrócił część usług serwisowych.</p>
       <figure>
-        <img src="img/01-akcja.png" alt="Karta wystawionej faktury sprzedaży z przyciskiem Wystaw korektę na górnym pasku">
-        <figcaption>Wystawiona faktura z akcją Wystaw korektę na górnym pasku.</figcaption>
+        <img src="img/01-akcja.png" alt="Karta wystawionej faktury sprzedaży DEMO/2026/FS/002 z sześcioma pozycjami i przyciskiem Wystaw korektę na górnym pasku">
+        <figcaption>Wystawiona faktura wielopozycyjna z akcją <span class="ui">Wystaw korektę</span> na górnym pasku.</figcaption>
       </figure>
       <div class="callout note"><strong>Zanim zaczniesz:</strong> upewnij się, że faktura jest już <strong>wystawiona</strong>. Przy szkicu przycisk <span class="ui">Wystaw korektę</span> się nie pojawi.</div>
       <p>Aby rozpocząć korektę, wykonaj następujące kroki:</p>
@@ -78,26 +79,40 @@
       <p>Otworzy się okno <span class="ui">Wystawienie korekty faktury</span> z pozycjami przepisanymi z faktury.</p>
 
       <h2 id="okno">Okno korekty</h2>
-      <p>Okno korekty pokazuje trzy widoki tych samych pozycji: <span class="ui">Przed korektą</span> (wartości z faktury, tylko do odczytu), <span class="ui">Po korekcie</span> (wartości docelowe, które edytujesz) oraz <span class="ui">Różnica</span> (to, o co zmienia się dokument). Na górze podajesz powód, a w razie potrzeby nową datę sprzedaży.</p>
+      <p>Okno korekty pokazuje trzy widoki tych samych pozycji: <span class="ui">Przed korektą</span> (wartości z faktury, tylko do odczytu), <span class="ui">Po korekcie</span> (wartości docelowe, które edytujesz) oraz <span class="ui">Różnica</span> (to, o co zmienia się dokument). Na górze podajesz powód, a w razie potrzeby nową datę sprzedaży. Na fakturze wielopozycyjnej wszystkie wiersze przepisują się do każdej z trzech siatek, więc korygujesz dokładnie te pozycje, których dotyczy zmiana.</p>
       <figure>
-        <img src="img/02-popup.png" alt="Okno Wystawienie korekty faktury z polem Powód korekty oraz siatkami Przed korektą i Po korekcie, gdzie wartości Po korekcie są wyzerowane">
-        <figcaption>Okno korekty — pozycja „Przed korektą” warta 2 386,20 zł zostaje wyzerowana w „Po korekcie” po użyciu korekty całkowitej.</figcaption>
+        <img src="img/02-popup.png" alt="Okno Wystawienie korekty faktury z polem Powód korekty oraz siatkami Przed korektą i Po korekcie, obie z sześcioma pozycjami przepisanymi z faktury">
+        <figcaption>Okno korekty faktury wielopozycyjnej — sześć pozycji „Przed korektą” trafia do edytowalnej siatki „Po korekcie”.</figcaption>
       </figure>
-      <p>Aby wystawić korektę, wykonaj następujące kroki:</p>
+      <p>Aby wystawić korektę częściową, wykonaj następujące kroki:</p>
       <ol class="steps">
         <li>W polu <span class="ui">Powód korekty</span> wpisz, dlaczego poprawiasz fakturę. To pole jest wymagane.</li>
-        <li>W siatce <span class="ui">Po korekcie</span> popraw wartości docelowe — na przykład zmniejsz <span class="ui">Ilość</span> albo <span class="ui">Cenę</span> pozycji. Aby wycofać całą fakturę, kliknij <span class="ui">Korekta całkowita</span>, a wszystkie pozycje wyzerują się naraz.</li>
+        <li>W siatce <span class="ui">Po korekcie</span> zmień tylko te pozycje, które korygujesz — zmniejsz <span class="ui">Ilość</span>, obniż <span class="ui">Cenę</span> albo ustaw ilość na zero, żeby wycofać całą pozycję. Pozostałe wiersze zostaw bez zmian.</li>
         <li>Jeśli korygujesz tylko datę sprzedaży, ustaw ją w polu <span class="ui">Data sprzedaży (po korekcie)</span> i nie ruszaj pozycji.</li>
         <li>Kliknij <span class="ui">Wystaw korektę</span>.</li>
       </ol>
-      <p>Aplikacja utworzy dokument korygujący, nada mu numer z serii KOR i zapisze różnicę względem faktury pierwotnej. Siatka <span class="ui">Różnica</span> pokazuje tę zmianę jeszcze przed zapisem, więc widzisz, o ile realnie zmienia się dokument.</p>
+      <p>Każda zmiana w siatce <span class="ui">Po korekcie</span> od razu przelicza wiersz w siatce <span class="ui">Różnica</span> — widzisz tam deltę, czyli o ile spada ilość, cena i wartość danej pozycji. Wiersze, których nie ruszasz, mają różnicę zerową.</p>
+      <figure>
+        <img src="img/04-roznica.png" alt="Okno korekty z siatką Po korekcie, gdzie zmieniono ilość jednej pozycji, oraz siatką Różnica pokazującą ujemną deltę tej pozycji">
+        <figcaption>Zmiana ilości jednej pozycji w siatce „Po korekcie” od razu odkłada się jako ujemna różnica w siatce „Różnica”.</figcaption>
+      </figure>
+      <p>Aplikacja utworzy dokument korygujący, nada mu numer z serii KOR i zapisze różnicę względem faktury pierwotnej. Suma korekty to suma delt wszystkich pozycji — przy zmniejszeniu sprzedaży wychodzi ujemna.</p>
+      <div class="callout note"><strong>Korekta częściowa a całkowita.</strong> Ręczna zmiana wybranych pozycji w siatce <span class="ui">Po korekcie</span> daje <strong>korektę częściową</strong> — korygujesz tylko to, co się zmieniło. Przycisk <span class="ui">Korekta całkowita</span> zeruje <strong>wszystkie</strong> pozycje naraz i wycofuje całą fakturę.</div>
       <div class="callout tip"><strong>Wskazówka:</strong> zaznacz <span class="ui">Nie przeliczaj wartości</span>, gdy chcesz wpisać kwoty po korekcie wprost, bez automatycznego przeliczania z ilości i ceny. Przy zwykłej zmianie ilości zostaw to pole puste.</div>
+
+      <h2 id="detal">Dokument korekty</h2>
+      <p>Zapisana korekta ma własną kartę z zakładką <span class="ui">Pozycje</span>, na której każda pozycja występuje w dwóch wierszach: <span class="ui">Przed korektą</span> z wartością pierwotną oraz <span class="ui">Po korekcie</span> z deltą zmiany. Kolumna <span class="ui">Rodzaj pozycji</span> odróżnia te dwa stany, a sekcja <span class="ui">Podsumowanie</span> podaje łączną kwotę korekty.</p>
+      <figure>
+        <img src="img/05-detal.png" alt="Karta korekty KOR/2026/07/000002 z pozycjami Przed korektą i Po korekcie oraz ujemnymi różnicami dla trzech skorygowanych pozycji i podsumowaniem minus 1590 zł netto">
+        <figcaption>Dokument korekty częściowej — trzy skorygowane pozycje z ujemnymi różnicami (−150, −480 i −960 zł netto), pozostałe bez zmian, podsumowanie −1 590,00 zł netto.</figcaption>
+      </figure>
+      <p>Na przykładzie korekta zmniejsza liczbę dób najmu, wycofuje wymianę opon i obniża stawkę assistance — pozostałe pozycje faktury zostają nietknięte, dlatego mają różnicę zerową.</p>
 
       <h2 id="lista">Lista korekt</h2>
       <p>Wystawione korekty zbiera ekran <span class="ui">Korekty sprzedaży</span>. Każdy wiersz wskazuje fakturę, której dotyczy, oraz kwoty zmiany — przy zmniejszeniu wartości są one ujemne.</p>
       <figure>
-        <img src="img/03-lista.png" alt="Lista korekt sprzedaży z jednym dokumentem KOR odwołującym się do faktury DEMO/2026/FS/003, z ujemnymi kwotami netto i VAT">
-        <figcaption>Lista korekt — dokument KOR do faktury DEMO/2026/FS/003 z ujemnymi kwotami korekty całkowitej.</figcaption>
+        <img src="img/03-lista.png" alt="Lista korekt sprzedaży z dwoma dokumentami KOR — korektą całkowitą do DEMO/2026/FS/003 i częściową do DEMO/2026/FS/001 — z ujemnymi kwotami netto i VAT">
+        <figcaption>Lista korekt — korekta całkowita do DEMO/2026/FS/003 (−1 940,00 zł) oraz korekta częściowa do DEMO/2026/FS/001 (−1 590,00 zł), obie z ujemnymi kwotami.</figcaption>
       </figure>
       <dl class="fields">
         <div><dt>Numer</dt><dd>Numer korekty z osobnej serii, na przykład <span class="ui">KOR/2026/07/000001</span>. Nie miesza się z numeracją faktur.</dd></div>
