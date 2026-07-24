@@ -38,6 +38,9 @@
       <a href="#kategoria">Kategoria kosztu</a>
       <a href="#produkty">Produkty ujednolicone</a>
       <a href="#konsolidacja">Konsolidacja produktów</a>
+      <a href="#analizy">Analiza przed i po</a>
+      <a href="#rozbicie-kosztow">Rozbicie po kosztach</a>
+      <a href="#planowany-podzial">Planowany podział pozycji</a>
     </div>
     <a href="/datadrive/pojazdy/">🚚 Flota — pojazdy i serwisy</a>
     <span class="navi">🧑‍✈️ Kierowcy <span class="soon">wkrótce</span></span>
@@ -117,7 +120,11 @@
       <div class="callout tip"><strong>Wskazówka:</strong> poprawiaj źródło wymiaru zamiast pojedynczego wyniku. Ustaw MPK na pojeździe lub karcie, a kierowcę w wydaniu karty. Kolejne transakcje dostaną wtedy właściwe dane automatycznie.</div>
 
       <h2 id="kategoria">Kategoria kosztu i MPK na fakturze kosztowej</h2>
-      <p>Kategoria kosztu jest polem pozycji faktury kosztowej. Użyj jej, gdy transakcja została powiązana z fakturą lub gdy rozliczasz koszt poza kartą paliwową. Przykładowe kategorie to paliwo, opłaty drogowe, myjnia albo materiały eksploatacyjne.</p>
+      <p>Kategoria kosztu jest polem pozycji faktury kosztowej. Użyj jej, gdy transakcja została powiązana z fakturą lub gdy rozliczasz koszt poza kartą paliwową. Każdy wiersz na liście <span class="ui">Koszty szczegółowo</span> jest pozycją faktury, dlatego może mieć własną kategorię, pojazd, MPK i pozostałe wymiary. Przykładowe kategorie to paliwo, opłaty drogowe, myjnia albo materiały eksploatacyjne.</p>
+      <figure>
+        <img src="img/09-koszty-szczegolowo.png" alt="Lista Koszty szczegółowo z pozycjami faktur i akcją Rozbij na MPK">
+        <figcaption>„Koszty szczegółowo” pokazują pozycje faktur. Zaznaczoną pozycję można opisać kategorią i wymiarami albo rozbić na mniejsze części.</figcaption>
+      </figure>
       <figure>
         <img src="img/08-pozycja-kosztowa.png" alt="Pozycja faktury kosztowej z sekcją Rozliczenie kosztu i polami Pojazd, Kategoria oraz Data transakcji">
         <figcaption>Pozycja faktury kosztowej — sekcja „Rozliczenie kosztu” zawiera pojazd, kategorię i pozostałe dane analityczne.</figcaption>
@@ -188,6 +195,82 @@
       <h3>Jak działa kolejny import</h3>
       <p>Mapowanie zapamiętuje dostawcę oraz jego kod lub nazwę produktu. Gdy kolejny plik albo integracja przekaże transakcję UTA, BP lub Orlen, DataDrive sprawdzi mapowanie i od razu przypisze produkt ujednolicony. Nie musisz ponawiać konsolidacji przy każdym imporcie.</p>
       <div class="callout tip"><strong>Wskazówka:</strong> po konsolidacji wróć do wspólnej listy transakcji i odfiltruj nową nazwę. Sprawdź kilku dostawców oraz grupę produktu, zanim użyjesz danych w raporcie.</div>
+
+      <h2 id="analizy">Analiza przed i po ujednoliceniu produktów</h2>
+      <p>Przed konsolidacją analiza grupuje zakupy według nazw zapisanych przez dostawców. Ten sam rodzaj paliwa zajmuje wtedy kilka wierszy lub słupków. Po konsolidacji raport używa produktu ujednoliconego i łączy odpowiadające sobie zakupy.</p>
+      <div class="comparison" role="group" aria-label="Porównanie analizy produktów przed i po ujednoliceniu">
+        <section>
+          <h3>Przed ujednoliceniem</h3>
+          <table class="data-table">
+            <thead><tr><th>Produkt w analizie</th><th>Wynik</th></tr></thead>
+            <tbody>
+              <tr><td>BP — BEZOLOW 95</td><td>osobna seria</td></tr>
+              <tr><td>Orlen — EFECTA 95</td><td>osobna seria</td></tr>
+              <tr><td>UTA — benzyna 95</td><td>osobna seria</td></tr>
+            </tbody>
+          </table>
+          <p>Trzy nazwy utrudniają odczyt całkowitego kosztu benzyny 95.</p>
+        </section>
+        <section>
+          <h3>Po ujednoliceniu</h3>
+          <table class="data-table">
+            <thead><tr><th>Produkt w analizie</th><th>Wynik</th></tr></thead>
+            <tbody>
+              <tr><td>Benzyna 95</td><td>jedna wspólna seria</td></tr>
+              <tr><td>Grupa produktu</td><td>Paliwa</td></tr>
+              <tr><td>Dostawcy</td><td>BP, Orlen i UTA</td></tr>
+            </tbody>
+          </table>
+          <p>Jedna pozycja pokazuje łączną wartość, ale nadal można filtrować po dostawcy.</p>
+        </section>
+      </div>
+      <p>Aby porównać wynik, najpierw uruchom analizę sumy wartości brutto według produktu dostawcy. Po konsolidacji uruchom ją ponownie według produktu ujednoliconego. Zakres dat i pozostałe filtry muszą być takie same.</p>
+      <div class="callout note"><strong>Jak czytać porównanie:</strong> tabele pokazują sposób grupowania, a nie kwoty przykładowej firmy. Wartości w analizie pochodzą z aktualnych transakcji i wybranego zakresu dat.</div>
+
+      <h2 id="rozbicie-kosztow">Rozbicie po kosztach</h2>
+      <p>Analiza kosztów szczegółowych korzysta z pozycji faktur, a nie z nagłówków dokumentów. Dzięki temu może pokazać, na co wydano pieniądze i kogo obciąża dany koszt.</p>
+      <dl class="fields">
+        <div><dt>Kategoria kosztu</dt><dd>Łączy podobne wydatki, na przykład paliwo, opony, sprzęt komputerowy albo opłaty drogowe.</dd></div>
+        <div><dt>MPK i dział</dt><dd>Pokazują jednostkę organizacyjną odpowiedzialną za koszt.</dd></div>
+        <div><dt>Pojazd</dt><dd>Pozwala analizować całkowity koszt utrzymania konkretnego samochodu.</dd></div>
+        <div><dt>Wymiary</dt><dd>Umożliwiają dodatkowy podział właściwy dla firmy i rodzaju raportu.</dd></div>
+      </dl>
+      <p>W sekcji analiz wybierz pozycje kosztowe, wartość brutto lub netto oraz grupowanie, na przykład <span class="ui">Kategoria kosztu → MPK → Pojazd</span>. Suma pozycji szczegółowych powinna zgadzać się z sumą dokumentów w tym samym zakresie.</p>
+      <div class="callout tip"><strong>Praktyczny układ raportu:</strong> zacznij od kategorii kosztu, rozwiń wybraną kategorię do MPK, a następnie do pojazdu. Dostaniesz czytelne podsumowanie i możliwość sprawdzenia pojedynczych pozycji faktur.</div>
+
+      <h2 id="planowany-podzial">Planowany podział jednej pozycji kosztowej</h2>
+      <div class="callout warn"><strong>Funkcja planowana:</strong> opisany niżej drugi krok nie jest jeszcze dostępny. Zakres prac zapisano w <a href="https://github.com/kashiash/DataDrive/issues/479">issue #479</a>.</div>
+      <p>Dziś akcja <span class="ui">Rozbij na MPK</span> pyta o liczbę części i od razu tworzy pozycje potomne z równymi kwotami. Planowane rozszerzenie doda podgląd wszystkich części przed zapisem. Użytkownik będzie mógł od razu wskazać pojazdy, działy, MPK i kategorie.</p>
+      <ol class="steps">
+        <li>Zaznacz jedną pozycję na liście <span class="ui">Koszty szczegółowo</span> i wybierz <span class="ui">Rozbij na MPK</span>.</li>
+        <li>W pierwszym oknie wpisz liczbę nowych pozycji, na przykład <span class="ui">5</span>.</li>
+        <li>W drugim oknie sprawdź pięć przygotowanych wierszy. System domyślnie podzieli ilość i kwotę, a ewentualną różnicę zaokrąglenia doliczy do ostatniego wiersza.</li>
+        <li>Uzupełnij w każdym wierszu opis, pojazd, dział, MPK, kategorię kosztu i potrzebne wymiary.</li>
+        <li>Sprawdź podsumowanie ilości oraz wartości netto, VAT i brutto. Zapis będzie możliwy dopiero wtedy, gdy sumy będą zgodne z pozycją źródłową.</li>
+      </ol>
+
+      <h3>Przykład: trzy komputery dla trzech działów</h3>
+      <table class="data-table">
+        <thead><tr><th>Pozycja</th><th>Ilość</th><th>Dział</th><th>MPK</th><th>Kategoria</th></tr></thead>
+        <tbody>
+          <tr><td>Komputer 1</td><td>1</td><td>Sprzedaż</td><td>MPK Sprzedaż</td><td>Sprzęt komputerowy</td></tr>
+          <tr><td>Komputer 2</td><td>1</td><td>Finanse</td><td>MPK Finanse</td><td>Sprzęt komputerowy</td></tr>
+          <tr><td>Komputer 3</td><td>1</td><td>IT</td><td>MPK IT</td><td>Sprzęt komputerowy</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Przykład: dwadzieścia opon dla pięciu pojazdów</h3>
+      <table class="data-table">
+        <thead><tr><th>Pozycja</th><th>Ilość</th><th>Pojazd</th><th>Kategoria</th></tr></thead>
+        <tbody>
+          <tr><td>Opony — część 1</td><td>4</td><td>Pojazd 1</td><td>Opony</td></tr>
+          <tr><td>Opony — część 2</td><td>4</td><td>Pojazd 2</td><td>Opony</td></tr>
+          <tr><td>Opony — część 3</td><td>4</td><td>Pojazd 3</td><td>Opony</td></tr>
+          <tr><td>Opony — część 4</td><td>4</td><td>Pojazd 4</td><td>Opony</td></tr>
+          <tr><td>Opony — część 5</td><td>4</td><td>Pojazd 5</td><td>Opony</td></tr>
+        </tbody>
+      </table>
+      <p>Po zapisaniu raport pokaże koszt opon osobno dla każdego pojazdu, lecz łączna ilość i wartość nadal będą zgodne z pierwotną pozycją faktury. Pozycja źródłowa pozostanie elementem kontrolnym i nie może podwajać sum w analizach.</p>
 
       <div class="pager">
         <a href="/datadrive/korekty/" class="prev"><div class="lbl">‹ Poprzedni</div><div class="ttl">Korekty sprzedaży</div></a>
