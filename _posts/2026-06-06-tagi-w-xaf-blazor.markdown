@@ -259,7 +259,7 @@ Ten schemat — logika testowalna bez UI, wyzwalana z kontrolera, a w `OnSaving`
 
 ## Kolor bez nowego kodu
 
-Kolorowanie wiersza po tagu zrób [regułą wyglądu]({% post_url 2026-05-15-dynamiczne-reguly-wygladu-xaf %}), nie nowym mechanizmem. Masz już silnik reguł wyglądu z kryterium XAF? Podaj mu warunek:
+Kolorowanie wiersza po tagu zrób [regułą wyglądu]({% post_url 2026-05-15-dynamiczne-reguly-wygladu-xaf-z-bazy %}), nie nowym mechanizmem. Masz już silnik reguł wyglądu z kryterium XAF? Podaj mu warunek:
 
 ```
 Tags[Name = 'Pilne']
