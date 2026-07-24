@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Parkingi i dostęp — podręcznik DataDrive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/datadrive/assets/manual.css">
+</head>
+<body>
+<header class="top">
+  <button class="navtoggle" aria-label="Menu">☰</button>
+  <a class="brand" href="/datadrive/"><span class="mark">DD</span> DataDrive <small>Podręcznik</small></a>
+  <div class="search">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.5-1.5-5-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+    <input id="q" type="search" placeholder="Szukaj…" autocomplete="off" aria-label="Szukaj" disabled>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside>
+    <div class="grp">Podręcznik</div>
+    <a href="/datadrive/">🏠 Start</a>
+    <div class="grp">Moduły</div>
+    <a href="/datadrive/parkingi/" class="active">🅿️ Parkingi i dostęp</a>
+    <div class="sub">
+      <a href="#o-module">O module</a>
+      <a href="#lista-parkingow">Lista parkingów</a>
+      <a href="#definicja">Definicja: strefy i miejsca</a>
+      <a href="#miejsca">Miejsca parkingowe</a>
+      <a href="#przydzialy">Przydział miejsca</a>
+      <a href="#kalendarz">Kalendarz miejsc</a>
+      <a href="#karty">Karty dostępu</a>
+      <a href="#przydzielanie-karty">Wydanie karty</a>
+    </div>
+    <span class="navi">🚚 Flota <span class="soon">wkrótce</span></span>
+    <span class="navi">🧑‍✈️ Kierowcy <span class="soon">wkrótce</span></span>
+    <span class="navi">⛽ Karty paliwowe <span class="soon">wkrótce</span></span>
+    <span class="navi">📈 Tachografy i UDT <span class="soon">wkrótce</span></span>
+    <span class="navi">🔍 Inspekcje i szkody <span class="soon">wkrótce</span></span>
+    <span class="navi">👥 Klienci (CRM) <span class="soon">wkrótce</span></span>
+    <span class="navi">🔑 Wynajem (RAC) <span class="soon">wkrótce</span></span>
+    <span class="navi">📊 Raporty <span class="soon">wkrótce</span></span>
+  </aside>
+
+  <main>
+    <div class="content">
+      <div class="crumb"><a href="/datadrive/">Podręcznik</a> › Parkingi i dostęp</div>
+      <h1>Parkingi i dostęp</h1>
+      <p class="lead">Moduł parkingów pozwala opisać parkingi firmy, podzielić je na strefy i miejsca, a potem przypisać stanowiska ludziom — jednym na stałe, innym tylko na wybrane dni. Kalendarz pokazuje zajętość miejsc w skali miesiąca, a karty dostępu sterują wjazdem na parking.</p>
+      <p><a href="/datadrive/parkingi/instrukcja-parkingi.pdf">📄 Pobierz ten rozdział jako PDF</a></p>
+
+      <h2 id="o-module">O module parkingów</h2>
+      <p>Moduł znajdziesz w lewym menu aplikacji w grupie <span class="ui">Flota → Parkingi i dostęp</span>. Składa się z kilku powiązanych ekranów: parkingów i ich stref, pojedynczych miejsc, przydziałów stanowisk oraz kart dostępu. Dane układają się w prostą hierarchię — parking dzieli się na strefy, strefa na miejsca, a miejsce przyjmuje przydział konkretnej osoby lub pojazdu na wskazany okres.</p>
+      <div class="callout note"><strong>Uwaga:</strong> liczniki wolnych i zajętych miejsc oraz procent wykorzystania parking liczy sam, na podstawie miejsc i ich aktywnych przydziałów. Nie wpisujesz ich ręcznie.</div>
+
+      <h2 id="lista-parkingow">Lista parkingów</h2>
+      <p>Kierownik floty zaczyna tutaj. Ekran zbiera wszystkie parkingi firmy i od razu pokazuje, ile miejsc na każdym z nich jest wolnych, a ile zajętych.</p>
+      <figure>
+        <img src="img/01-parkingi.png" alt="Lista parkingów z kolumnami nazwy, delegatury, liczników miejsc i wykorzystania">
+        <figcaption>Lista parkingów z licznikami zajętości i etapem definicji.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Nazwa</dt><dd>Nazwa parkingu, po której go rozpoznajesz — na przykład „Parking Zarządu" albo „Parking Serwisowy". Pod nią kryje się cała definicja stref i miejsc.</dd></div>
+        <div><dt>Delegatura</dt><dd>Oddział albo lokalizacja, do której parking należy.</dd></div>
+        <div><dt>Etap definicji</dt><dd>Mówi, czy parking jest dopiero szkicem, czy zatwierdzoną, gotową do pracy definicją. Dopóki widnieje „Szkic", swobodnie zmieniasz strefy i miejsca.</dd></div>
+        <div><dt>Miejsca razem, Wolne, Zajęte, Wyłączone</dt><dd>Cztery liczniki, które parking wylicza samodzielnie z miejsc i ich przydziałów.</dd></div>
+        <div><dt>Wykorzystanie</dt><dd>Procent zajętości parkingu. Przy 67% dwa z trzech miejsc mają aktywny przydział, więc od razu widzisz, gdzie kończy się zapas.</dd></div>
+      </dl>
+
+      <h2 id="definicja">Definicja parkingu: strefy i miejsca</h2>
+      <p>Po wejściu w parking trafiasz na jego kartę. Górny pasek podsumowuje zajętość, a zakładki niżej prowadzą przez definicję: od stref, przez pojedyncze miejsca, po plan i szczegóły.</p>
+      <figure>
+        <img src="img/02-parking-detail.png" alt="Karta parkingu z paskiem podsumowania i zakładką Strefy pokazującą Strefę A">
+        <figcaption>Karta parkingu „Parking Zarządu" otwarta na zakładce Strefy — jedna strefa, siatka 1 rząd na 3 miejsca.</figcaption>
+      </figure>
+      <p>Strefa opisuje siatkę: ile rzędów, ile miejsc w rzędzie i ile miejsc realnie z niej powstało (kolumna <span class="ui">Założonych</span>). Zamiast klepać stanowiska pojedynczo, tworzysz je z siatki jednym poleceniem.</p>
+      <p>Aby założyć miejsca dla strefy, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Otwórz parking i przejdź na zakładkę <span class="ui">Strefy</span>.</li>
+        <li>Wskaż strefę na liście albo dodaj nową przyciskiem <span class="ui">Nowy</span> — podaj liczbę rzędów i liczbę miejsc w rzędzie.</li>
+        <li>Na pasku nad listą kliknij <span class="ui">Załóż miejsca z siatki</span>.</li>
+      </ol>
+      <p>Miejsca zostaną utworzone według siatki strefy i pojawią się na zakładce <span class="ui">Miejsca</span>. Sąsiednia akcja <span class="ui">Zastosuj cechy strefy</span> rozsyła na te miejsca wspólne udogodnienia (na przykład ładowarkę EV czy zadaszenie).</p>
+      <div class="callout tip"><strong>Wskazówka:</strong> plan parkingu (rzut z zaznaczonymi stanowiskami) jest opcjonalny — dodajesz go na zakładce <span class="ui">Plany</span>, gdy chcesz nanieść miejsca na obrazek. Do samego przydzielania miejsc nie jest potrzebny.</div>
+
+      <h2 id="miejsca">Miejsca parkingowe</h2>
+      <p>Ten ekran zbiera wszystkie miejsca ze wszystkich parkingów. Dyspozytor patrzy tu, gdy szuka wolnego stanowiska albo chce sprawdzić, kto stoi na konkretnym miejscu.</p>
+      <figure>
+        <img src="img/03-miejsca.png" alt="Lista miejsc parkingowych z oznaczeniem, parkingiem, strefą, dostępnością i bieżącym przydziałem">
+        <figcaption>Lista miejsc z dostępnością i bieżącym przydziałem.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Oznaczenie</dt><dd>Kod miejsca, na przykład „A001". Nadaje go systemowy silnik numeracji, więc oznaczenia są spójne w całej firmie.</dd></div>
+        <div><dt>Parking i Strefa</dt><dd>Pokazują, do którego parkingu i której strefy miejsce należy — dzięki temu jedna lista obsługuje wiele parkingów.</dd></div>
+        <div><dt>Rząd, Nr w rzędzie, Etykieta rzędu</dt><dd>Pozycja w siatce strefy. Rzędy dostają litery (A, B, C…), a numer porządkuje miejsca od lewej.</dd></div>
+        <div><dt>Dostępność</dt><dd>Najważniejsza kolumna dla dyspozytora: „Wolne" znaczy, że możesz przydzielić miejsce od ręki, a „Zajęte" — że ma aktywny przydział.</dd></div>
+        <div><dt>Bieżący przydział</dt><dd>Oznaczenie miejsca, na którym trwa przydział — potwierdza, że stanowisko jest w użyciu.</dd></div>
+      </dl>
+
+      <h2 id="przydzialy">Przydział miejsca</h2>
+      <p>Przydział łączy miejsce z osobą lub pojazdem na wskazany okres. Ekran <span class="ui">Przydziały miejsc</span> pokazuje pełny obraz, pogrupowany po parkingu, więc sytuację czytasz oddział po oddziale.</p>
+      <figure>
+        <img src="img/04-lista.png" alt="Przydziały miejsc pogrupowane po parkingu, z pracownikiem, datami od-do i departamentem">
+        <figcaption>Przydziały pogrupowane po parkingu — długie okresy to użytkownicy stali, jednodniowe to pojedyncze parkowania.</figcaption>
+      </figure>
+      <p>Aby przydzielić miejsce pracownikowi, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Przejdź do <span class="ui">Miejsca parkingowe</span> i zaznacz wolne stanowisko.</li>
+        <li>Na górnym pasku kliknij <span class="ui">Przydziel miejsce</span>.</li>
+        <li>Wskaż pracownika, pojazd albo oba naraz i podaj datę <span class="ui">Od</span>. Datę <span class="ui">Do</span> zostaw pustą dla przydziału bezterminowego albo wpisz dzień zakończenia dla pojedynczego parkowania.</li>
+        <li>Zapisz.</li>
+      </ol>
+      <p>Miejsce zmieni dostępność na „Zajęte", a przydział pojawi się na liście i w kalendarzu. Kolumna <span class="ui">Departament</span> podciąga się automatycznie z danych pracownika, więc możesz po niej filtrować i grupować.</p>
+      <div class="callout warn"><strong>Ważne:</strong> na jedno miejsce w tym samym okresie może przypadać tylko jeden przydział. Jeśli okresy by się nakładały, zapis zostanie zablokowany — najpierw zakończ poprzedni przydział.</div>
+
+      <h2 id="kalendarz">Kalendarz miejsc</h2>
+      <p>Kalendarz odpowiada na pytanie „kto i kiedy". Każde miejsce dostaje własny wiersz na osi czasu, a domyślnie oś pokazuje cały miesiąc w skali dziennej — od razu widać, które dni mają stałych użytkowników, a które tylko pojedyncze, jednodniowe parkowania.</p>
+      <figure>
+        <img src="img/05-kalendarz-miesiac.png" alt="Kalendarz miejsc w widoku miesięcznym: długie pasy na cały miesiąc i krótkie jednodniowe bloki na wybrane dni">
+        <figcaption>Kalendarz w widoku miesięcznym — długie pasy to przydziały stałe, krótkie bloki to pojedyncze parkowania na wybrane dni.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Wiersze zasobów</dt><dd>Po lewej stronie osi stoją miejsca, na przykład „Parking Serwisowy · A001". Każde stanowisko to osobny tor, więc nakładające się rezerwacje od razu rzucają się w oczy.</dd></div>
+        <div><dt>Długie pasy</dt><dd>Pas przez cały miesiąc oznacza miejsce przypisane komuś na stałe — na przykład Piotr Gdański trzyma swoje stanowisko od 1 do 31 lipca.</dd></div>
+        <div><dt>Krótkie bloki</dt><dd>Na miejscach dzielonych widać osobne, jednodniowe bloki: ktoś parkuje 5 lipca, ktoś inny 11 lipca. Dzień bez bloku to dzień wolny.</dd></div>
+        <div><dt>Zakres czasu</dt><dd>Akcja <span class="ui">Zakres czasu</span> przełącza okno między tygodniem, dwoma tygodniami a miesiącem. Miesiąc jest ustawiony domyślnie.</dd></div>
+      </dl>
+      <p>Przyciskiem <span class="ui">Nowy</span> dodajesz przydział wprost na osi — wskazujesz miejsce, osobę i okres, a wpis pojawia się na właściwym torze.</p>
+
+      <h2 id="karty">Karty dostępu</h2>
+      <p>Karta dostępu otwiera szlaban lub bramę parkingu. Ekran <span class="ui">Karty dostępu</span> trzyma wszystkie karty razem z ich stanem, terminem ważności i bieżącym właścicielem, więc od jednego spojrzenia wiesz, które działają, a które trzeba wkrótce przedłużyć.</p>
+      <figure>
+        <img src="img/07-karty.png" alt="Lista kart dostępu: trzy aktywne z właścicielem i terminem ważności, jedna przygotowana">
+        <figcaption>Lista kart — aktywne z właścicielem i terminem ważności (pomarańczowo, gdy wygasa w ciągu miesiąca) oraz jedna dopiero przygotowana.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Numer karty</dt><dd>Numer nadrukowany na karcie, na przykład „KP-1001" — wiąże fizyczną kartę z rekordem w systemie.</dd></div>
+        <div><dt>Typ karty</dt><dd>Sposób otwierania parkingu: zbliżeniowa albo na kod.</dd></div>
+        <div><dt>Status</dt><dd>Cykl życia karty: przygotowana czeka na wydanie, aktywna działa, a zablokowana, utracona czy unieważniona zamyka dostęp.</dd></div>
+        <div><dt>Data wydania i Ważna do</dt><dd>Termin obowiązywania. Kolumna „Ważna do" świeci pomarańczowo na miesiąc przed końcem i czerwono po jego upływie.</dd></div>
+        <div><dt>Bieżący właściciel</dt><dd>Pracownik, który aktualnie trzyma kartę. Wartość bierze się z historii właścicieli.</dd></div>
+      </dl>
+
+      <h2 id="przydzielanie-karty">Wydanie karty pracownikowi</h2>
+      <p>Wydanie karty łączy trzy rzeczy: właściciela, parkingi, do których karta otwiera wjazd, i wpis w historii operacji. Wszystko robisz z karty otwartej na jej formatce.</p>
+      <figure>
+        <img src="img/08-karta-detal.png" alt="Karta dostępu z akcjami Zmień właściciela i Wydaj kartę oraz zakładkami Parkingi, Historia właścicieli, Historia operacji">
+        <figcaption>Karta „KP-1001" — akcje wydania u góry oraz zakładki z parkingami, historią właścicieli i historią operacji.</figcaption>
+      </figure>
+      <div class="callout note"><strong>Zanim zaczniesz:</strong> karta stanie się aktywna dopiero, gdy ma właściciela, datę wydania i co najmniej jeden parking. Przygotuj te trzy rzeczy.</div>
+      <p>Aby wydać kartę, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Otwórz kartę z listy <span class="ui">Karty dostępu</span>.</li>
+        <li>Na zakładce <span class="ui">Parkingi</span> kliknij <span class="ui">Nowy</span> i wskaż parking, do którego karta ma otwierać wjazd.</li>
+        <li>Na górnym pasku kliknij <span class="ui">Zmień właściciela</span> i wybierz pracownika — poprzedni przydział zostanie zamknięty, a nowy otwarty.</li>
+        <li>Kliknij <span class="ui">Wydaj kartę</span>.</li>
+      </ol>
+      <p>Status karty zmieni się na „Aktywna", a data wydania zapisze się automatycznie. Nowy właściciel pojawi się na zakładce <span class="ui">Historia właścicieli</span> jako wiersz bez daty zakończenia.</p>
+      <figure>
+        <img src="img/10-karta-wlasciciele.png" alt="Zakładka Historia właścicieli karty z bieżącym właścicielem i datą od">
+        <figcaption>Historia właścicieli — aktualny właściciel to wiersz bez daty „Do".</figcaption>
+      </figure>
+      <p>Pozostałe akcje prowadzą kartę przez resztę cyklu życia: <span class="ui">Zablokuj</span>, <span class="ui">Odblokuj</span>, <span class="ui">Zgłoś utratę</span> i <span class="ui">Unieważnij</span>. Każda zapisuje wpis na zakładce <span class="ui">Historia operacji</span>, więc łatwo odtworzyć, co działo się z kartą.</p>
+
+      <div class="pager">
+        <a href="/datadrive/" class="prev"><div class="lbl">‹ Wstecz</div><div class="ttl">Start podręcznika</div></a>
+        <a href="/datadrive/" class="next"><div class="lbl">Następny — wkrótce</div><div class="ttl">Flota</div></a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<footer>
+  <span>DataDrive · podręcznik użytkownika</span><span class="dot">·</span>
+  <span>Data Drive Sp. z o.o.</span>
+</footer>
+<script src="/datadrive/assets/manual.js"></script>
+</body>
+</html>
