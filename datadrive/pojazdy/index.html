@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Flota — podręcznik DataDrive</title>
+<title>Flota — pojazdy i serwisy — podręcznik DataDrive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,26 +14,158 @@
 <header class="top">
   <button class="navtoggle" aria-label="Menu">☰</button>
   <a class="brand" href="/datadrive/"><span class="mark">DD</span> DataDrive <small>Podręcznik</small></a>
+  <div class="search">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.5-1.5-5-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+    <input id="q" type="search" placeholder="Szukaj…" autocomplete="off" aria-label="Szukaj" disabled>
+  </div>
 </header>
+
 <div class="wrap">
   <aside>
     <div class="grp">Podręcznik</div>
     <a href="/datadrive/">🏠 Start</a>
     <div class="grp">Moduły</div>
     <a href="/datadrive/parkingi/">🅿️ Parkingi i dostęp</a>
-    <span class="navi">🚚 Flota <span class="soon">wkrótce</span></span>
+    <a href="/datadrive/klienci/">👥 Klienci (CRM)</a>
+    <a href="/datadrive/faktury/">🧾 Faktury sprzedaży</a>
+    <a href="/datadrive/korekty/">↩️ Korekty sprzedaży</a>
+    <a href="/datadrive/rozliczanie-kosztow/">💰 Rozliczanie kosztów</a>
+    <a href="/datadrive/pojazdy/" class="active">🚚 Flota — pojazdy i serwisy</a>
+    <div class="sub">
+      <a href="#o-module">O module</a>
+      <a href="#lista">Lista pojazdów</a>
+      <a href="#karta">Karta pojazdu</a>
+      <a href="#techniczne">Dane techniczne</a>
+      <a href="#serwis-karta">Serwis i szkody</a>
+      <a href="#serwisy">Serwisy i przeglądy</a>
+    </div>
+    <span class="navi">🧑‍✈️ Kierowcy <span class="soon">wkrótce</span></span>
+    <span class="navi">⛽ Karty paliwowe <span class="soon">wkrótce</span></span>
+    <span class="navi">📈 Tachografy i UDT <span class="soon">wkrótce</span></span>
+    <span class="navi">🔑 Wynajem (RAC) <span class="soon">wkrótce</span></span>
+    <span class="navi">📊 Raporty <span class="soon">wkrótce</span></span>
   </aside>
+
   <main>
     <div class="content">
-      <div class="crumb"><a href="/datadrive/">Podręcznik</a> › Flota</div>
-      <h1>🚚 Flota</h1>
-      <p class="lead">Pojazdy, zajętość, serwisy i przeglądy, polisy, opony oraz telematyka.</p>
-      <div class="callout note"><strong>Uwaga:</strong> ten rozdział jest w przygotowaniu. Na razie zajrzyj do gotowego rozdziału <a href="/datadrive/parkingi/">Parkingi i dostęp</a>.</div>
-      <p><a href="/datadrive/">← Wróć do spisu treści</a></p>
+      <div class="crumb"><a href="/datadrive/">Podręcznik</a> › Flota — pojazdy i serwisy</div>
+      <h1>Flota — pojazdy i serwisy</h1>
+      <p class="lead">Moduł floty prowadzi kartotekę pojazdów wraz z ich pełną historią eksploatacji. Jeden rekord łączy dane rejestrowe, specyfikację techniczną, przebieg, polisy oraz zdarzenia serwisowe, dzięki czemu w każdej chwili wiesz, czym dysponujesz i co czeka dany samochód. Serwisy, naprawy, awarie i szkody rejestrujesz przy pojeździe albo na wspólnej liście zdarzeń.</p>
+
+      <h2 id="o-module">O module floty</h2>
+      <p>Flotę otwierasz z lewego menu, w grupie <span class="ui">Flota</span>. Znajdziesz tam między innymi <span class="ui">Pojazdy</span> (kartoteka), <span class="ui">Serwisy / przeglądy</span> (zdarzenia serwisowe), <span class="ui">Polisy</span>, <span class="ui">Inspekcje</span> i <span class="ui">Opony floty</span>. Każdy pojazd ma jedną kartę z zakładkami: dane podstawowe i techniczne, plan serwisowy, dostępność, serwis i szkody, przebieg, polisy oraz opony. Rola pojazdu (Flota, Pool, Wynajem, CFM) i status operacyjny podpowiadają, do czego samochód służy i czy jest dostępny.</p>
+
+      <h2 id="lista">Lista pojazdów</h2>
+      <p>Pracę zaczynasz tutaj. Ekran zbiera wszystkie pojazdy floty i pokazuje ich najważniejsze dane w jednej siatce, więc szybko odnajdziesz właściwy samochód po numerze rejestracyjnym, marce albo statusie.</p>
+      <figure>
+        <img src="img/01-lista.png" alt="Lista pojazdów z kolumnami numeru rejestracyjnego, marki, modelu, roku produkcji, statusu i numeru VIN">
+        <figcaption>Lista pojazdów — numer rejestracyjny, marka, model, rok produkcji, status operacyjny i VIN.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Nr rejestracyjny</dt><dd>Tablica pojazdu. Po niej rozpoznajesz samochód na wszystkich listach i dokumentach.</dd></div>
+        <div><dt>Marka, Model</dt><dd>Producent i model. Wybierasz je ze słownika pojazdów.</dd></div>
+        <div><dt>Rok produkcji</dt><dd>Rocznik pojazdu.</dd></div>
+        <div><dt>Status</dt><dd>Stan operacyjny: <span class="ui">Dostępny</span>, <span class="ui">Flota</span>, <span class="ui">Serwis</span>, <span class="ui">Wynajem</span>, <span class="ui">Zarezerwowany</span> i inne. Mówi, czy pojazd jest wolny i do czego jest przypisany.</dd></div>
+        <div><dt>VIN</dt><dd>Numer nadwozia. Jednoznacznie identyfikuje pojazd.</dd></div>
+      </dl>
+      <p>Pojazd wyszukasz w polu <span class="ui">Tekst wyszukiwania</span> nad listą, a kolumny filtrujesz ikoną lejka i sortujesz kliknięciem nagłówka.</p>
+
+      <h2 id="karta">Karta pojazdu</h2>
+      <p>Kartę pojazdu otwierasz podwójnym kliknięciem wiersza na liście. Zakładka <span class="ui">Podstawowe</span> zbiera dane rejestrowe i identyfikacyjne. Na górze widać numer rejestracyjny, bieżącą rolę pojazdu i stan operacyjny, które aplikacja wylicza na podstawie przydziałów i zdarzeń.</p>
+      <figure>
+        <img src="img/02-detal.png" alt="Karta pojazdu na zakładce Podstawowe z polami numeru rejestracyjnego, roli pojazdu, stanu operacyjnego, VIN, marki, modelu, generacji i roku produkcji">
+        <figcaption>Karta pojazdu — dane podstawowe wraz z rolą pojazdu i stanem operacyjnym na górnym pasku.</figcaption>
+      </figure>
+      <p>Aby dodać nowy pojazd, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Na liście pojazdów kliknij <span class="ui">Nowy</span> na górnym pasku.</li>
+        <li>Wpisz <span class="ui">Nr rejestracyjny</span> — to pole jest wymagane.</li>
+        <li>Wybierz <span class="ui">Markę</span> i <span class="ui">Model</span> ze słownika. Opcjonalnie uzupełnij <span class="ui">Generację</span>, <span class="ui">Serię</span> i <span class="ui">Wersję</span>.</li>
+        <li>Podaj <span class="ui">VIN</span>, <span class="ui">Rok produkcji</span> i <span class="ui">Wartość pojazdu netto</span>.</li>
+        <li>Zapisz kartę skrótem <kbd>Ctrl+Shift+S</kbd> albo przyciskiem <span class="ui">Zapisz</span>.</li>
+      </ol>
+      <p>Pojazd pojawi się na liście, a jego stan operacyjny ustawi się na <span class="ui">Dostępny</span>, dopóki nie przypiszesz go do floty, poolu ani wynajmu.</p>
+      <dl class="fields">
+        <div><dt>Nr rejestracyjny</dt><dd>Tablica pojazdu. Pole wymagane.</dd></div>
+        <div><dt>Marka, Model</dt><dd>Producent i model ze słownika. Oba wymagane.</dd></div>
+        <div><dt>VIN</dt><dd>17-znakowy numer nadwozia.</dd></div>
+        <div><dt>Rok produkcji</dt><dd>Rocznik pojazdu.</dd></div>
+        <div><dt>Wartość pojazdu netto</dt><dd>Wartość początkowa netto, podstawa dla rozliczeń i amortyzacji.</dd></div>
+        <div><dt>Rola pojazdu</dt><dd>Bieżące przeznaczenie: Flota, Pool, Wynajem albo CFM. Aplikacja wylicza je z aktywnego przydziału.</dd></div>
+        <div><dt>Stan operacyjny</dt><dd>Wyliczany status pojazdu, na przykład Dostępny, Serwis albo Wynajem.</dd></div>
+      </dl>
+
+      <h2 id="techniczne">Dane techniczne</h2>
+      <p>Zakładka <span class="ui">Techniczne</span> opisuje parametry pojazdu, które przydają się przy serwisie, tankowaniu i doborze opon. Wypełnij te pola, które faktycznie potrzebujesz w rozliczeniach i raportach.</p>
+      <figure>
+        <img src="img/03-techniczne.png" alt="Zakładka Techniczne karty pojazdu z polami paliwa, skrzyni biegów, pojemności silnika, mocy i koloru nadwozia">
+        <figcaption>Zakładka Techniczne — paliwo, skrzynia biegów, pojemność i moc silnika oraz dane nadwozia.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Paliwo</dt><dd>Rodzaj zasilania: Benzyna, Olej napędowy, LPG, Hybryda, Elektryczny albo Ogniwo wodorowe.</dd></div>
+        <div><dt>Skrzynia biegów</dt><dd>Manualna, Automatyczna albo Półautomatyczna.</dd></div>
+        <div><dt>Pojemność (cm³), Moc (KM)</dt><dd>Parametry silnika.</dd></div>
+        <div><dt>Klasa / segment, Sylwetka</dt><dd>Klasyfikacja pojazdu i typ nadwozia (Sedan, SUV, Van, Ciężarowy i inne).</dd></div>
+        <div><dt>Kolor nadwozia</dt><dd>Kolor lakieru pojazdu.</dd></div>
+      </dl>
+
+      <h2 id="serwis-karta">Serwis i szkody na karcie pojazdu</h2>
+      <p>Zakładka <span class="ui">Serwis i szkody</span> pokazuje wszystkie zdarzenia serwisowe danego pojazdu w jednym miejscu — przeglądy, naprawy, awarie i szkody. Dzięki temu z poziomu karty widzisz pełną historię eksploatacji i dopisujesz nowe zdarzenie bez opuszczania samochodu.</p>
+      <figure>
+        <img src="img/04-serwis-tab.png" alt="Zakładka Serwis i szkody na karcie pojazdu DL 64641 z jednym zdarzeniem Planowany serwis o statusie Otwarte">
+        <figcaption>Zakładka Serwis i szkody — zdarzenia serwisowe przypisane do pojazdu, z typem, statusem i warsztatem.</figcaption>
+      </figure>
+      <p>Aby dopisać zdarzenie serwisowe przy pojeździe, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Na karcie pojazdu przejdź do zakładki <span class="ui">Serwis i szkody</span>.</li>
+        <li>Na pasku siatki kliknij <span class="ui">Nowy</span>.</li>
+        <li>Wypełnij okno zdarzenia i zapisz — pojazd podstawi się automatycznie.</li>
+      </ol>
+      <p>Zdarzenie pojawi się na liście zakładki oraz na wspólnym ekranie <span class="ui">Serwisy / przeglądy</span>.</p>
+
+      <h2 id="serwisy">Serwisy i przeglądy</h2>
+      <p>Wszystkie zdarzenia serwisowe całej floty zbiera ekran <span class="ui">Serwisy / przeglądy</span> w grupie <span class="ui">Flota</span>. To wygodne miejsce, gdy planujesz przeglądy albo szukasz otwartych napraw niezależnie od pojazdu. Każdy wiersz wskazuje pojazd, typ zdarzenia, status i warsztat.</p>
+      <figure>
+        <img src="img/05-serwisy-lista.png" alt="Lista Serwisy przeglądy ze zdarzeniami różnych typów: Planowany serwis i Planowana naprawa, dla różnych pojazdów, ze statusem Otwarte i nazwą warsztatu">
+        <figcaption>Serwisy / przeglądy — wspólna lista zdarzeń całej floty z typem, pojazdem, statusem i warsztatem.</figcaption>
+      </figure>
+      <p>Aby zarejestrować zdarzenie serwisowe, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>W grupie <span class="ui">Flota</span> otwórz <span class="ui">Serwisy / przeglądy</span>.</li>
+        <li>Na górnym pasku kliknij <span class="ui">Nowy</span>.</li>
+        <li>W polu <span class="ui">Typ zdarzenia</span> wybierz <span class="ui">Planowany serwis</span>, <span class="ui">Planowaną naprawę</span>, <span class="ui">Awarię</span> albo <span class="ui">Szkodę</span>.</li>
+        <li>Wpisz <span class="ui">Tytuł</span> zdarzenia — to pole jest wymagane.</li>
+        <li>Uzupełnij <span class="ui">Datę zdarzenia</span>, <span class="ui">Przebieg przy zdarzeniu (km)</span>, <span class="ui">Warsztat / serwis</span> oraz <span class="ui">Koszt (PLN)</span>.</li>
+        <li>Ustaw <span class="ui">Status</span> na <span class="ui">Otwarte</span>, a po zakończeniu prac zmień go na <span class="ui">Rozwiązane</span> i podaj <span class="ui">Datę zakończenia</span>.</li>
+        <li>Kliknij <span class="ui">Zapisz</span>.</li>
+      </ol>
+      <figure>
+        <img src="img/06-nowe-zdarzenie.png" alt="Okno nowego zdarzenia serwisowego z polami Typ zdarzenia, Status, Tytuł, Opis, Data zdarzenia, Przebieg przy zdarzeniu, Warsztat oraz Koszt">
+        <figcaption>Okno nowego zdarzenia serwisowego — typ, status, tytuł i data obok pól kosztu, przebiegu i warsztatu.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Typ zdarzenia</dt><dd>Rodzaj zdarzenia: Planowany serwis, Planowana naprawa, Awaria albo Szkoda.</dd></div>
+        <div><dt>Status</dt><dd>Etap obsługi: Otwarte, W trakcie, Rozwiązane albo Anulowane.</dd></div>
+        <div><dt>Tytuł</dt><dd>Krótki opis zdarzenia, na przykład „Przegląd okresowy 30 000 km”. Pole wymagane.</dd></div>
+        <div><dt>Data zdarzenia, Data zakończenia</dt><dd>Kiedy zdarzenie wystąpiło i kiedy je zamknięto.</dd></div>
+        <div><dt>Przebieg przy zdarzeniu (km)</dt><dd>Stan licznika w chwili zdarzenia.</dd></div>
+        <div><dt>Warsztat / serwis</dt><dd>Nazwa warsztatu. Kontrahenta z bazy wskażesz osobno w polu <span class="ui">Warsztat (kontrahent)</span>.</dd></div>
+        <div><dt>Koszt (PLN)</dt><dd>Koszt zdarzenia. Przy szkodzie podaj też <span class="ui">Nr szkody</span>.</dd></div>
+      </dl>
+      <div class="callout tip"><strong>Wskazówka:</strong> zdarzenia dodane z karty pojazdu i z ekranu <span class="ui">Serwisy / przeglądy</span> trafiają do tego samego rejestru. Wybierz drogę, która jest wygodniejsza — efekt jest identyczny.</div>
+
+      <div class="pager">
+        <a href="/datadrive/korekty/" class="prev"><div class="lbl">‹ Poprzedni</div><div class="ttl">Korekty sprzedaży</div></a>
+        <a href="/datadrive/" class="next"><div class="lbl">Następny ›</div><div class="ttl">Start podręcznika</div></a>
+      </div>
     </div>
   </main>
 </div>
-<footer><span>DataDrive · podręcznik użytkownika</span><span class="dot">·</span><span>Data Drive Sp. z o.o.</span></footer>
+
+<footer>
+  <span>DataDrive · podręcznik użytkownika</span><span class="dot">·</span>
+  <span>Data Drive Sp. z o.o.</span>
+</footer>
 <script src="/datadrive/assets/manual.js"></script>
 </body>
 </html>

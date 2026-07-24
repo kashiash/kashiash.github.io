@@ -32,12 +32,14 @@
       <a href="#lista">Lista klientów</a>
       <a href="#nowy">Nowy klient</a>
       <a href="#adresy">Adresy</a>
+      <a href="#kontakty">Osoby kontaktowe</a>
+      <a href="#historia">Historia kontaktu</a>
       <a href="#gus">Import z GUS</a>
     </div>
     <a href="/datadrive/faktury/">🧾 Faktury sprzedaży</a>
     <a href="/datadrive/korekty/">↩️ Korekty sprzedaży</a>
     <a href="/datadrive/rozliczanie-kosztow/">💰 Rozliczanie kosztów</a>
-    <span class="navi">🚚 Flota <span class="soon">wkrótce</span></span>
+    <a href="/datadrive/pojazdy/">🚚 Flota — pojazdy i serwisy</a>
     <span class="navi">🧑‍✈️ Kierowcy <span class="soon">wkrótce</span></span>
     <span class="navi">🔑 Wynajem (RAC) <span class="soon">wkrótce</span></span>
     <span class="navi">📊 Raporty <span class="soon">wkrótce</span></span>
@@ -91,8 +93,81 @@
       <div class="callout warn"><strong>Ważne:</strong> jeśli w polu <span class="ui">Rodzaj</span> wybierzesz <strong>Osobę fizyczną</strong>, zapis bez imienia, nazwiska i numeru PESEL zostanie zablokowany. Dla firmy te pola pozostają puste.</div>
       <div class="callout note"><strong>Uwaga:</strong> powtórzony NIP lub PESEL daje tylko ostrzeżenie, a nie blokadę. Dzięki temu wpiszesz obcokrajowca bez numeru NIP albo dwie powiązane spółki, jeśli tak wygląda rzeczywistość.</div>
 
-      <h2 id="adresy">Adresy siedziby i korespondencyjny</h2>
-      <p>Karta rozdziela dwa adresy. <span class="ui">Adres siedziby</span> to adres rejestrowy firmy, a <span class="ui">Adres korespondencyjny</span> trafia na fakturę i domyślnie kopiuje się z siedziby. Rozdziel je tylko wtedy, gdy klient odbiera pocztę pod innym adresem niż zarejestrowana siedziba.</p>
+      <h2 id="adresy">Adresy klienta</h2>
+      <p>Jeden klient prowadzi kilka adresów o różnym przeznaczeniu — siedzibę, adres korespondencyjny, miejsce dostawy czy oddział. Wszystkie zbiera zakładka <span class="ui">Adresy</span> na dole karty, a każdy wiersz opisuje jego rolę w polu <span class="ui">Przeznaczenie</span>. Adres siedziby i korespondencyjny z górnej części karty (oraz te pobrane z GUS) trafiają na tę listę automatycznie.</p>
+      <figure>
+        <img src="img/04-adresy.png" alt="Zakładka Adresy na karcie klienta z trzema wierszami: Siedziba, Korespondencyjny i Oddział, z kolumnami ulicy, numeru budynku, miasta i kodu pocztowego">
+        <figcaption>Zakładka Adresy — trzy adresy klienta o różnym przeznaczeniu: siedziba, korespondencyjny i oddział.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Przeznaczenie</dt><dd>Rola adresu: <span class="ui">Siedziba</span>, <span class="ui">Rozliczeniowy</span>, <span class="ui">Dostawa</span>, <span class="ui">Korespondencyjny</span>, <span class="ui">Oddział</span> albo <span class="ui">Inny</span>. Po niej aplikacja wie, którego adresu użyć na dokumencie i w wysyłce.</dd></div>
+        <div><dt>Podstawowy</dt><dd>Wskazuje główny adres danego rodzaju. Zaznaczony wiersz aplikacja traktuje jako domyślny.</dd></div>
+        <div><dt>Ulica, Nr budynku, Nr lokalu</dt><dd>Dane lokalu. Numer budynku i lokalu prowadzisz osobno, więc adres pozostaje czytelny na fakturze i liście.</dd></div>
+        <div><dt>Miasto, Kod pocztowy</dt><dd>Miejscowość i kod. Kod zapisujesz w formacie 00-000.</dd></div>
+        <div><dt>Obowiązuje od, Obowiązuje do</dt><dd>Okres ważności adresu. Wypełnij je, gdy adres jest tymczasowy albo zmienił się w czasie współpracy.</dd></div>
+      </dl>
+      <p>Aby dodać kolejny adres, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Na karcie klienta przejdź do zakładki <span class="ui">Adresy</span>.</li>
+        <li>Kliknij <span class="ui">Kliknij tutaj, aby dodać nowy wiersz</span> nad siatką.</li>
+        <li>W polu <span class="ui">Przeznaczenie</span> wybierz rolę adresu, na przykład <span class="ui">Korespondencyjny</span>.</li>
+        <li>Wpisz <span class="ui">Ulicę</span>, <span class="ui">Nr budynku</span>, <span class="ui">Miasto</span> i <span class="ui">Kod pocztowy</span>.</li>
+        <li>Zapisz kartę przyciskiem <span class="ui">Zapisz</span>.</li>
+      </ol>
+      <p>Nowy adres pojawi się na liście z przypisanym przeznaczeniem.</p>
+      <div class="callout tip"><strong>Wskazówka:</strong> zaznacz wiersz i kliknij <span class="ui">Ustaw jako siedzibę</span> albo <span class="ui">Ustaw jako korespondencyjny</span>, aby jednym ruchem oznaczyć wskazany adres jako główny danego rodzaju.</div>
+
+      <h2 id="kontakty">Osoby kontaktowe</h2>
+      <p>Przy kliencie prowadzisz listę osób, z którymi rozmawiasz — z telefonem, adresem e-mail i stanowiskiem. Dzięki temu wiesz, do kogo dzwonić w sprawie floty, a do kogo w sprawie faktury. Osoby zbiera zakładka <span class="ui">Kontakty</span>.</p>
+      <figure>
+        <img src="img/05-kontakty.png" alt="Zakładka Kontakty na karcie klienta z dwiema osobami: Dyrektor floty i Księgowa, z kolumnami imienia, nazwiska, telefonu, e-maila, stanowiska i uprawnienia do zakupów">
+        <figcaption>Zakładka Kontakty — osoby kontaktowe klienta z telefonem, e-mailem i stanowiskiem.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Imię, Nazwisko</dt><dd>Dane osoby. Po nich rozpoznajesz kontakt na liście i w historii rozmów.</dd></div>
+        <div><dt>Telefon, E-mail</dt><dd>Bezpośrednie dane kontaktowe do tej osoby.</dd></div>
+        <div><dt>Stanowisko</dt><dd>Rola osoby u klienta, na przykład <span class="ui">Dyrektor floty</span> albo <span class="ui">Księgowa</span>.</dd></div>
+        <div><dt>Uprawniony do zakupów</dt><dd>Zaznacz, gdy osoba decyduje o zakupach. Wyróżnia to decydentów spośród pozostałych kontaktów.</dd></div>
+      </dl>
+      <p>Aby dodać osobę kontaktową, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Na karcie klienta przejdź do zakładki <span class="ui">Kontakty</span>.</li>
+        <li>Kliknij <span class="ui">Kliknij tutaj, aby dodać nowy wiersz</span> nad siatką.</li>
+        <li>Wpisz <span class="ui">Imię</span>, <span class="ui">Nazwisko</span>, <span class="ui">Telefon</span>, <span class="ui">E-mail</span> oraz <span class="ui">Stanowisko</span>.</li>
+        <li>Zaznacz <span class="ui">Uprawniony do zakupów</span>, jeśli osoba podejmuje decyzje zakupowe.</li>
+        <li>Zapisz kartę.</li>
+      </ol>
+      <p>Osoba trafi na listę kontaktów i od tej chwili możesz przypisać ją do zdarzenia w historii kontaktu.</p>
+      <div class="callout warn"><strong>Ważne:</strong> osoba kontaktowa wymaga <strong>imienia i nazwiska</strong> — bez nich zapis zostanie zablokowany.</div>
+
+      <h2 id="historia">Historia kontaktu</h2>
+      <p>Każdą rozmowę telefoniczną, notatkę, spotkanie i wiadomość zapisujesz w <span class="ui">Historii kontaktu</span>. Im dokładniej ją prowadzisz, tym wierniejszy obraz współpracy zobaczysz w polu <span class="ui">Ostatni kontakt</span> na karcie klienta. Każdy wpis ma swój rodzaj, więc na liście od razu odróżnisz telefon od spotkania czy e-maila.</p>
+      <figure>
+        <img src="img/06-historia-lista.png" alt="Zakładka Historia kontaktu z paskiem przycisków Dodaj notatkę, Dodaj spotkanie, Dodaj telefon, Dodaj e-mail, Dodaj SMS oraz listą zdarzeń różnych rodzajów">
+        <figcaption>Historia kontaktu — pasek z przyciskami dla każdego rodzaju zdarzenia i lista zarejestrowanych rozmów.</figcaption>
+      </figure>
+      <p>Rodzaj zdarzenia wybierasz przyciskiem na pasku listy. Dostępne są:</p>
+      <dl class="fields">
+        <div><dt>Dodaj telefon</dt><dd>Rozmowa telefoniczna — z numerem i czasem trwania.</dd></div>
+        <div><dt>Dodaj notatkę</dt><dd>Krótki wpis, na przykład ustalenie albo obserwacja o kliencie.</dd></div>
+        <div><dt>Dodaj spotkanie</dt><dd>Spotkanie z klientem — z miejscem i statusem.</dd></div>
+        <div><dt>Dodaj e-mail</dt><dd>Wiadomość e-mail — z adresem odbiorcy.</dd></div>
+        <div><dt>Dodaj SMS</dt><dd>Wiadomość SMS — z numerem telefonu.</dd></div>
+      </dl>
+      <p>Aby zarejestrować zdarzenie, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Na karcie klienta przejdź do zakładki <span class="ui">Historia kontaktu</span>.</li>
+        <li>Na pasku wybierz rodzaj zdarzenia, na przykład <span class="ui">Dodaj telefon</span>.</li>
+        <li>W oknie wpisz <span class="ui">Tytuł</span> oraz pola zależne od rodzaju — dla telefonu podaj <span class="ui">Numer telefonu</span>, dla e-maila <span class="ui">Adres odbiorcy</span>, dla spotkania <span class="ui">Miejsce</span>.</li>
+        <li>Opcjonalnie wskaż <span class="ui">Osobę kontaktową</span> z listy kontaktów klienta i opisz przebieg w polu <span class="ui">Treść</span>.</li>
+        <li>Kliknij <span class="ui">Zapisz</span>.</li>
+      </ol>
+      <figure>
+        <img src="img/07-dodaj-telefon.png" alt="Okno Telefon dla nowego zdarzenia w historii kontaktu, z polami Data rejestracji zdarzenia, Status rozmowy, Właściciel, Osoba kontaktowa, Numer telefonu, Czas trwania, Tytuł i Treść">
+        <figcaption>Okno rejestracji rozmowy telefonicznej — numer telefonu i czas trwania obok wspólnych pól zdarzenia.</figcaption>
+      </figure>
+      <p>Zdarzenie pojawi się na liście z odpowiednim rodzajem, a data trafi do pola <span class="ui">Ostatni kontakt</span>.</p>
+      <div class="callout note"><strong>Uwaga:</strong> zaznacz <span class="ui">Zakończone</span> na zdarzeniu, którego sprawa jest już domknięta. Zaplanowane telefony i spotkania zostaw niezakończone, aby wracały jako przypomnienie.</div>
 
       <h2 id="gus">Import danych z GUS</h2>
       <p>Zamiast przepisywać dane firmy ręcznie, pobierz je z bazy GUS na podstawie samego numeru NIP. To najszybsza droga do kompletnej, poprawnej kartoteki.</p>
@@ -108,7 +183,7 @@
         <li>Sprawdź uzupełnione pola i zapisz kartę.</li>
       </ol>
       <p>Aplikacja połączy się z rejestrem i wypełni nazwę, REGON oraz adres siedziby. Pełny zestaw danych — forma prawna, kody PKD, województwo i powiat — znajdziesz na zakładce <span class="ui">Dane z GUS</span>, razem z datą pobrania.</p>
-      <div class="callout tip"><strong>Wskazówka:</strong> na zakładce <span class="ui">Historia kontaktu</span> zapisujesz notatki, telefony, spotkania i e-maile z klientem. Im dokładniej ją prowadzisz, tym wierniejszy obraz współpracy zobaczysz w polu <span class="ui">Ostatni kontakt</span>.</div>
+      <div class="callout tip"><strong>Wskazówka:</strong> gdy dane firmy się zmienią, ponów <span class="ui">Wczytaj z GUS</span> — aplikacja nadpisze pola rejestrowe świeżymi danymi i zapisze nową datę pobrania.</div>
 
       <div class="pager">
         <a href="/datadrive/parkingi/" class="prev"><div class="lbl">‹ Poprzedni</div><div class="ttl">Parkingi i dostęp</div></a>
