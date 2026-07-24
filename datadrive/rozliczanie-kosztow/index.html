@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Rozliczanie kosztów — podręcznik DataDrive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/datadrive/assets/manual.css">
+</head>
+<body>
+<header class="top">
+  <button class="navtoggle" aria-label="Menu">☰</button>
+  <a class="brand" href="/datadrive/"><span class="mark">DD</span> DataDrive <small>Podręcznik</small></a>
+  <div class="search">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.5-1.5-5-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+    <input id="q" type="search" placeholder="Szukaj…" autocomplete="off" aria-label="Szukaj" disabled>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside>
+    <div class="grp">Podręcznik</div>
+    <a href="/datadrive/">🏠 Start</a>
+    <div class="grp">Moduły</div>
+    <a href="/datadrive/parkingi/">🅿️ Parkingi i dostęp</a>
+    <a href="/datadrive/klienci/">👥 Klienci (CRM)</a>
+    <a href="/datadrive/faktury/">🧾 Faktury sprzedaży</a>
+    <a href="/datadrive/korekty/">↩️ Korekty sprzedaży</a>
+    <a href="/datadrive/rozliczanie-kosztow/" class="active">💰 Rozliczanie kosztów</a>
+    <div class="sub">
+      <a href="#o-module">O module</a>
+      <a href="#zrodla">Źródła danych</a>
+      <a href="#transakcje">Lista transakcji</a>
+      <a href="#wymiary">Wymiary kosztowe</a>
+      <a href="#kategoria">Kategoria kosztu</a>
+      <a href="#produkty">Produkty ujednolicone</a>
+      <a href="#konsolidacja">Konsolidacja produktów</a>
+    </div>
+    <span class="navi">🚚 Flota <span class="soon">wkrótce</span></span>
+    <span class="navi">🧑‍✈️ Kierowcy <span class="soon">wkrótce</span></span>
+    <span class="navi">📈 Tachografy i UDT <span class="soon">wkrótce</span></span>
+    <span class="navi">🔍 Inspekcje i szkody <span class="soon">wkrótce</span></span>
+    <span class="navi">🔑 Wynajem (RAC) <span class="soon">wkrótce</span></span>
+    <span class="navi">📊 Raporty <span class="soon">wkrótce</span></span>
+  </aside>
+
+  <main>
+    <div class="content">
+      <div class="crumb"><a href="/datadrive/">Podręcznik</a> › Rozliczanie kosztów</div>
+      <h1>Rozliczanie kosztów</h1>
+      <p class="lead">Rozliczanie kosztów łączy zakupy z pojazdem, kierowcą, oddziałem, MPK i wspólną grupą produktu. Dzięki temu możesz analizować wydatki całej floty niezależnie od tego, czy dane pochodzą z UTA, BP, Orlen, czy z faktury kosztowej.</p>
+
+      <h2 id="o-module">O rozliczaniu kosztów</h2>
+      <p>Podstawowym miejscem pracy jest wspólna lista <span class="ui">Flota → Karty paliwowe → Transakcje paliwowe</span>. Pokazuje ona transakcje wszystkich dostawców w jednym układzie. DataDrive zachowuje też dane źródłowe, aby można było sprawdzić import bez mieszania technicznych kolumn z codzienną pracą.</p>
+      <p>Każda transakcja ma dane handlowe, źródło oraz wymiary analityczne. Dane handlowe opisują zakup, a wymiary odpowiadają na pytania: kto kupił, dla którego pojazdu, oddziału i MPK oraz do jakiej grupy należy produkt.</p>
+      <div class="callout note"><strong>Uwaga:</strong> <strong>grupa produktu</strong> i <strong>kategoria kosztu</strong> to dwa różne pojęcia. Grupa produktu porządkuje transakcje kartowe, a kategoria kosztu klasyfikuje pozycję faktury kosztowej.</div>
+
+      <h2 id="zrodla">Źródła danych: UTA, BP i Orlen</h2>
+      <p>Wspólna lista może zawierać dane z UTA, BP i Orlen. Każdy dostawca używa własnych nazw produktów, numerów transakcji i oznaczeń stacji. DataDrive przenosi wspólne informacje do tych samych pól, a oryginalne wartości zostawia w widoku źródłowym.</p>
+      <dl class="fields">
+        <div><dt>UTA</dt><dd>Transakcje mogą zawierać identyfikator UTA, typ transakcji, numer faktury, kod i grupę produktu, kraj oraz identyfikator stacji. Dane sprawdzisz w widoku <span class="ui">Źródło UTA</span>.</dd></div>
+        <div><dt>BP</dt><dd>Import zachowuje między innymi klucz importu BP, centrum kosztowe, opis pojazdu lub użytkownika oraz nazwę i lokalizację stacji.</dd></div>
+        <div><dt>Orlen</dt><dd>Import przechowuje numer faktury, identyfikator i nazwę stacji, kod karty, EAN, numer rejestracyjny oraz opis produktu.</dd></div>
+      </dl>
+      <p>Aby sprawdzić dane konkretnego dostawcy, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Rozwiń w lewym menu <span class="ui">Flota → Karty paliwowe → Analiza importu</span>.</li>
+        <li>Otwórz <span class="ui">Źródło UTA</span>, <span class="ui">Źródło BP</span> albo <span class="ui">Źródło Orlen</span>.</li>
+        <li>Porównaj wartości źródłowe z pojazdem, stacją i produktem przypisanym przez DataDrive.</li>
+        <li>Wróć do <span class="ui">Transakcje paliwowe</span>, gdy zakończysz kontrolę importu.</li>
+      </ol>
+      <p>Widok źródłowy pokaże techniczne pola dostawcy. Do filtrowania, analizy i dalszego rozliczania używaj wspólnej listy transakcji.</p>
+      <figure>
+        <img src="img/03-analiza-importu-bp.png" alt="Widok źródłowy transakcji BP z danymi wspólnymi i polami pochodzącymi z pliku dostawcy">
+        <figcaption>Analiza importu BP — dane źródłowe pomagają sprawdzić rozpoznany pojazd, stację i produkt.</figcaption>
+      </figure>
+
+      <h2 id="transakcje">Przeglądanie transakcji</h2>
+      <p>Wspólna lista zaczyna się od daty, pojazdu i stacji. Dalej pokazuje produkt, ilość, cenę jednostkową, wartości netto, VAT i brutto. Po prawej stronie znajdziesz dostawcę oraz wymiary do analizy.</p>
+      <figure>
+        <img src="img/01-transakcje-wspolne.png" alt="Wspólna lista transakcji paliwowych z datą, pojazdem, stacją, produktem, ilością oraz wartościami netto, VAT i brutto">
+        <figcaption>Wspólna lista transakcji — jeden układ danych dla UTA, BP i Orlen.</figcaption>
+      </figure>
+      <p>Aby znaleźć i sprawdzić transakcję, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Przejdź do <span class="ui">Flota → Karty paliwowe → Transakcje paliwowe</span>.</li>
+        <li>Wpisz szukaną wartość w wierszu filtrów pod nagłówkiem kolumny, na przykład numer rejestracyjny, nazwę stacji albo produkt.</li>
+        <li>Kliknij nagłówek kolumny <span class="ui">Data transakcji</span>, aby zmienić kolejność wyników.</li>
+        <li>Otwórz wybrany wiersz, aby zobaczyć wszystkie dane transakcji.</li>
+      </ol>
+      <p>Otworzy się karta transakcji. Pierwsza zakładka zawiera dane wspólne i wymiary analityczne, a zakładka <span class="ui">Dane dostawcy</span> pokazuje pola charakterystyczne dla UTA, BP albo Orlen.</p>
+      <figure>
+        <img src="img/02-szczegoly-transakcji.png" alt="Szczegóły transakcji paliwowej z wymiarami, danymi zakupu oraz zakładką danych dostawcy">
+        <figcaption>Szczegóły transakcji — u góry wymiary do analizy, niżej wspólne dane zakupu.</figcaption>
+      </figure>
+
+      <h2 id="wymiary">Przypisywanie wymiarów kosztowych</h2>
+      <p>DataDrive wylicza część wymiarów z powiązanych kartotek. Dzięki temu nie musisz wpisywać oddziału i MPK osobno w tysiącach transakcji.</p>
+      <dl class="fields">
+        <div><dt>Pojazd</dt><dd>Importer szuka pojazdu po numerze rejestracyjnym. Gdy go nie rozpozna, otwórz transakcję, wybierz <span class="ui">Pojazd</span> i zapisz.</dd></div>
+        <div><dt>Kierowca</dt><dd>Wynika z aktywnego wydania karty w dniu transakcji. Jeśli kierowca jest błędny, popraw osobę lub daty w <span class="ui">Wydania kart</span>.</dd></div>
+        <div><dt>Oddział</dt><dd>Wynika z działu kierowcy. DataDrive używa działu oznaczonego jako oddział albo jego jednostki nadrzędnej.</dd></div>
+        <div><dt>MPK</dt><dd>Najpierw pochodzi z pojazdu. Jeśli pojazd nie ma MPK, DataDrive używa domyślnego MPK karty paliwowej.</dd></div>
+        <div><dt>Grupa produktu</dt><dd>Pochodzi z produktu ujednoliconego, na przykład <span class="ui">Paliwa</span>.</dd></div>
+      </dl>
+      <p>Aby poprawić pojazd i wynikające z niego MPK, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Otwórz transakcję na wspólnej liście.</li>
+        <li>W polu <span class="ui">Pojazd</span> wybierz właściwy numer rejestracyjny.</li>
+        <li>Kliknij <span class="ui">Zapisz</span>.</li>
+        <li>Sprawdź pole <span class="ui">MPK</span> w sekcji wymiarów do analizy.</li>
+      </ol>
+      <p>Transakcja zostanie powiązana z pojazdem, a MPK ustawi się według kartoteki pojazdu. Gdy zmienisz domyślne MPK pojazdu lub karty, odśwież listę i sprawdź wynik.</p>
+      <div class="callout tip"><strong>Wskazówka:</strong> poprawiaj źródło wymiaru zamiast pojedynczego wyniku. Ustaw MPK na pojeździe lub karcie, a kierowcę w wydaniu karty. Kolejne transakcje dostaną wtedy właściwe dane automatycznie.</div>
+
+      <h2 id="kategoria">Kategoria kosztu i MPK na fakturze kosztowej</h2>
+      <p>Kategoria kosztu jest polem pozycji faktury kosztowej. Użyj jej, gdy transakcja została powiązana z fakturą lub gdy rozliczasz koszt poza kartą paliwową. Przykładowe kategorie to paliwo, opłaty drogowe, myjnia albo materiały eksploatacyjne.</p>
+      <figure>
+        <img src="img/08-pozycja-kosztowa.png" alt="Pozycja faktury kosztowej z sekcją Rozliczenie kosztu i polami Pojazd, Kategoria oraz Data transakcji">
+        <figcaption>Pozycja faktury kosztowej — sekcja „Rozliczenie kosztu” zawiera pojazd, kategorię i pozostałe dane analityczne.</figcaption>
+      </figure>
+      <p>Aby przypisać kategorię kosztu i MPK, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Przejdź do <span class="ui">Finansowe → Kosztowe → Koszty szczegółowo</span>.</li>
+        <li>Otwórz pozycję faktury powiązaną z rozliczanym zakupem.</li>
+        <li>W sekcji <span class="ui">Rozliczenie kosztu</span> wpisz lub wybierz <span class="ui">Kategorię</span>.</li>
+        <li>Wskaż <span class="ui">Pojazd</span>. Pozostaw MPK puste, jeśli ma wynikać z pojazdu lub nagłówka faktury.</li>
+        <li>Uzupełnij <span class="ui">MPK</span> tylko wtedy, gdy ta pozycja ma trafić do innego centrum kosztowego.</li>
+        <li>Kliknij <span class="ui">Zapisz</span>.</li>
+      </ol>
+      <p>Pozycja otrzyma kategorię i efektywne MPK. Raporty kosztowe będą mogły grupować ją według pojazdu, kategorii oraz centrum kosztowego.</p>
+      <div class="callout warn"><strong>Ważne:</strong> MPK wpisane bezpośrednio na pozycji faktury ma pierwszeństwo przed MPK pojazdu i nagłówka faktury. Używaj tego nadpisania tylko dla wyjątków.</div>
+
+      <h2 id="produkty">Dlaczego tworzymy produkty ujednolicone</h2>
+      <p>Dostawcy nazywają ten sam towar inaczej. Benzyna 95 może wystąpić jako <span class="ui">BEZOLOW 95</span> w danych BP i <span class="ui">EFECTA 95</span> w danych Orlen. UTA może przesłać jeszcze inną nazwę lub kod. Bez ujednolicenia raport potraktuje je jak oddzielne produkty.</p>
+      <p>Produkt ujednolicony łączy wiele nazw dostawców w jeden produkt, na przykład <span class="ui">Benzyna 95</span>. Dzięki temu:</p>
+      <ul>
+        <li>raport pokazuje jedną pozycję zamiast kilku nazw tego samego paliwa,</li>
+        <li>wszystkie transakcje dostają wspólną grupę, na przykład <span class="ui">Paliwa</span>,</li>
+        <li>kolejne importy z UTA, BP i Orlen korzystają z zapisanego mapowania,</li>
+        <li>porównanie zużycia i wartości między dostawcami staje się wiarygodne.</li>
+      </ul>
+
+      <h2 id="konsolidacja">Tworzenie produktu ujednoliconego</h2>
+      <p>Najpierw wybierz produkty, które oznaczają ten sam towar. Porównaj rodzaj paliwa, jednostkę oraz kod lub opis dostawcy. Nie łącz produktów tylko dlatego, że mają podobną nazwę.</p>
+      <figure>
+        <img src="img/04-produkty-zaznaczone.png" alt="Lista produktów kartowych z zaznaczonymi produktami BEZOLOW 95 i EFECTA 95">
+        <figcaption>Dwa produkty dostawców oznaczające benzynę 95 są zaznaczone do wspólnego grupowania i konsolidacji.</figcaption>
+      </figure>
+
+      <h3>Przypisanie grupy wielu produktom</h3>
+      <p>Aby nadać wielu produktom tę samą grupę, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Otwórz listę <span class="ui">Produkt kartowy</span>.</li>
+        <li>Zaznacz co najmniej dwa produkty należące do tej samej grupy.</li>
+        <li>Kliknij <span class="ui">Przypisz grupę</span>.</li>
+        <li>Wpisz nazwę grupy, na przykład <span class="ui">Paliwa</span>, i kliknij <span class="ui">OK</span>.</li>
+      </ol>
+      <p>Wybrane produkty otrzymają tę samą grupę. Grupa pojawi się jako wymiar na transakcjach i w raportach.</p>
+      <figure>
+        <img src="img/05-przypisanie-grupy.png" alt="Okno Przypisz grupę produktów z wpisaną grupą Paliwa">
+        <figcaption>Przypisanie grupy „Paliwa” do kilku zaznaczonych produktów.</figcaption>
+      </figure>
+
+      <h3>Konsolidacja nazw dostawców</h3>
+      <p>Aby utworzyć jeden produkt ujednolicony, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>Na liście <span class="ui">Produkt kartowy</span> zaznacz co najmniej dwa odpowiedniki tego samego produktu.</li>
+        <li>Kliknij <span class="ui">Konsoliduj</span>.</li>
+        <li>W polu <span class="ui">Nazwa nowego produktu bazowego</span> wpisz wspólną nazwę, na przykład <span class="ui">Benzyna 95</span>.</li>
+        <li>Wybierz lub wpisz <span class="ui">Grupę produktu</span>, na przykład <span class="ui">Paliwa</span>.</li>
+        <li>Kliknij <span class="ui">OK</span>.</li>
+      </ol>
+      <p>DataDrive utworzy nowy produkt, przeniesie do niego mapowania dostawców i przepnie istniejące transakcje. Kolejne transakcje z tymi samymi nazwami lub kodami dostawców również trafią do produktu ujednoliconego.</p>
+      <figure>
+        <img src="img/06-konsolidacja.png" alt="Okno Konsoliduj produkty z nazwą Benzyna 95 i grupą Paliwa">
+        <figcaption>Konsolidacja produktów BP i Orlen do wspólnego produktu „Benzyna 95”.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/07-produkt-ujednolicony.png" alt="Lista produktów po konsolidacji z produktem Benzyna 95 w grupie Paliwa i komunikatem o przepięciu transakcji">
+        <figcaption>Wynik konsolidacji — jeden produkt „Benzyna 95”, grupa „Paliwa” i przepięte mapowania oraz transakcje.</figcaption>
+      </figure>
+      <div class="callout danger"><strong>Przed konsolidacją sprawdź zaznaczenie.</strong> Operacja przepina wszystkie istniejące transakcje i mapowania, a następnie usuwa stare produkty. Nie łącz różnych paliw, na przykład benzyny 95 z benzyną 98 albo olejem napędowym.</div>
+
+      <h3>Jak działa kolejny import</h3>
+      <p>Mapowanie zapamiętuje dostawcę oraz jego kod lub nazwę produktu. Gdy kolejny plik albo integracja przekaże transakcję UTA, BP lub Orlen, DataDrive sprawdzi mapowanie i od razu przypisze produkt ujednolicony. Nie musisz ponawiać konsolidacji przy każdym imporcie.</p>
+      <div class="callout tip"><strong>Wskazówka:</strong> po konsolidacji wróć do wspólnej listy transakcji i odfiltruj nową nazwę. Sprawdź kilku dostawców oraz grupę produktu, zanim użyjesz danych w raporcie.</div>
+
+      <div class="pager">
+        <a href="/datadrive/korekty/" class="prev"><div class="lbl">‹ Poprzedni</div><div class="ttl">Korekty sprzedaży</div></a>
+        <a href="/datadrive/" class="next"><div class="lbl">Spis treści ›</div><div class="ttl">Wszystkie rozdziały</div></a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<footer>
+  <span>DataDrive · podręcznik użytkownika</span><span class="dot">·</span>
+  <span>Data Drive Sp. z o.o.</span>
+</footer>
+<script src="/datadrive/assets/manual.js"></script>
+</body>
+</html>
