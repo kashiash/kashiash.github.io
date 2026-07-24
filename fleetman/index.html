@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fleetman — podręcznik użytkownika</title>
+<meta name="description" content="Instrukcje obsługi Fleetman: pojazdy, klienci, wynajem, szkody, dokumenty, rozliczenia i administracja.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/fleetman/assets/manual.css">
+</head>
+<body>
+<header class="top">
+  <button class="navtoggle" type="button" aria-label="Otwórz menu">☰</button>
+  <a class="brand" href="/fleetman/" aria-label="Strona główna podręcznika Fleetman">
+    <span class="mark">FM</span> Fleetman <small>Podręcznik</small>
+  </a>
+  <div class="search">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 5 1.5-1.5-5-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+    <input id="q" type="search" placeholder="Szukaj działu…" autocomplete="off" aria-label="Szukaj działu">
+  </div>
+</header>
+
+<div class="wrap">
+  <aside aria-label="Działy podręcznika">
+    <div class="grp">Podręcznik</div>
+    <a href="/fleetman/" class="active" aria-current="page">🏠 Start</a>
+    <a href="/fleetman/pierwsze-kroki/">🚀 Pierwsze kroki</a>
+    <div class="grp">Działy</div>
+    <span class="navi">🚗 Pojazdy <span class="soon">wkrótce</span></span>
+    <span class="navi">👥 Klienci <span class="soon">wkrótce</span></span>
+    <span class="navi">🔑 Wynajem <span class="soon">wkrótce</span></span>
+    <span class="navi">🛠️ Szkody <span class="soon">wkrótce</span></span>
+    <span class="navi">🧾 Faktury i koszty <span class="soon">wkrótce</span></span>
+    <span class="navi">📎 Dokumenty <span class="soon">wkrótce</span></span>
+    <span class="navi">📊 Raporty <span class="soon">wkrótce</span></span>
+    <span class="navi">⚙️ Administracja <span class="soon">wkrótce</span></span>
+    <span class="navi">🧰 Rozwiązywanie problemów <span class="soon">wkrótce</span></span>
+  </aside>
+
+  <main>
+    <div class="content">
+      <div class="crumb">Podręcznik Fleetman</div>
+      <h1>Jak możemy Ci pomóc?</h1>
+      <p class="lead">Znajdź krótką instrukcję i wykonaj zadanie krok po kroku. Manual obejmie codzienną pracę z pojazdami, klientami, wynajmem, szkodami i dokumentami.</p>
+
+      <div class="callout note">
+        <strong>Pierwsza wersja:</strong> podręcznik jest rozwijany. Gotowe działy mają zielone oznaczenie „Gotowe”.
+      </div>
+
+      <div class="section-title">Rozdziały</div>
+      <div class="cards" id="cards">
+        <a class="card" href="/fleetman/pierwsze-kroki/" data-name="pierwsze kroki start podręcznik wyszukiwanie instrukcje">
+          <span class="badge live">Gotowe</span>
+          <span class="ico">🚀</span>
+          <h3>Pierwsze kroki</h3>
+          <p>Dowiedz się, jak znaleźć instrukcję, wykonać kroki i rozpoznać ważne uwagi.</p>
+          <span class="go">Otwórz rozdział →</span>
+        </a>
+        <div class="card disabled" data-name="pojazdy samochody flota dodawanie edycja dokumenty przebieg status">
+          <span class="badge soon">Wkrótce</span><span class="ico">🚗</span>
+          <h3>Pojazdy</h3><p>Dodawanie pojazdu, dane, dokumenty, przebieg, status i historia.</p>
+        </div>
+        <div class="card disabled" data-name="klienci kontrahenci kontakty dokumenty historia">
+          <span class="badge soon">Wkrótce</span><span class="ico">👥</span>
+          <h3>Klienci</h3><p>Dodawanie klienta, dane kontaktowe, dokumenty i historia współpracy.</p>
+        </div>
+        <div class="card disabled" data-name="wynajem rac rezerwacja umowa wydanie zwrot przedłużenie">
+          <span class="badge soon">Wkrótce</span><span class="ico">🔑</span>
+          <h3>Wynajem</h3><p>Rezerwacja, umowa najmu, wydanie, zwrot i zakończenie wynajmu.</p>
+        </div>
+        <div class="card disabled" data-name="szkody zgłoszenie naprawa dokumentacja rozliczenie">
+          <span class="badge soon">Wkrótce</span><span class="ico">🛠️</span>
+          <h3>Szkody</h3><p>Zgłoszenie szkody, dokumentacja, naprawa i rozliczenie.</p>
+        </div>
+        <div class="card disabled" data-name="faktury koszty sprzedaż zakup rozliczenia eksport">
+          <span class="badge soon">Wkrótce</span><span class="ico">🧾</span>
+          <h3>Faktury i koszty</h3><p>Faktury sprzedaży i zakupu, koszty pojazdu oraz eksport dokumentów.</p>
+        </div>
+        <div class="card disabled" data-name="dokumenty załączniki pdf skany zdjęcia pliki">
+          <span class="badge soon">Wkrótce</span><span class="ico">📎</span>
+          <h3>Dokumenty</h3><p>Dodawanie plików, skanów i zdjęć oraz podgląd dokumentów PDF.</p>
+        </div>
+        <div class="card disabled" data-name="raporty filtry drukowanie eksport pdf excel">
+          <span class="badge soon">Wkrótce</span><span class="ico">📊</span>
+          <h3>Raporty</h3><p>Filtrowanie danych, uruchamianie raportów, drukowanie i eksport.</p>
+        </div>
+        <div class="card disabled" data-name="administracja użytkownicy role uprawnienia słowniki konfiguracja">
+          <span class="badge soon">Wkrótce</span><span class="ico">⚙️</span>
+          <h3>Administracja</h3><p>Użytkownicy, role, uprawnienia, słowniki i ustawienia firmy.</p>
+        </div>
+        <div class="card disabled" data-name="problemy błędy logowanie brak danych przycisku email pomoc">
+          <span class="badge soon">Wkrótce</span><span class="ico">🧰</span>
+          <h3>Rozwiązywanie problemów</h3><p>Logowanie, brak danych lub uprawnień oraz najczęstsze błędy.</p>
+        </div>
+      </div>
+      <p class="empty" id="empty">Nie znaleźliśmy pasującego działu.</p>
+    </div>
+  </main>
+</div>
+
+<footer>
+  <span>Fleetman · podręcznik użytkownika</span><span class="dot">·</span>
+  <span>Ostatnia aktualizacja: 24 lipca 2026</span><span class="dot">·</span>
+  <a href="/">Strona główna</a>
+</footer>
+<script src="/fleetman/assets/manual.js"></script>
+</body>
+</html>
