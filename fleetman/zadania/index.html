@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Zadania — Fleetman</title>
+<meta name="description" content="Instrukcja pracy z zadaniami w Fleetman: lista zadań, detal zadania, czynności i pola ekranów.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/fleetman/assets/manual.css">
+</head>
+<body>
+<header class="top">
+  <button class="navtoggle" type="button" aria-label="Otwórz menu">☰</button>
+  <a class="brand" href="/fleetman/" aria-label="Strona główna podręcznika Fleetman">
+    <span class="mark">FM</span> Fleetman <small>Podręcznik</small>
+  </a>
+</header>
+
+<div class="wrap">
+  <aside aria-label="Działy podręcznika">
+    <div class="grp">Podręcznik</div>
+    <a href="/fleetman/">🏠 Start</a>
+    <a href="/fleetman/pierwsze-kroki/">🚀 Pierwsze kroki</a>
+    <a href="/fleetman/standard-opisu-ekranow/">📐 Standard ekranów</a>
+    <a href="/fleetman/inwentarz-ekranow/">🗂️ Inwentarz ekranów</a>
+    <div class="grp">Działy</div>
+    <a href="/fleetman/zadania/" class="active" aria-current="page">📋 Zadania</a>
+    <div class="sub">
+      <a href="#o-module">O module</a>
+      <a href="#lista-zadan">Lista zadań</a>
+      <a href="#detal-zadania">Detal zadania</a>
+      <a href="#czynnosci">Czynności zadań</a>
+      <a href="#detal-czynnosci">Detal czynności</a>
+    </div>
+    <span class="navi">🚗 Pojazdy <span class="soon">wkrótce</span></span>
+    <span class="navi">👥 Klienci <span class="soon">wkrótce</span></span>
+    <span class="navi">🔑 Wynajem <span class="soon">wkrótce</span></span>
+    <span class="navi">🛠️ Szkody <span class="soon">wkrótce</span></span>
+    <span class="navi">🧾 Faktury i koszty <span class="soon">wkrótce</span></span>
+    <span class="navi">📎 Dokumenty <span class="soon">wkrótce</span></span>
+    <span class="navi">📊 Raporty <span class="soon">wkrótce</span></span>
+    <span class="navi">⚙️ Administracja <span class="soon">wkrótce</span></span>
+  </aside>
+
+  <main>
+    <article class="content">
+      <div class="crumb"><a href="/fleetman/">Podręcznik Fleetman</a> › Zadania</div>
+      <h1>Zadania</h1>
+      <p class="lead">Moduł zadań pozwala zaplanować pracę, przypisać osobę odpowiedzialną, wskazać pojazd i zebrać czynności wykonane w terenie.</p>
+
+      <h2 id="o-module">O module zadań</h2>
+      <p>Grupa <span class="ui">Zadania</span> zawiera trzy ekrany: <span class="ui">Zadania z powiadomieniami</span>, <span class="ui">Czynności zadań</span> i <span class="ui">Kalendarz zadań</span>. Lista zadań pokazuje pracę do wykonania. Czynności zapisują wykonane kroki, na przykład wydanie pojazdu, podpis, zdjęcie albo zakończenie pracy.</p>
+      <p>Zadanie może być połączone z pojazdem, najmem, zleceniem, transportem albo kartą Control Card. Dzięki temu użytkownik widzi, skąd pochodzi praca i jakiego rekordu dotyczy.</p>
+
+      <h2 id="lista-zadan">Lista zadań</h2>
+      <p>Ekran <span class="ui">Zadania z powiadomieniami</span> pokazuje bieżące zadania w siatce. Domyślny filtr <span class="ui">Dzisiejsze</span> ogranicza listę do zadań z datą przypadającą na dziś.</p>
+      <figure>
+        <img src="img/01-lista-zadan.png" alt="Lista zadań z kolumnami oddziału, daty zadania, rodzaju zadania, pojazdu, osoby odpowiedzialnej i adresów. Dane wierszy są zamaskowane.">
+        <figcaption>Lista zadań — nagłówki kolumn pozostają czytelne, a dane przykładowych rekordów są zamaskowane.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Oddział firmy</dt><dd>Oddział, który obsługuje zadanie.</dd></div>
+        <div><dt>Data zadania</dt><dd>Termin rozpoczęcia zadania. Siatka sortuje zadania według tej daty.</dd></div>
+        <div><dt>Rodzaj zadania</dt><dd>Typ pracy, na przykład podstawienie pojazdu, odbiór pojazdu albo kontakt z klientem.</dd></div>
+        <div><dt>CC Rodzaj</dt><dd>Rodzaj użycia pojazdu z powiązanej karty Control Card.</dd></div>
+        <div><dt>Pojazd</dt><dd>Pojazd przypisany do zadania.</dd></div>
+        <div><dt>Osoba odpowiedzialna</dt><dd>Pracownik, który ma wykonać zadanie.</dd></div>
+        <div><dt>Adres rozpoczęcia zadania</dt><dd>Miejsce, w którym użytkownik zaczyna zadanie.</dd></div>
+        <div><dt>Adres ukończenia zadania</dt><dd>Miejsce, w którym użytkownik kończy zadanie.</dd></div>
+        <div><dt>Ostatnia notatka</dt><dd>Ostatni wpis dodany do notatek zadania.</dd></div>
+        <div><dt>Opis</dt><dd>Szerszy opis zadania i kontekstu dla osoby odpowiedzialnej.</dd></div>
+        <div><dt>Status</dt><dd>Bieżący stan zadania: <span class="ui">Nie rozpoczęto</span>, <span class="ui">W toku</span>, <span class="ui">Anulowany</span> albo <span class="ui">Zakończony</span>.</dd></div>
+        <div><dt>Numer telefonu</dt><dd>Telefon kontaktowy używany przy wykonaniu zadania.</dd></div>
+        <div><dt>Email</dt><dd>Adres e-mail kontaktu. Aplikacja sprawdza poprawność adresu przy zapisie.</dd></div>
+        <div><dt>Nr Najmu</dt><dd>Numer powiązanego najmu.</dd></div>
+        <div><dt>Nr Zlecenia</dt><dd>Numer powiązanego zlecenia PAZ.</dd></div>
+        <div><dt>Cena cennikowa</dt><dd>Cena z cennika użyta przy zadaniu powiązanym z najmem.</dd></div>
+        <div><dt>Nr ControlCard</dt><dd>Numer powiązanej karty Control Card.</dd></div>
+        <div><dt>Koszt najmu</dt><dd>Koszt najmu powiązany z zadaniem.</dd></div>
+        <div><dt>Nr Transportu</dt><dd>Numer transportu powiązanego z zadaniem.</dd></div>
+        <div><dt>Koszt najmu umowny</dt><dd>Koszt wynikający z warunków umowy.</dd></div>
+        <div><dt>Ostrzeżenie</dt><dd>Komunikat aplikacji, jeśli zadanie wymaga uwagi.</dd></div>
+        <div><dt>Numer szkody</dt><dd>Numer szkody z powiązanego zlecenia.</dd></div>
+        <div><dt>Rodzaj zlecenia</dt><dd>Rodzaj powiązanego zlecenia PAZ.</dd></div>
+      </dl>
+
+      <h2 id="detal-zadania">Detal zadania</h2>
+      <p>Detal zadania pokazuje dane potrzebne do wykonania pracy: termin, adresy, osobę odpowiedzialną, kontakt i pojazd. Z tego miejsca otwierasz też notatki, opis, czynności, zdjęcia, dokumenty, tagi i podpis.</p>
+      <figure>
+        <img src="img/02-detal-zadania.png" alt="Detal zadania z polami oddziału, miejsca postoju, adresu rozpoczęcia, osoby odpowiedzialnej, telefonu, statusu, daty zadania, rodzaju zadania, e-maila i pojazdu. Dane wartości są zamaskowane.">
+        <figcaption>Detal zadania — etykiety pól i zakładki są widoczne, a wartości przykładowego rekordu są zamaskowane.</figcaption>
+      </figure>
+      <div class="callout warn">
+        <strong>Pola wymagane:</strong> uzupełnij <span class="ui">Rodzaj zadania</span> i <span class="ui">Data zadania</span>. Bez tych pól aplikacja blokuje zapis nowego zadania.
+      </div>
+      <dl class="fields">
+        <div><dt>Oddział firmy</dt><dd>Oddział odpowiedzialny za zadanie.</dd></div>
+        <div><dt>Miejsce postoju</dt><dd>Lokalizacja z kartoteki. Po wyborze miejsca aplikacja może przepisać jego nazwę do adresu rozpoczęcia zadania.</dd></div>
+        <div><dt>Adres rozpoczęcia zadania</dt><dd>Adres, pod którym użytkownik zaczyna pracę.</dd></div>
+        <div><dt>Osoba odpowiedzialna</dt><dd>Pracownik, który wykonuje zadanie.</dd></div>
+        <div><dt>Numer telefonu</dt><dd>Telefon do kontaktu w sprawie zadania.</dd></div>
+        <div><dt>Status</dt><dd>Stan zadania. Wybierz <span class="ui">Zakończony</span> po wykonaniu pracy albo użyj akcji <span class="ui">Zrobiono</span>.</dd></div>
+        <div><dt>Data zadania</dt><dd>Termin zadania. To pole jest wymagane.</dd></div>
+        <div><dt>Adres ukończenia zadania</dt><dd>Adres, pod którym użytkownik kończy pracę.</dd></div>
+        <div><dt>Rodzaj zadania</dt><dd>Typ pracy ze słownika <span class="ui">Rodzaj zadania</span>. To pole jest wymagane.</dd></div>
+        <div><dt>Email</dt><dd>Adres e-mail kontaktu. Jeśli wpiszesz adres, aplikacja sprawdza jego format przy zapisie.</dd></div>
+        <div><dt>Umówione z klientem</dt><dd>Zaznacz, gdy termin został potwierdzony z klientem.</dd></div>
+        <div><dt>Pojazd</dt><dd>Pojazd przypisany do zadania.</dd></div>
+        <div><dt>Notatki kierowcy</dt><dd>Miejsce na informacje przekazane kierowcy lub pracownikowi terenowemu.</dd></div>
+        <div><dt>Notatki wykonawcy</dt><dd>Zakładka z notatkami osoby wykonującej zadanie.</dd></div>
+        <div><dt>Notatki</dt><dd>Lista notatek powiązanych z zadaniem.</dd></div>
+        <div><dt>Opis</dt><dd>Pełny opis zadania.</dd></div>
+        <div><dt>Czynności</dt><dd>Lista wykonanych czynności dla tego zadania.</dd></div>
+        <div><dt>Mapa czynności</dt><dd>Mapa punktów zapisanych przez czynności. Aplikacja wylicza ją z szerokości i długości geograficznej czynności.</dd></div>
+        <div><dt>Zdjęcia</dt><dd>Zdjęcia powiązane z zadaniem.</dd></div>
+        <div><dt>Dokumenty</dt><dd>Skany i pliki przypisane do zadania.</dd></div>
+        <div><dt>Tagi</dt><dd>Tagi porządkujące zadanie.</dd></div>
+        <div><dt>Podpis</dt><dd>Podpis zebrany przy wykonaniu zadania.</dd></div>
+      </dl>
+      <p>Aby oznaczyć zadanie jako wykonane, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>W grupie <span class="ui">Zadania</span> otwórz <span class="ui">Zadania z powiadomieniami</span>.</li>
+        <li>Zaznacz jedno lub więcej zadań na liście.</li>
+        <li>Na górnym pasku kliknij <span class="ui">Zrobiono</span>.</li>
+      </ol>
+      <p>Aplikacja ustawi status zaznaczonych zadań na <span class="ui">Zakończony</span> i odświeży listę.</p>
+
+      <h2 id="czynnosci">Czynności zadań</h2>
+      <p>Ekran <span class="ui">Czynności zadań</span> pokazuje wykonane czynności z wielu zadań. Użyj go, gdy chcesz sprawdzić, kto wykonał pracę, kiedy ją wykonał i czy zapisał licznik lub lokalizację.</p>
+      <figure>
+        <img src="img/03-czynnosci-lista.png" alt="Lista czynności zadań z kolumnami rodzaju czynności, daty utworzenia, użytkownika, współrzędnych, licznika, pojazdu i numerów powiązanych dokumentów. Dane wierszy są zamaskowane.">
+        <figcaption>Czynności zadań — lista wykonanych kroków z datą, autorem, lokalizacją, licznikiem i powiązaniami.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Rodzaj czynności</dt><dd>Typ wykonanej czynności, na przykład wydanie samochodu, podpis, zdjęcie albo zakończenie pracy.</dd></div>
+        <div><dt>Data utworzenia</dt><dd>Data i godzina zapisania czynności. Aplikacja uzupełnia ją przy utworzeniu rekordu.</dd></div>
+        <div><dt>Utworzone przez</dt><dd>Użytkownik, który dodał czynność. Aplikacja uzupełnia go z bieżącego konta.</dd></div>
+        <div><dt>Szerokość geograficzna</dt><dd>Współrzędna miejsca wykonania czynności.</dd></div>
+        <div><dt>Długość geograficzna</dt><dd>Współrzędna miejsca wykonania czynności.</dd></div>
+        <div><dt>Licznik</dt><dd>Stan licznika pojazdu zapisany przy czynności.</dd></div>
+        <div><dt>Korekta licznika</dt><dd>Zaznaczenie oznacza, że wpis koryguje licznik.</dd></div>
+        <div><dt>Pojazd</dt><dd>Pojazd z zadania, którego dotyczy czynność.</dd></div>
+        <div><dt>Nr Najmu</dt><dd>Numer najmu z powiązanego zadania.</dd></div>
+        <div><dt>Nr Zlecenia</dt><dd>Numer zlecenia PAZ z powiązanego zadania.</dd></div>
+        <div><dt>Nr ControlCard</dt><dd>Numer karty Control Card z powiązanego zadania.</dd></div>
+        <div><dt>Osoba odpowiedzialna</dt><dd>Pracownik przypisany do zadania.</dd></div>
+      </dl>
+
+      <h2 id="detal-czynnosci">Detal czynności</h2>
+      <p>Detal czynności zależy od jej typu. Poniższy przykład pokazuje czynność wydania samochodu. Oprócz pól wspólnych ma pola dotyczące baku, czystości, miejsca wykonania i klienta.</p>
+      <figure>
+        <img src="img/04-czynnosc-detal.png" alt="Detal czynności wydania samochodu z polami pojemności baku, czystości, adresu, braku klienta, daty, mapy, daty utworzenia, autora i współrzędnych. Dane wartości są zamaskowane.">
+        <figcaption>Detal czynności — przykład czynności wydania samochodu z mapą i polami wykonania.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Pojemność baku</dt><dd>Poziom paliwa zapisany przy wydaniu lub odbiorze pojazdu.</dd></div>
+        <div><dt>Czysty w środku</dt><dd>Zaznacz, jeśli pojazd był czysty wewnątrz.</dd></div>
+        <div><dt>Czyty na zewnątrz</dt><dd>Zaznacz, jeśli pojazd był czysty z zewnątrz. Etykieta jest zapisana w aplikacji dokładnie w tej formie.</dd></div>
+        <div><dt>Miejsce wykonania</dt><dd>Lokalizacja z kartoteki, jeśli czynność wykonano w znanym miejscu.</dd></div>
+        <div><dt>Adres</dt><dd>Adres wykonania czynności.</dd></div>
+        <div><dt>Brak klienta</dt><dd>Zaznacz, gdy czynność wykonano bez obecności klienta.</dd></div>
+        <div><dt>Cancelation Reason Type</dt><dd>Powód anulowania w formie słownikowej. Etykieta jest po angielsku, bo aplikacja nie ma tu polskiej nazwy wyświetlanej.</dd></div>
+        <div><dt>Data</dt><dd>Data czynności.</dd></div>
+        <div><dt>Mapa</dt><dd>Mapa punktu, w którym zapisano czynność. Aplikacja wylicza położenie z pól współrzędnych.</dd></div>
+        <div><dt>Data utworzenia</dt><dd>Data utworzenia rekordu czynności. Aplikacja uzupełnia ją przy zapisie.</dd></div>
+        <div><dt>Utworzone przez</dt><dd>Użytkownik, który utworzył czynność. Aplikacja uzupełnia go z bieżącego konta.</dd></div>
+        <div><dt>Szerokość geograficzna</dt><dd>Współrzędna punktu czynności.</dd></div>
+        <div><dt>Długość geograficzna</dt><dd>Współrzędna punktu czynności.</dd></div>
+      </dl>
+      <p>Aby sprawdzić czynność zadania, wykonaj następujące kroki:</p>
+      <ol class="steps">
+        <li>W grupie <span class="ui">Zadania</span> otwórz <span class="ui">Czynności zadań</span>.</li>
+        <li>Wyszukaj czynność po rodzaju, dacie, użytkowniku albo pojeździe.</li>
+        <li>Otwórz wiersz podwójnym kliknięciem.</li>
+        <li>Sprawdź pola detalu oraz mapę, jeśli czynność ma zapisane współrzędne.</li>
+      </ol>
+      <p>Otworzy się detal czynności z danymi zapisanymi podczas wykonania pracy.</p>
+
+      <div class="callout note">
+        <strong>Weryfikacja:</strong> zrzuty wykonano 25 lipca 2026 na środowisku staging Fleetman. Dane rekordów zostały zamaskowane przed publikacją.
+      </div>
+
+      <div class="pager">
+        <a href="/fleetman/pierwsze-kroki/"><span class="lbl">Poprzednia strona</span><br><span class="ttl">← Pierwsze kroki</span></a>
+        <a class="next" href="/fleetman/inwentarz-ekranow/"><span class="lbl">Następna strona</span><br><span class="ttl">Inwentarz ekranów →</span></a>
+      </div>
+
+      <p><small>Ostatnia weryfikacja: 25 lipca 2026</small></p>
+    </article>
+  </main>
+</div>
+
+<footer>
+  <span>Fleetman · podręcznik użytkownika</span><span class="dot">·</span>
+  <a href="/fleetman/">Wszystkie rozdziały</a>
+</footer>
+<script src="/fleetman/assets/manual.js"></script>
+</body>
+</html>
