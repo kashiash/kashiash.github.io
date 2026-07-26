@@ -143,15 +143,28 @@
         <img src="img/06-nowe-zdarzenie.png" alt="Okno nowego zdarzenia serwisowego z polami Typ zdarzenia, Status, Tytuł, Opis, Data zdarzenia, Przebieg przy zdarzeniu, Warsztat oraz Koszt">
         <figcaption>Okno nowego zdarzenia serwisowego — typ, status, tytuł i data obok pól kosztu, przebiegu i warsztatu.</figcaption>
       </figure>
+      <p>Zapisane zdarzenie otwierasz dwuklikiem w wiersz listy. Karta pokazuje komplet danych obsługi, a w dolnej części zakładki z dokumentami i pozycjami kosztorysu.</p>
+      <figure>
+        <img src="img/07-zdarzenie-detal.png" alt="Karta zdarzenia pojazdu: planowany serwis Wymiana oleju i filtrów, status Rozwiązane, data 3.06.2026, przebieg 22 500 km, warsztat Serwis Toyota Warszawa, koszt 420 zł">
+        <figcaption>Karta zdarzenia „Wymiana oleju i filtrów” — planowany serwis zamknięty tego samego dnia, przy przebiegu 22&nbsp;500 km, za 420,00 zł.</figcaption>
+      </figure>
       <dl class="fields">
         <div><dt>Typ zdarzenia</dt><dd>Rodzaj zdarzenia: Planowany serwis, Planowana naprawa, Awaria albo Szkoda.</dd></div>
         <div><dt>Status</dt><dd>Etap obsługi: Otwarte, W trakcie, Rozwiązane albo Anulowane.</dd></div>
-        <div><dt>Tytuł</dt><dd>Krótki opis zdarzenia, na przykład „Przegląd okresowy 30 000 km”. Pole wymagane.</dd></div>
-        <div><dt>Data zdarzenia, Data zakończenia</dt><dd>Kiedy zdarzenie wystąpiło i kiedy je zamknięto.</dd></div>
-        <div><dt>Przebieg przy zdarzeniu (km)</dt><dd>Stan licznika w chwili zdarzenia.</dd></div>
-        <div><dt>Warsztat / serwis</dt><dd>Nazwa warsztatu. Kontrahenta z bazy wskażesz osobno w polu <span class="ui">Warsztat (kontrahent)</span>.</dd></div>
-        <div><dt>Koszt (PLN)</dt><dd>Koszt zdarzenia. Przy szkodzie podaj też <span class="ui">Nr szkody</span>.</dd></div>
+        <div><dt>Tytuł</dt><dd>Krótki opis zdarzenia, na przykład „Wymiana oleju i filtrów”. Pole wymagane.</dd></div>
+        <div><dt>Opis</dt><dd>Miejsce na szczegóły zakresu prac i ustalenia z warsztatem.</dd></div>
+        <div><dt>Data zdarzenia, Planowana data naprawy, Data zakończenia</dt><dd>Kiedy zdarzenie wystąpiło, kiedy zaplanowano naprawę i kiedy ją zamknięto.</dd></div>
+        <div><dt>Przebieg przy zdarzeniu (km)</dt><dd>Stan licznika w chwili zdarzenia. Wykorzystują go raporty kosztu na kilometr.</dd></div>
+        <div><dt>Szerokość geogr., Długość geogr.</dt><dd>Miejsce zdarzenia. Uzupełnij przy awarii w trasie, żeby udokumentować lokalizację holowania.</dd></div>
+        <div><dt>Warsztat / serwis</dt><dd>Nazwa warsztatu wpisana tekstem. Kontrahenta z bazy wskażesz w polu <span class="ui">Warsztat (kontrahent)</span>.</dd></div>
+        <div><dt>Nr szkody</dt><dd>Numer szkody ubezpieczeniowej. Wypełnij, gdy zdarzenie jest szkodą.</dd></div>
+        <div><dt>Koszt (PLN)</dt><dd>Koszt zdarzenia. To wartość, która trafia do zestawień kosztów utrzymania pojazdu.</dd></div>
+        <div><dt>Źródło kosztorysu, Nr kosztorysu, Data kosztorysu</dt><dd>Dane kosztorysu z warsztatu. Aplikacja wypełnia je, gdy kosztorys przyszedł z integracji.</dd></div>
+        <div><dt>Nr zlecenia serwisu, Data zlecenia serwisu</dt><dd>Numer i data zlecenia po stronie warsztatu — ułatwiają reklamację i kontrolę terminu.</dd></div>
+        <div><dt>Kosztorys netto, Kosztorys VAT, Kosztorys brutto</dt><dd>Kwoty z kosztorysu. Porównaj je z polem <span class="ui">Koszt (PLN)</span>, zanim zaakceptujesz fakturę.</dd></div>
+        <div><dt>Powiązana zajętość</dt><dd>Wpis w kalendarzu zajętości pojazdu na czas naprawy. Dzięki niemu pojazd nie zostanie w tym czasie wydany.</dd></div>
       </dl>
+      <div class="callout warn"><strong>Ważne:</strong> akcja <span class="ui">Wymagaj autoryzacji</span> na górnym pasku włącza kontrolę kwoty. Zdarzenie z tym znacznikiem czeka na zatwierdzenie kwoty przez osobę uprawnioną, zanim koszt trafi do rozliczenia.</div>
       <div class="callout tip"><strong>Wskazówka:</strong> zdarzenia dodane z karty pojazdu i z ekranu <span class="ui">Serwisy / przeglądy</span> trafiają do tego samego rejestru. Wybierz drogę, która jest wygodniejsza — efekt jest identyczny.</div>
 
       <div class="pager">

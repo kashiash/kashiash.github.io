@@ -103,6 +103,26 @@
         <div><dt>Bieżący przydział</dt><dd>Oznaczenie miejsca, na którym trwa przydział — potwierdza, że stanowisko jest w użyciu.</dd></div>
       </dl>
 
+      <p>Kartę miejsca otwierasz dwuklikiem w wiersz listy. Znajdziesz na niej pełne dane stanowiska oraz akcje <span class="ui">Przydziel miejsce</span> i <span class="ui">Zwolnij miejsce</span>.</p>
+      <figure>
+        <img src="img/03b-miejsce-detal.png" alt="Karta miejsca parkingowego A001 na Parkingu Serwisowym: typ Stałe, stan Aktywne, strefa A, dostępność Zajęte i pracownik Piotr Gdański">
+        <figcaption>Karta miejsca „A001” — komplet danych stanowiska. U góry akcje przydziału, na dole zakładki z historią przydziałów i cechami dodatkowymi.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Parking</dt><dd>Parking, do którego należy stanowisko. Pole wymagane — miejsce zawsze stoi na konkretnym parkingu.</dd></div>
+        <div><dt>Oznaczenie</dt><dd>Kod miejsca, na przykład <span class="ui">A001</span>. Pole wymagane, musi być niepowtarzalne w obrębie parkingu.</dd></div>
+        <div><dt>Typ miejsca</dt><dd><span class="ui">Stałe</span> dla stanowisk przypisanych na dłużej, pozostałe typy dla miejsc wydawanych na pojedyncze dni.</dd></div>
+        <div><dt>Stan operacyjny</dt><dd><span class="ui">Aktywne</span> oznacza miejsce w użyciu. Stanowisko wyłączone z eksploatacji zmień na stan nieaktywny zamiast je kasować.</dd></div>
+        <div><dt>Strefa</dt><dd>Strefa parkingu, z której miejsce zostało rozpisane.</dd></div>
+        <div><dt>Rząd, Nr w rzędzie, Etykieta rzędu</dt><dd>Pozycja w siatce strefy. Aplikacja wypełnia je przy zakładaniu miejsc z siatki.</dd></div>
+        <div><dt>Plan, Na planie, Pozycja ustawiona ręcznie</dt><dd>Powiązanie z planem graficznym parkingu. Znacznik <span class="ui">Pozycja ustawiona ręcznie</span> chroni ręcznie przesunięty punkt przed nadpisaniem przy ponownym rozpisaniu siatki.</dd></div>
+        <div><dt>Udogodnienia</dt><dd>Wyposażenie stanowiska, na przykład ładowarka albo zadaszenie. Szczegóły opisujesz w zakładce <span class="ui">Cechy dodatkowe</span>.</dd></div>
+        <div><dt>Dostępność</dt><dd>Aplikacja wylicza to pole z aktywnych przydziałów: <span class="ui">Wolne</span> albo <span class="ui">Zajęte</span>.</dd></div>
+        <div><dt>Bieżący przydział</dt><dd>Przydział trwający w dniu dzisiejszym. Puste pole oznacza wolne stanowisko.</dd></div>
+        <div><dt>Pojazd, Pracownik</dt><dd>Kto obecnie korzysta z miejsca. Aplikacja przepisuje te dane z bieżącego przydziału.</dd></div>
+      </dl>
+      <div class="callout tip"><strong>Wskazówka:</strong> zakładka <span class="ui">Historia przydziałów</span> pokazuje wszystkie okresy użytkowania miejsca na osi czasu. Zajrzyj tam, zanim ustalisz, że stanowisko od dawna stoi puste.</div>
+
       <h2 id="przydzialy">Przydział miejsca</h2>
       <p>Przydział łączy miejsce z osobą lub pojazdem na wskazany okres. Ekran <span class="ui">Przydziały miejsc</span> pokazuje pełny obraz, pogrupowany po parkingu, więc sytuację czytasz oddział po oddziale.</p>
       <figure>
