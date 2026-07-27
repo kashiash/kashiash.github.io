@@ -119,6 +119,38 @@
         <img src="img/03-detal.png" alt="Nagłówek faktury sprzedaży z rodzajem faktury, numerem, datami, sprzedawcą, nabywcą, płatnikiem i sposobem płatności">
         <figcaption>Nagłówek faktury — rodzaj, numer, daty oraz strony transakcji i sposób płatności.</figcaption>
       </figure>
+      <p>Kartę faktury dzielą trzy zakładki. Na zakładce <span class="ui">Podstawowe</span> opisujesz dokument i strony transakcji. Zakładka <span class="ui">KSeF</span> zbiera dane wysyłki do Krajowego Systemu e-Faktur, a <span class="ui">Techniczne</span> — dane systemowe dokumentu.</p>
+      <p>Pola zakładki <span class="ui">Podstawowe</span>:</p>
+      <dl class="fields">
+        <div><dt>Rodzaj faktury</dt><dd>Typ dokumentu ze słownika, na przykład <span class="ui">Sprzedaż zwykła</span>. Sterują nim reguły numeracji i sposób księgowania.</dd></div>
+        <div><dt>Numer</dt><dd>Numer dokumentu. Aplikacja nadaje go z rejestru numeracji przy zapisie.</dd></div>
+        <div><dt>Data wystawienia</dt><dd>Dzień wystawienia faktury. Od niej liczy się termin płatności.</dd></div>
+        <div><dt>Data sprzedaży</dt><dd>Dzień wykonania usługi lub wydania towaru. Potrafi różnić się od daty wystawienia.</dd></div>
+        <div><dt>Termin płatności</dt><dd>Dzień, do którego nabywca ma zapłacić. Aplikacja wylicza go z warunków płatności, ale możesz go zmienić.</dd></div>
+        <div><dt>Sposób płatności</dt><dd>Forma zapłaty ze słownika, na przykład <span class="ui">Przelew</span> albo <span class="ui">Gotówka</span>.</dd></div>
+        <div><dt>Konto do zapłaty</dt><dd>Rachunek bankowy, który wydrukuje się na fakturze. Wybierasz go z kont firmy.</dd></div>
+        <div><dt>Rabat handlowy (%)</dt><dd>Rabat obejmujący cały dokument. Aplikacja rozłoży go na wszystkie pozycje.</dd></div>
+        <div><dt>Sprzedawca</dt><dd>Twoja firma. Aplikacja podstawia ją z ustawień, ale w grupie kapitałowej wybierzesz właściwą spółkę.</dd></div>
+        <div><dt>Nabywca</dt><dd>Kontrahent, dla którego wystawiasz fakturę. Pole wymagane.</dd></div>
+        <div><dt>Płatnik</dt><dd>Podmiot, który płaci. Zwykle jest to nabywca, ale przy refakturze bywa ktoś inny.</dd></div>
+        <div><dt>Uwagi</dt><dd>Dodatkowa treść drukowana na fakturze, na przykład <span class="ui">Najem długoterminowy</span>.</dd></div>
+      </dl>
+      <p>Pola sekcji <span class="ui">Podsumowanie</span> pod pozycjami aplikacja wylicza sama:</p>
+      <dl class="fields">
+        <div><dt>Kwota netto, Kwota VAT, Kwota brutto</dt><dd>Sumy wszystkich pozycji faktury.</dd></div>
+        <div><dt>Kwota rozliczona</dt><dd>Suma wpłat powiązanych z tą fakturą.</dd></div>
+        <div><dt>Pozostało do zapłaty</dt><dd>Różnica między kwotą brutto a kwotą rozliczoną. Po zapłacie całości pokaże zero.</dd></div>
+      </dl>
+      <p>Pozostałe zakładki karty:</p>
+      <dl class="fields">
+        <div><dt>Pozycje</dt><dd>Wiersze faktury. Licznik w nazwie zakładki podaje ich liczbę.</dd></div>
+        <div><dt>Należności</dt><dd>Zapis rozrachunku powstały z tej faktury. Stąd widzisz, czy dokument jest zapłacony.</dd></div>
+        <div><dt>Rozrachunki</dt><dd>Powiązania wpłat z fakturą.</dd></div>
+        <div><dt>Wiadomości, Wezwania</dt><dd>Korespondencja z nabywcą i wezwania do zapłaty wysłane do tego dokumentu.</dd></div>
+        <div><dt>Tagi</dt><dd>Własne znaczniki do filtrowania faktur.</dd></div>
+      </dl>
+      <div class="callout tip"><strong>Wskazówka:</strong> akcja <span class="ui">Wystaw korektę</span> na górnym pasku tworzy korektę do otwartej faktury. Opisujemy ją w rozdziale <a href="/datadrive/korekty/">Korekty sprzedaży</a>.</div>
+
       <p>Aby założyć fakturę, wykonaj następujące kroki:</p>
       <ol class="steps">
         <li>Na liście faktur kliknij <span class="ui">Nowy</span>.</li>

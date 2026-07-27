@@ -102,6 +102,39 @@
         <figcaption>Szczegóły transakcji — u góry wymiary do analizy, niżej wspólne dane zakupu.</figcaption>
       </figure>
 
+      <p>Pola zakładki <span class="ui">Dane transakcji</span> dzielą się na trzy grupy. Pierwsza to wymiary, po których analizujesz koszt. Druga opisuje sam zakup. Trzecia pokazuje dane techniczne importu.</p>
+      <p>Wymiary do analizy:</p>
+      <dl class="fields">
+        <div><dt>Kierowca</dt><dd>Osoba, która miała wydaną kartę w dniu transakcji. Aplikacja ustala ją z wydań kart.</dd></div>
+        <div><dt>Oddział</dt><dd>Jednostka wynikająca z działu kierowcy.</dd></div>
+        <div><dt>MPK</dt><dd>Centrum kosztowe transakcji. Pochodzi z pojazdu, a gdy pojazd go nie ma — z karty paliwowej.</dd></div>
+        <div><dt>Grupa produktu</dt><dd>Grupa produktu ujednoliconego, na przykład paliwa. Pozwala porównywać zakupy różnych dostawców.</dd></div>
+      </dl>
+      <p>Dane zakupu:</p>
+      <dl class="fields">
+        <div><dt>Data transakcji</dt><dd>Dzień i godzina tankowania z pliku dostawcy.</dd></div>
+        <div><dt>Pojazd</dt><dd>Samochód rozpoznany po numerze rejestracyjnym. Gdy pole jest puste, wskaż pojazd ręcznie.</dd></div>
+        <div><dt>Stacja</dt><dd>Punkt sprzedaży, na którym doszło do zakupu.</dd></div>
+        <div><dt>Produkt</dt><dd>Nazwa produktu tak, jak zapisał ją dostawca, na przykład <span class="ui">EFECTA</span>.</dd></div>
+        <div><dt>Produkt ujednolicony</dt><dd>Wspólna nazwa używana w raportach. Łączy różne nazwy dostawców w jedną pozycję.</dd></div>
+        <div><dt>Ilość, Jednostka</dt><dd>Kupiona ilość i jej miara, najczęściej litry.</dd></div>
+        <div><dt>Cena jednostkowa netto</dt><dd>Cena za jednostkę z dokumentu dostawcy.</dd></div>
+        <div><dt>Wartość netto, VAT, Wartość brutto</dt><dd>Kwoty transakcji. To one trafiają do analiz kosztowych.</dd></div>
+        <div><dt>Dostawca, Waluta</dt><dd>Wystawca danych oraz waluta rozliczenia.</dd></div>
+        <div><dt>Karta</dt><dd>Numer karty paliwowej użytej przy zakupie.</dd></div>
+        <div><dt>Faktura, Pozycja faktury</dt><dd>Powiązanie z fakturą kosztową dostawcy. Puste pola oznaczają, że faktura jeszcze nie przyszła.</dd></div>
+        <div><dt>Przebieg (raw)</dt><dd>Stan licznika podany przez kierowcę na terminalu. Bywa błędny, dlatego aplikacja trzyma go osobno.</dd></div>
+        <div><dt>Storno</dt><dd>Znacznik transakcji wycofanej przez dostawcę.</dd></div>
+        <div><dt>Zakup w weekend</dt><dd>Aplikacja zaznacza go automatycznie. Ułatwia kontrolę tankowań poza dniami pracy.</dd></div>
+      </dl>
+      <p>Dane techniczne importu:</p>
+      <dl class="fields">
+        <div><dt>Numer transakcji, Numer karty (raw), Nr rejestracyjny (raw)</dt><dd>Wartości dokładnie w takiej postaci, w jakiej przyszły z pliku. Służą do wyjaśniania rozbieżności.</dd></div>
+        <div><dt>Batch importu</dt><dd>Paczka, w której transakcja trafiła do systemu. Po niej cofniesz cały import.</dd></div>
+        <div><dt>Ostrzeżenie, Opis ostrzeżenia</dt><dd>Znacznik i treść uwagi zgłoszonej przez import, na przykład o nierozpoznanym pojeździe.</dd></div>
+      </dl>
+      <div class="callout tip"><strong>Wskazówka:</strong> zakładka <span class="ui">Dane dostawcy</span> pokazuje pola typowe dla UTA, BP albo Orlen. Zajrzyj tam, gdy chcesz porównać zapis w naszym systemie z oryginalnym plikiem.</div>
+
       <h2 id="wymiary">Przypisywanie wymiarów kosztowych</h2>
       <p>DataDrive wylicza część wymiarów z powiązanych kartotek. Dzięki temu nie musisz wpisywać oddziału i MPK osobno w tysiącach transakcji.</p>
       <dl class="fields">
@@ -340,6 +373,19 @@
         <div><dt>Kategoria</dt><dd>Rodzaj kosztu części, na przykład <span class="ui">Opony</span> albo <span class="ui">Sprzęt komputerowy</span>.</dd></div>
         <div><dt>Pojazd (nr rej./VIN), Wymiar 2, Wymiar 3, Wymiar 4</dt><dd>Wymiary analityczne przeniesione z pozycji źródłowej. Możesz je zmienić osobno dla każdej części.</dd></div>
       </dl>
+      <p>Kwoty poprawiasz wprost w siatce. Wymiary każdej części ustawiasz w osobnym oknie, które otwierasz dwuklikiem w wiersz.</p>
+      <figure>
+        <img src="img/14-wiersz-rozpisania.png" alt="Okno Pozycja rozpisania kosztu z polami Lp., Opis, Ilość, kwotami oraz polami Dział, MPK, Kategoria i wymiarami">
+        <figcaption>Okno pojedynczej części — po lewej kwoty, po prawej wymiary. To jedyne miejsce, w którym nadasz pozycji kosztowej własny <span class="ui">Dział</span> i <span class="ui">MPK</span>.</figcaption>
+      </figure>
+      <dl class="fields">
+        <div><dt>Dział</dt><dd>Jednostka organizacyjna obciążana tą częścią kosztu. Wybierasz ją ze struktury firmy.</dd></div>
+        <div><dt>MPK</dt><dd>Centrum kosztowe części. Puste pole oznacza, że raport użyje MPK pojazdu albo nagłówka faktury.</dd></div>
+        <div><dt>Kategoria</dt><dd>Rodzaj kosztu tej części. Domyślnie dziedziczy się z pozycji źródłowej.</dd></div>
+        <div><dt>Pojazd, Pojazd (nr rej./VIN), Wymiar 2, Wymiar 3, Wymiar 4</dt><dd>Pozostałe wymiary analityczne. Zmień je, gdy część ma trafić na inny samochód albo projekt.</dd></div>
+      </dl>
+      <p>Po kliknięciu <span class="ui">OK</span> wracasz do siatki, a zmienione wymiary widać w wierszu.</p>
+
       <p>Aby dokończyć rozpisanie, wykonaj następujące kroki:</p>
       <ol class="steps">
         <li>Popraw <span class="ui">Ilość</span> i kwoty w wierszach, jeśli podział ma być inny niż równy.</li>
@@ -356,7 +402,7 @@
         <figcaption>Po zapisaniu podziału licznik pozycji wzrósł z 48 do 51. Pod pozycją źródłową (3&nbsp;250,00 zł) stoją trzy części: 1&nbsp;083,33 zł, 1&nbsp;083,33 zł i 1&nbsp;083,34 zł.</figcaption>
       </figure>
       <p>Koszt zostanie rozpisany na części, a każda z nich trafi do analiz z własnym pojazdem, działem i MPK.</p>
-      <div class="callout note"><strong>Uwaga:</strong> pozycja źródłowa pozostaje na liście jako wiersz kontrolny. Analizy kosztowe liczą pozycje wynikowe, więc kwota faktury nie podwaja się w raportach.</div>
+      <div class="callout note"><strong>Uwaga:</strong> pozycja źródłowa pozostaje na liście jako wiersz kontrolny, ale <strong>nie wchodzi do sumy dokumentu</strong> — nagłówek faktury liczy tylko części. Dzięki temu kwota faktury nie podwaja się po rozpisaniu. Na samej liście <span class="ui">Koszty szczegółowo</span> widzisz zarówno pozycję źródłową, jak i jej części, więc przy własnych zestawieniach odfiltruj jedne albo drugie.</div>
 
       <div class="pager">
         <a href="/datadrive/korekty/" class="prev"><div class="lbl">‹ Poprzedni</div><div class="ttl">Korekty sprzedaży</div></a>

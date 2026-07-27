@@ -106,6 +106,23 @@
         <img src="img/05-detal.png" alt="Karta korekty KOR/2026/07/000002 z pozycjami Przed korektą i Po korekcie oraz ujemnymi różnicami dla trzech skorygowanych pozycji i podsumowaniem minus 1590 zł netto">
         <figcaption>Dokument korekty częściowej — trzy skorygowane pozycje z ujemnymi różnicami (−150, −480 i −960 zł netto), pozostałe bez zmian, podsumowanie −1 590,00 zł netto.</figcaption>
       </figure>
+      <dl class="fields">
+        <div><dt>Opis</dt><dd>Nazwa pozycji przepisana z faktury pierwotnej. Powtarza się w obu wierszach pary.</dd></div>
+        <div><dt>Rodzaj pozycji</dt><dd>Odróżnia stan pierwotny od zmiany. <span class="ui">Przed korektą</span> to wartość z faktury, <span class="ui">Po korekcie</span> to różnica.</dd></div>
+        <div><dt>Lp.</dt><dd>Numer pozycji z faktury pierwotnej. Dzięki niemu widzisz, której pozycji dotyczy para wierszy.</dd></div>
+        <div><dt>Ilość</dt><dd>Liczba sztuk. W wierszu <span class="ui">Po korekcie</span> wartość ujemna oznacza zmniejszenie ilości.</dd></div>
+        <div><dt>Cena jedn. netto, Cena jedn. brutto</dt><dd>Ceny jednostkowe. Wartość ujemna w wierszu korekty oznacza obniżkę ceny.</dd></div>
+        <div><dt>Stawka VAT</dt><dd>Stawka podatku pozycji. Korekta nie zmienia stawki z faktury pierwotnej.</dd></div>
+        <div><dt>Rabat (%), Rabat (kwota)</dt><dd>Rabat pozycji, jeśli faktura pierwotna go zawierała.</dd></div>
+        <div><dt>Wartość netto, Kwota VAT, Wartość brutto</dt><dd>Kwoty pozycji. Aplikacja wylicza je z ilości i ceny.</dd></div>
+      </dl>
+      <p>Pola sekcji <span class="ui">Podsumowanie</span> aplikacja wylicza z wierszy <span class="ui">Po korekcie</span>:</p>
+      <dl class="fields">
+        <div><dt>Kwota netto, Kwota VAT, Kwota brutto</dt><dd>Łączna wartość korekty. Kwoty ujemne oznaczają zmniejszenie należności.</dd></div>
+        <div><dt>Kwota rozliczona</dt><dd>Część korekty rozliczona z wpłatami albo z innym dokumentem.</dd></div>
+        <div><dt>Pozostało do zapłaty</dt><dd>Kwota do zwrotu nabywcy, gdy korekta zmniejsza wartość sprzedaży.</dd></div>
+      </dl>
+      <div class="callout note"><strong>Uwaga:</strong> pozycje niezmienione też mają parę wierszy, ale wiersz <span class="ui">Po korekcie</span> ma w nich <strong>zera</strong>. Nie kasuj ich — dokument korekty musi odwzorować całą fakturę pierwotną.</div>
       <p>Na przykładzie korekta zmniejsza liczbę dób najmu, wycofuje wymianę opon i obniża stawkę assistance — pozostałe pozycje faktury zostają nietknięte, dlatego mają różnicę zerową.</p>
 
       <h2 id="lista">Lista korekt</h2>

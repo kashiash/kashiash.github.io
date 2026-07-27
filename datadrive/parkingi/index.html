@@ -79,6 +79,35 @@
         <img src="img/02-parking-detail.png" alt="Karta parkingu z paskiem podsumowania i zakładką Strefy pokazującą Strefę A">
         <figcaption>Karta parkingu „Parking Zarządu" otwarta na zakładce Strefy — jedna strefa, siatka 1 rząd na 3 miejsca.</figcaption>
       </figure>
+      <p>Górny pasek karty parkingu podaje liczniki, które aplikacja wylicza z miejsc:</p>
+      <dl class="fields">
+        <div><dt>Miejsca razem</dt><dd>Liczba wszystkich stanowisk założonych na parkingu.</dd></div>
+        <div><dt>Wolne, Zajęte</dt><dd>Podział miejsc według bieżących przydziałów.</dd></div>
+        <div><dt>Wyłączone</dt><dd>Miejsca czasowo niedostępne, na przykład zajęte przez remont.</dd></div>
+        <div><dt>Wykorzystanie</dt><dd>Udział miejsc zajętych we wszystkich stanowiskach, podany w procentach.</dd></div>
+      </dl>
+      <p>Pola opisujące sam parking:</p>
+      <dl class="fields">
+        <div><dt>Nazwa</dt><dd>Nazwa parkingu widoczna na listach i w kalendarzu. Pole wymagane.</dd></div>
+        <div><dt>Delegatura</dt><dd>Oddział firmy, do którego parking należy. Pole wymagane — po nim filtrujesz parkingi w dużej organizacji.</dd></div>
+        <div><dt>Etap definicji</dt><dd><span class="ui">Szkic</span> oznacza parking w trakcie opisywania. Akcja <span class="ui">Zatwierdź definicję parkingu</span> zamyka etap i chroni siatkę przed przypadkową zmianą.</dd></div>
+        <div><dt>Aktywny</dt><dd>Odznacz, gdy parking wychodzi z użycia. Historia przydziałów zostaje.</dd></div>
+      </dl>
+      <p>Zakładki karty parkingu:</p>
+      <dl class="fields">
+        <div><dt>Strefy</dt><dd>Siatki, z których powstają miejsca. Licznik przy nazwie podaje liczbę stref.</dd></div>
+        <div><dt>Miejsca</dt><dd>Stanowiska tego parkingu. Ten sam zestaw danych znajdziesz na liście <span class="ui">Miejsca parkingowe</span>.</dd></div>
+        <div><dt>Plany</dt><dd>Rysunki parkingu, na których rozstawiasz punkty stanowisk.</dd></div>
+        <div><dt>Szczegóły</dt><dd>Dane uzupełniające, na przykład adres i opis dojazdu.</dd></div>
+      </dl>
+      <p>Kolumny siatki stref:</p>
+      <dl class="fields">
+        <div><dt>Symbol, Nazwa</dt><dd>Oznaczenie strefy, na przykład <span class="ui">A</span> i <span class="ui">Strefa A</span>. Symbol trafia do oznaczeń miejsc.</dd></div>
+        <div><dt>Rzędów, Miejsc w rzędzie</dt><dd>Wymiary siatki. Z ich iloczynu powstaje liczba stanowisk.</dd></div>
+        <div><dt>Wg siatki</dt><dd>Ile miejsc powinno powstać z podanych wymiarów.</dd></div>
+        <div><dt>Założonych</dt><dd>Ile miejsc realnie już istnieje. Różnica względem kolumny <span class="ui">Wg siatki</span> oznacza, że siatki jeszcze nie rozpisano do końca.</dd></div>
+        <div><dt>Plan, Aktywna</dt><dd>Powiązanie strefy z planem graficznym oraz znacznik, czy strefa jest w użyciu.</dd></div>
+      </dl>
       <p>Strefa opisuje siatkę: ile rzędów, ile miejsc w rzędzie i ile miejsc realnie z niej powstało (kolumna <span class="ui">Założonych</span>). Zamiast klepać stanowiska pojedynczo, tworzysz je z siatki jednym poleceniem.</p>
       <p>Aby założyć miejsca dla strefy, wykonaj następujące kroki:</p>
       <ol class="steps">
@@ -173,6 +202,28 @@
         <img src="img/08-karta-detal.png" alt="Karta dostępu z akcjami Zmień właściciela i Wydaj kartę oraz zakładkami Parkingi, Historia właścicieli, Historia operacji">
         <figcaption>Karta „KP-1001" — akcje wydania u góry oraz zakładki z parkingami, historią właścicieli i historią operacji.</figcaption>
       </figure>
+      <dl class="fields">
+        <div><dt>Numer karty</dt><dd>Oznaczenie nadrukowane na karcie, na przykład <span class="ui">KP-1001</span>. Pole wymagane i niepowtarzalne.</dd></div>
+        <div><dt>Typ karty</dt><dd>Technologia nośnika, na przykład <span class="ui">Zbliżeniowa</span>. Ułatwia dobranie czytnika.</dd></div>
+        <div><dt>Status</dt><dd>Stan karty: <span class="ui">Aktywna</span>, zablokowana, zgłoszona jako utracona albo unieważniona. Zmieniasz go akcjami z górnego paska, nie ręcznie.</dd></div>
+        <div><dt>Data wydania</dt><dd>Dzień przekazania karty pracownikowi. Bez niej karta nie stanie się aktywna.</dd></div>
+        <div><dt>Ważna do</dt><dd>Ostatni dzień ważności. Aplikacja podświetla go na pomarańczowo, gdy termin mija w ciągu miesiąca.</dd></div>
+        <div><dt>Bieżący właściciel</dt><dd>Osoba, która ma kartę dzisiaj. Aplikacja ustala ją z historii właścicieli.</dd></div>
+      </dl>
+      <p>Zakładki karty:</p>
+      <dl class="fields">
+        <div><dt>Parkingi</dt><dd>Obiekty, na które karta otwiera wjazd. Licznik przy nazwie podaje ich liczbę.</dd></div>
+        <div><dt>Historia właścicieli</dt><dd>Kolejne osoby, które miały tę kartę. Wiersz bez daty <span class="ui">Do</span> to właściciel bieżący.</dd></div>
+        <div><dt>Historia operacji</dt><dd>Zapis akcji wykonanych na karcie: wydania, blokady, zgłoszenia utraty i unieważnienia.</dd></div>
+      </dl>
+      <p>Akcje na górnym pasku:</p>
+      <dl class="fields">
+        <div><dt>Zmień właściciela</dt><dd>Zamyka bieżący wpis w historii właścicieli i otwiera nowy dla wskazanej osoby.</dd></div>
+        <div><dt>Wydaj kartę</dt><dd>Ustawia datę wydania i uaktywnia kartę.</dd></div>
+        <div><dt>Zablokuj, Odblokuj</dt><dd>Czasowo wstrzymuje i przywraca dostęp, na przykład na czas urlopu.</dd></div>
+        <div><dt>Zgłoś utratę</dt><dd>Oznacza kartę jako zgubioną. Dostęp przestaje działać od razu.</dd></div>
+        <div><dt>Unieważnij</dt><dd>Wycofuje kartę z użycia na stałe.</dd></div>
+      </dl>
       <div class="callout note"><strong>Zanim zaczniesz:</strong> karta stanie się aktywna dopiero, gdy ma właściciela, datę wydania i co najmniej jeden parking. Przygotuj te trzy rzeczy.</div>
       <p>Aby wydać kartę, wykonaj następujące kroki:</p>
       <ol class="steps">

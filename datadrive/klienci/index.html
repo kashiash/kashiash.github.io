@@ -188,6 +188,18 @@
         <img src="img/07-dodaj-telefon.png" alt="Okno Telefon dla nowego zdarzenia w historii kontaktu, z polami Data rejestracji zdarzenia, Status rozmowy, Właściciel, Osoba kontaktowa, Numer telefonu, Czas trwania, Tytuł i Treść">
         <figcaption>Okno rejestracji rozmowy telefonicznej — numer telefonu i czas trwania obok wspólnych pól zdarzenia.</figcaption>
       </figure>
+      <dl class="fields">
+        <div><dt>Data rejestracji zdarzenia</dt><dd>Kiedy rozmowa się odbyła. Aplikacja podstawia bieżącą datę i godzinę, ale możesz je poprawić.</dd></div>
+        <div><dt>Status rozmowy</dt><dd>Etap obsługi zdarzenia, na starcie <span class="ui">Utworzony</span>.</dd></div>
+        <div><dt>Zakończone</dt><dd>Zaznacz, gdy sprawa z tej rozmowy jest domknięta i nie wymaga dalszych działań.</dd></div>
+        <div><dt>Właściciel</dt><dd>Pracownik odpowiedzialny za kontakt. Aplikacja wpisuje osobę zalogowaną.</dd></div>
+        <div><dt>Osoba kontaktowa</dt><dd>Rozmówca po stronie klienta. Wybierasz go spośród osób kontaktowych tego klienta.</dd></div>
+        <div><dt>Numer telefonu</dt><dd>Numer, pod którym odbyła się rozmowa. Pole wymagane.</dd></div>
+        <div><dt>Czas trwania (min)</dt><dd>Długość rozmowy w minutach. Przydaje się przy rozliczaniu obsługi klienta.</dd></div>
+        <div><dt>Tytuł</dt><dd>Krótkie podsumowanie tematu, na przykład <span class="ui">Rozmowa o warunkach kontraktu</span>. To ono pokazuje się na liście historii.</dd></div>
+        <div><dt>Treść</dt><dd>Notatka z rozmowy w edytorze tekstu sformatowanego. Możesz wypunktować ustalenia i wkleić tabelę.</dd></div>
+      </dl>
+      <div class="callout tip"><strong>Wskazówka:</strong> zakładka <span class="ui">Informacje</span> w tym oknie zbiera dane techniczne zdarzenia. Przy zwykłej rejestracji rozmowy nie musisz jej otwierać.</div>
       <p>Zdarzenie pojawi się na liście z odpowiednim rodzajem, a data trafi do pola <span class="ui">Ostatni kontakt</span>.</p>
       <div class="callout note"><strong>Uwaga:</strong> zaznacz <span class="ui">Zakończone</span> na zdarzeniu, którego sprawa jest już domknięta. Zaplanowane telefony i spotkania zostaw niezakończone, aby wracały jako przypomnienie.</div>
 
@@ -197,6 +209,15 @@
         <img src="img/03-dane-gus.png" alt="Zakładka Dane z GUS na karcie klienta z nazwą, numerami NIP i REGON, adresem oraz datą pobrania danych">
         <figcaption>Zakładka Dane z GUS — komplet danych rejestrowych z datą pobrania z rejestru.</figcaption>
       </figure>
+      <dl class="fields">
+        <div><dt>Organizacja, Nazwa</dt><dd>Pełna nazwa firmy z rejestru REGON. Aplikacja przepisuje ją dokładnie tak, jak zapisał ją GUS.</dd></div>
+        <div><dt>NIP, REGON, KRS</dt><dd>Numery identyfikacyjne pobrane z rejestru. Pusty KRS oznacza, że podmiot nie podlega wpisowi do Krajowego Rejestru Sądowego.</dd></div>
+        <div><dt>Telefon</dt><dd>Numer zgłoszony do rejestru. Bywa pusty, bo nie każda firma go podaje.</dd></div>
+        <div><dt>Województwo, Powiat, Gmina, Miejscowość</dt><dd>Adres administracyjny siedziby z rejestru.</dd></div>
+        <div><dt>Kod pocztowy, Ulica, Nr nieruchomości, Nr lokalu</dt><dd>Adres pocztowy siedziby. Aplikacja rozbija go na osobne pola, dzięki czemu da się po nich filtrować.</dd></div>
+        <div><dt>Data pobrania z GUS</dt><dd>Kiedy dane zostały pobrane. Po tej dacie poznasz, czy warto odświeżyć wpis akcją <span class="ui">Wczytaj z GUS</span>.</dd></div>
+      </dl>
+      <div class="callout note"><strong>Uwaga:</strong> dane na tej zakładce są <strong>kopią wpisu rejestrowego</strong>, a nie danymi roboczymi klienta. Adresy do faktur i korespondencji prowadzisz na zakładce <span class="ui">Adresy</span>.</div>
       <p>Aby wczytać dane z GUS, wykonaj następujące kroki:</p>
       <ol class="steps">
         <li>Na karcie klienta wpisz numer <span class="ui">NIP</span> bez myślników.</li>
