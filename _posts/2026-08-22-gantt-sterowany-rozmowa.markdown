@@ -6,6 +6,8 @@ date: 2026-08-22
 categories: blazor syncfusion ai
 ---
 
+![Ekran: czat u góry, wykres Gantta pod spodem](/assets/images/gantt-rozmowa-uklad.png)
+
 Chciałem sprawdzić, czy da się pisać do harmonogramu robót po polsku. „Przesuń wylewkę o trzy dni", „dodaj próbę szczelności po przewiertach" — i żeby wykres sam się przestawił. Da się. Tylko nie tak, jak podpowiada pierwsza myśl.
 
 Pierwsza myśl to podłączyć modelowi tool calling i pozwolić mu wołać `AddTask`, `UpdateTask`, `ShiftTask`. Odradzam. Harmonogram budowy to nie notatnik — polecenie „przesuń wszystko o tydzień" dotyka kilkudziesięciu pozycji naraz, a cofnięcia nie ma. Model, który sam wykonuje operacje, jest o jedną halucynację od zaorania planu robót.
@@ -199,6 +201,14 @@ case "przesun":
 
 Zwróć uwagę, że użytkownik widzi w podglądzie **prawdę o mechanizmie**: „zależność 6FS → 6FS+3", a nie zmyśloną datę. Jeśli operacja polega na czym innym, niż się wydaje, podgląd ma o tym mówić.
 
+![Panel propozycji: zależność 6FS → 6FS+3](/assets/images/gantt-rozmowa-propozycja.png)
+
+*Propozycja przed zatwierdzeniem. Panel mówi wprost, co się zmieni — zależność, nie data.*
+
+![Wykres po zatwierdzeniu: wylewka na 28.08, w kolumnie zależności 6FS+3 days](/assets/images/gantt-rozmowa-po-zastosowaniu.png)
+
+*Po zatwierdzeniu. Wylewka stoi na 28.08, w kolumnie zależności widnieje `6FS+3 days`.*
+
 Sam zapis zależności ma więcej wariantów, niż widać na pierwszy rzut oka. Parser dostał osobny zestaw przypadków:
 
 | Wejście | Wynik | Dlaczego |
@@ -221,6 +231,18 @@ Sekwencja czterech poleceń pod rząd, każde zatwierdzone ręcznie:
 2. „Dodaj pod Instalacjami Przewierty przez ściany, 2 dni, po montażu opraw" → zadanie z `9FS`.
 3. „Dodaj pod Instalacjami Próbę szczelności, 1 dzień, po przewiertach" → zadanie z `14FS`.
 4. „Wydłuż przewierty o 2 dni" → przewierty 2 → 4 dni, próba szczelności sama przesuwa się o 2 dni, grupa nadrzędna rośnie z 7 na 9 dni.
+
+![Krok 2: zadanie „Przewierty przez ściany" wpięte pod Instalacje z zależnością 9FS](/assets/images/gantt-rozmowa-krok2.png)
+
+*Krok 2. Nowe zadanie wchodzi w środek łańcucha instalacji, z zależnością `9FS`.*
+
+![Krok 3: zadanie „Próba szczelności" z zależnością 14FS](/assets/images/gantt-rozmowa-krok3.png)
+
+*Krok 3. Próba szczelności zależy od przewiertów, czyli od zadania dodanego chwilę wcześniej. To dokładnie ten przypadek, który w pierwszej wersji ginął.*
+
+![Krok 4: po wydłużeniu przewiertów kaskada przesuwa próbę szczelności i rozciąga grupę](/assets/images/gantt-rozmowa-krok4.png)
+
+*Krok 4. Wydłużenie przewiertów o 2 dni. Próba szczelności przeskakuje na 3.09, grupa Instalacje rośnie z 7 na 9 dni — o żadnym z nich polecenie nie wspominało.*
 
 Ostatni krok jest tym, po co to wszystko. Polecenie nie wspomniało ani o próbie szczelności, ani o grupie nadrzędnej. Gantt policzył kaskadę sam, bo dostał poprawne dane — a dostał je, bo człowiek popatrzył na listę zmian i kliknął.
 
