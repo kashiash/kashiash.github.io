@@ -361,7 +361,7 @@ Przesu&#324; wylewk&#281; posadzki hali o 3 dni w przód.</pre>
         <p>Najcz&#281;stszy b&#322;&#261;d ma&#322;ego modelu. Bez tego wyzwalacza ko&#324;czy&#322;by jako pomini&#281;ta pozycja na li&#347;cie, a eskalacja nigdy by si&#281; nie odpali&#322;a.</p>
       </div>
     </div>
-    <p><strong>Wniosek szerszy ni&#380; ten POC:</strong> walidator, który nie widzi stanu aplikacji, przepuszcza dok&#322;adnie te b&#322;&#281;dy, dla których go napisa&#322;e&#347;. Sygnatura musi bra&#263; dane, nie sam tekst odpowiedzi.</p>
+    <p><strong>Walidator, który nie widzi stanu aplikacji, przepuszcza dok&#322;adnie te b&#322;&#281;dy, dla których go napisa&#322;e&#347;.</strong> Sygnatura musi bra&#263; dane, nie sam tekst odpowiedzi.</p>
   </section>
 
   <section>
@@ -369,7 +369,7 @@ Przesu&#324; wylewk&#281; posadzki hali o 3 dni w przód.</pre>
       <span class="label">Test na &#380;ywo &mdash; sekwencja A</span>
       <h2>Cztery polecenia pod rz&#261;d</h2>
     </div>
-    <p>Ka&#380;de wpisane do czatu dos&#322;ownie tak, jak w tabeli, i ka&#380;de zatwierdzone przyciskiem <strong>Zastosuj</strong>. Ostatni krok jest tym, po co ta sekwencja powsta&#322;a: zmiana jednego zadania poci&#261;gn&#281;&#322;a nast&#281;pnik i rozci&#261;gn&#281;&#322;a zadanie nadrz&#281;dne, cho&#263; polecenie nie wspomina&#322;o o &#380;adnym z nich.</p>
+    <p>Ka&#380;de wpisane do czatu dos&#322;ownie tak, jak w tabeli, i ka&#380;de zatwierdzone przyciskiem <strong>Zastosuj</strong>. W ostatnim kroku zmiana jednego zadania poci&#261;gn&#281;&#322;a nast&#281;pnik i rozci&#261;gn&#281;&#322;a zadanie nadrz&#281;dne, cho&#263; polecenie nie wspomina&#322;o o &#380;adnym z nich.</p>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Prompt wpisany do czatu</th><th>Wynik na wykresie</th></tr></thead>
@@ -524,7 +524,7 @@ private void ApplyPending()
       <li><span>Ka&#380;da zatwierdzona zmiana odtwarza komponent Gantta &mdash; drzewo si&#281; zwija, przewijanie wraca na pocz&#261;tek.</span></li>
       <li><span>Przesuni&#281;cie przez zale&#380;no&#347;&#263; obs&#322;uguje jednego poprzednika. Zadanie z kilkoma zale&#380;no&#347;ciami trafia na list&#281; jako pomini&#281;te, z podanym powodem.</span></li>
     </ul>
-    <p style="margin-top:0.6rem">Rzecz, któr&#261; zabieram dalej: <strong>czas poszed&#322; nie na model, tylko na komponent.</strong> Prompt dzia&#322;a&#322; od pierwszego podej&#347;cia. Ca&#322;a reszta zesz&#322;a na zrozumienie, kiedy <code>SfGantt</code> rysuje to, co ma w kolekcji, a kiedy co&#347; zupe&#322;nie innego. Je&#347;li budujesz podobn&#261; rzecz, planuj bud&#380;et odwrotnie, ni&#380; podpowiada intuicja.</p>
+    <p style="margin-top:0.6rem"><strong>Czas poszed&#322; nie na model, tylko na komponent.</strong> Prompt dzia&#322;a&#322; od pierwszego podej&#347;cia. Reszta zesz&#322;a na ustalenie, kiedy <code>SfGantt</code> rysuje to, co ma w kolekcji, a kiedy co&#347; innego.</p>
   </section>
 
   <footer>

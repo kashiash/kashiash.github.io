@@ -10,11 +10,11 @@ categories: blazor syncfusion ai
 
 > Pełna wersja — wszystkie prompty co do słowa, komplet zrzutów i tabele testów — jest na osobnej stronie: [Gantt sterowany rozmową, opis pełny](/gantt-ai.html).
 
-Chciałem sprawdzić, czy da się pisać do harmonogramu robót po polsku. „Przesuń wylewkę o trzy dni", „dodaj próbę szczelności po przewiertach" — i żeby wykres sam się przestawił. Da się. Tylko nie tak, jak podpowiada pierwsza myśl.
+Do harmonogramu robót da się pisać po polsku: „przesuń wylewkę o trzy dni", „dodaj próbę szczelności po przewiertach". Pytanie brzmi, kto wykonuje te operacje.
 
-Pierwsza myśl to podłączyć modelowi tool calling i pozwolić mu wołać `AddTask`, `UpdateTask`, `ShiftTask`. Odradzam. Harmonogram budowy to nie notatnik — polecenie „przesuń wszystko o tydzień" dotyka kilkudziesięciu pozycji naraz, a cofnięcia nie ma. Model, który sam wykonuje operacje, jest o jedną halucynację od zaorania planu robót.
+Narzucające się rozwiązanie to tool calling — model dostaje `AddTask`, `UpdateTask`, `ShiftTask` i woła je sam. Nie polecam. Polecenie „przesuń wszystko o tydzień" dotyka kilkudziesięciu pozycji naraz, a cofnięcia nie ma.
 
-Zbudowałem to inaczej: **model nie pisze po Gantcie, tylko proponuje**.
+U mnie **model nie pisze po Gantcie, tylko proponuje**.
 
 ## Cztery etapy, jeden punkt zatrzymania
 
@@ -54,7 +54,7 @@ case "zmien":
     break;
 ```
 
-Użytkownik czyta „Przewierty przez ściany: czas 2 → 4 dni", a nie „ok, zmieniłem". Różnica jest zasadnicza: pierwsze da się sprawdzić wzrokiem.
+Użytkownik czyta „Przewierty przez ściany: czas 2 → 4 dni", a nie „ok, zmieniłem". Pierwsze da się sprawdzić wzrokiem.
 
 ## Drabina modeli, czyli po co eskalacja
 
@@ -91,7 +91,7 @@ public async Task<Result> AskAsync(
 
 Oczywiste wyzwalacze to 429 i piątki — każdy model ma osobną pulę przepustowości, więc wyżej może się udać od razu. Do tego niepoprawny JSON i nieznana akcja.
 
-Czwarty wyzwalacz kosztował mnie najwięcej myślenia i jest najważniejszy: **model odwołał się do zadania, którego nie ma**.
+Czwarty jest najważniejszy: **model odwołał się do zadania, którego nie ma**.
 
 W pierwszej wersji walidator dostawał tylko surowy tekst odpowiedzi. Sprawdzał składnię i przepuszczał wszystko, co było poprawnym JSON-em. Efekt: model wymyślał numer zadania 47, walidacja przechodziła, eskalacja się nie odpalała, a użytkownik widział „pominięte: nie ma zadania 47". Najczęstszy błąd małego modelu był jednocześnie jedynym, który nie eskalował.
 
@@ -115,11 +115,11 @@ public static string? Validate(string raw, IReadOnlyCollection<GanttTask> tasks)
 }
 ```
 
-Wniosek szerszy niż ten POC: **walidator, który nie widzi stanu aplikacji, przepuszcza dokładnie te błędy, dla których go napisałeś.**
+**Walidator, który nie widzi stanu aplikacji, przepuszcza dokładnie te błędy, dla których go napisałeś.**
 
 ## Trzy pułapki SfGantt, które nie rzucają wyjątku
 
-Tu zaczyna się część, dla której warto było to zbudować. Wszystkie trzy błędy były ciche — bez wyjątku, bez wpisu w logu serwera, bez błędu w konsoli przeglądarki. Dokumentacja prowadzi wprost do dwóch pierwszych.
+Wszystkie trzy błędy były ciche: bez wyjątku, bez wpisu w logu serwera, bez błędu w konsoli przeglądarki. Dokumentacja prowadzi wprost do dwóch pierwszych.
 
 ### Znikające zadanie
 
@@ -137,7 +137,7 @@ Poleciłem wydłużyć przewierty o 2 dni. Panel podglądu pokazał poprawne „
 
 Powód: `AddRecordAsync()` trzyma **własną kopię rekordu**. Moja kolekcja i drzewo komponentu rozjechały się na tym jednym obiekcie. Podgląd czytał z kolekcji, więc pokazywał prawdę o danych — tyle że wykres rysował coś innego.
 
-To najgorszy wariant z możliwych: interfejs potwierdza zmianę, której nie widać.
+Interfejs potwierdzał zmianę, której nie widać.
 
 ### Co ostatecznie zadziałało
 
@@ -201,11 +201,11 @@ case "przesun":
     break;
 ```
 
-Zwróć uwagę, że użytkownik widzi w podglądzie **prawdę o mechanizmie**: „zależność 6FS → 6FS+3", a nie zmyśloną datę. Jeśli operacja polega na czym innym, niż się wydaje, podgląd ma o tym mówić.
+Podgląd pokazuje **prawdę o mechanizmie**: „zależność 6FS → 6FS+3", a nie zmyśloną datę.
 
 ![Panel propozycji: zależność 6FS → 6FS+3](/assets/images/gantt-rozmowa-propozycja.png)
 
-*Propozycja przed zatwierdzeniem. Panel mówi wprost, co się zmieni — zależność, nie data.*
+*Propozycja przed zatwierdzeniem: zmienia się zależność, nie data.*
 
 ![Wykres po zatwierdzeniu: wylewka na 28.08, w kolumnie zależności 6FS+3 days](/assets/images/gantt-rozmowa-po-zastosowaniu.png)
 
@@ -221,9 +221,9 @@ Sam zapis zależności ma więcej wariantów, niż widać na pierwszy rzut oka. 
 | `6FS,7FS` | `null` | wielu poprzedników — nie zgadujemy, do którego dopisać |
 | `6XX` | `null` | nieznany typ zależności |
 
-Gdy parser zwróci `null`, zmiana ląduje na liście jako pominięta, z podanym powodem. Nie ruszam zapisu, którego nie rozumiem — to jedyna uczciwa reakcja.
+Gdy parser zwróci `null`, zmiana ląduje na liście jako pominięta, z podanym powodem. Nie ruszam zapisu, którego nie rozumiem.
 
-Operacja jest symetryczna: „cofnij o 3 dni" sprowadza `6FS+3` z powrotem do `6FS`, a data wraca tam, gdzie była. Sprawdzone w obie strony.
+Operacja jest symetryczna: „cofnij o 3 dni" sprowadza `6FS+3` z powrotem do `6FS`, a data wraca tam, gdzie była.
 
 ## Co z tego wyszło
 
@@ -236,18 +236,18 @@ Sekwencja czterech poleceń pod rząd, każde zatwierdzone ręcznie:
 
 ![Krok 2: zadanie „Przewierty przez ściany" wpięte pod Instalacje z zależnością 9FS](/assets/images/gantt-rozmowa-krok2.png)
 
-*Krok 2. Nowe zadanie wchodzi w środek łańcucha instalacji, z zależnością `9FS`.*
+*Krok 2. Nowe zadanie w środku łańcucha instalacji.*
 
 ![Krok 3: zadanie „Próba szczelności" z zależnością 14FS](/assets/images/gantt-rozmowa-krok3.png)
 
-*Krok 3. Próba szczelności zależy od przewiertów, czyli od zadania dodanego chwilę wcześniej. To dokładnie ten przypadek, który w pierwszej wersji ginął.*
+*Krok 3. Próba szczelności zależy od zadania dodanego chwilę wcześniej — ten przypadek w pierwszej wersji ginął.*
 
 ![Krok 4: po wydłużeniu przewiertów kaskada przesuwa próbę szczelności i rozciąga grupę](/assets/images/gantt-rozmowa-krok4.png)
 
-*Krok 4. Wydłużenie przewiertów o 2 dni. Próba szczelności przeskakuje na 3.09, grupa Instalacje rośnie z 7 na 9 dni — o żadnym z nich polecenie nie wspominało.*
+*Krok 4. Po wydłużeniu przewiertów próba szczelności przeskakuje na 3.09, a grupa Instalacje rośnie z 7 na 9 dni.*
 
-Ostatni krok jest tym, po co to wszystko. Polecenie nie wspomniało ani o próbie szczelności, ani o grupie nadrzędnej. Gantt policzył kaskadę sam, bo dostał poprawne dane — a dostał je, bo człowiek popatrzył na listę zmian i kliknął.
+Czwarte polecenie nie wspomniało ani o próbie szczelności, ani o grupie nadrzędnej — Gantt policzył kaskadę sam, bo dostał poprawne dane.
 
-Najtańszy model z rodziny obsłużył wszystkie polecenia. Ani razu nie trzeba było eskalować. Co nie znaczy, że drabina jest zbędna — znaczy tylko, że na dwunastu zadaniach zadanie jest łatwe. Przy stu pozycjach i poleceniach w rodzaju „przesuń wszystko po odbiorze instalacji" spodziewam się innych wyników.
+Najtańszy model z rodziny obsłużył wszystkie polecenia, ani razu nie trzeba było eskalować. Na dwunastu zadaniach to łatwe zadanie. Przy stu pozycjach i poleceniach w rodzaju „przesuń wszystko po odbiorze instalacji" spodziewam się innych wyników.
 
-Rzecz, którą zabieram dalej: **czas poszedł nie na model, tylko na komponent**. Prompt działał od pierwszego podejścia. Trzy dni zeszły na zrozumienie, kiedy `SfGantt` rysuje to, co ma w kolekcji, a kiedy coś zupełnie innego. Jeśli budujesz podobną rzecz, planuj budżet odwrotnie, niż podpowiada intuicja.
+**Czas poszedł nie na model, tylko na komponent.** Prompt działał od pierwszego podejścia. Reszta zeszła na ustalenie, kiedy `SfGantt` rysuje to, co ma w kolekcji, a kiedy coś innego.
