@@ -8,6 +8,8 @@ categories: blazor syncfusion ai
 
 ![Ekran: czat u góry, wykres Gantta pod spodem](/assets/images/gantt-rozmowa-uklad.png)
 
+> Pełna wersja — wszystkie prompty co do słowa, komplet zrzutów i tabele testów — jest na osobnej stronie: [Gantt sterowany rozmową, opis pełny](/gantt-ai.html).
+
 Chciałem sprawdzić, czy da się pisać do harmonogramu robót po polsku. „Przesuń wylewkę o trzy dni", „dodaj próbę szczelności po przewiertach" — i żeby wykres sam się przestawił. Da się. Tylko nie tak, jak podpowiada pierwsza myśl.
 
 Pierwsza myśl to podłączyć modelowi tool calling i pozwolić mu wołać `AddTask`, `UpdateTask`, `ShiftTask`. Odradzam. Harmonogram budowy to nie notatnik — polecenie „przesuń wszystko o tydzień" dotyka kilkudziesięciu pozycji naraz, a cofnięcia nie ma. Model, który sam wykonuje operacje, jest o jedną halucynację od zaorania planu robót.

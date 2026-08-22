@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gantt sterowany rozmową — pełny opis POC | Jacek Placek</title>
+<meta name="description" content="Wykres Gantta w Syncfusion Blazor sterowany poleceniami po polsku. Pełne prompty, zrzuty ekranu, drabina modeli z eskalacją i trzy pułapki SfGantt, które nie rzucają wyjątku.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ink: #101A24; --ink-soft: #46586A; --ink-faint: #7E8FA0;
+    --ground: #E7ECEF; --surface: #FBFCFD; --surface-2: #F1F4F6;
+    --rule: #CBD5DC; --rule-soft: #DDE4E9;
+    --blueprint: #2C6E9B; --chalk: #B8860E; --chalk-w: #FAF1D8;
+    --alarm: #A03226; --alarm-w: #F8E7E4;
+    --good: #1F6B4F; --good-w: #E3F1EA;
+    --measure: 68ch;
+    --step--1: 0.815rem; --step-0: 1.02rem; --step-1: 1.28rem;
+    --step-2: 1.62rem; --step-4: 3.1rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #DEE6EC; --ink-soft: #9AACBB; --ink-faint: #6B7C8C;
+      --ground: #0D151D; --surface: #141F29; --surface-2: #1A2733;
+      --rule: #2C3B49; --rule-soft: #22303C;
+      --blueprint: #6BA9D4; --chalk: #E0B33F; --chalk-w: #2E2513;
+      --alarm: #E08278; --alarm-w: #331A17;
+      --good: #6FC49C; --good-w: #12281F;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    font-size: var(--step-0); line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .site-header {
+    border-bottom: 1px solid var(--rule); background: var(--surface);
+  }
+  .site-header-inner {
+    max-width: 1080px; margin: 0 auto;
+    padding: 0.9rem clamp(1.1rem, 4vw, 2.5rem);
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; color: inherit; }
+  .brand-mark {
+    width: 30px; height: 30px; display: grid; place-items: center;
+    background: var(--ink); color: var(--ground);
+    font-family: Archivo, sans-serif; font-weight: 700; font-size: 0.72rem; letter-spacing: 0.03em;
+  }
+  .brand-title { font-family: Archivo, sans-serif; font-weight: 600; font-size: 0.92rem; }
+  .site-nav { display: flex; gap: 1.1rem; font-family: Archivo, sans-serif; font-size: 0.84rem; }
+
+  .page {
+    max-width: 1080px; margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1.1rem, 4vw, 2.5rem) 5rem;
+    display: flex; flex-direction: column; gap: clamp(2.4rem, 5vw, 3.6rem);
+  }
+
+  h1, h2, h3, .label, .chip, .rung-name, th { font-family: Archivo, "Helvetica Neue", Arial, sans-serif; }
+  h1 { font-size: var(--step-4); font-weight: 700; line-height: 1.04; letter-spacing: -0.022em; text-wrap: balance; margin: 0; }
+  h2 { font-size: var(--step-2); font-weight: 600; letter-spacing: -0.012em; line-height: 1.2; text-wrap: balance; margin: 0; }
+  h3 { font-size: var(--step-0); font-weight: 600; margin: 0; }
+
+  p { margin: 0; max-width: var(--measure); }
+  strong { font-weight: 600; }
+
+  .label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.13em; text-transform: uppercase; color: var(--blueprint); }
+
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.87em; }
+  code { background: var(--surface-2); border: 1px solid var(--rule-soft); border-radius: 3px; padding: 0.08em 0.36em; }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.9rem; padding-bottom: 1.6rem; border-bottom: 2px solid var(--ink); }
+  .deck { font-size: var(--step-1); line-height: 1.5; color: var(--ink-soft); max-width: 60ch; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.2rem; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 0.34rem 0.7rem; border: 1px solid var(--rule); background: var(--surface); color: var(--ink-soft);
+  }
+  .chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--blueprint); }
+  .chip.open::before { background: var(--ink-faint); }
+
+  section { display: flex; flex-direction: column; gap: 1.15rem; }
+  .sec-head { display: flex; flex-direction: column; gap: 0.35rem; }
+
+  .thesis {
+    background: var(--surface); border: 1px solid var(--rule); border-left: 4px solid var(--chalk);
+    padding: clamp(1.2rem, 3vw, 1.9rem); display: flex; flex-direction: column; gap: 0.8rem;
+  }
+  .thesis p:first-of-type { font-size: var(--step-1); line-height: 1.45; font-weight: 600; }
+
+  .shot { margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+  .shot img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); background: var(--surface); }
+  .shot figcaption { font-size: var(--step--1); color: var(--ink-soft); line-height: 1.5; }
+  .shot figcaption b { color: var(--ink); font-weight: 600; }
+  .shot-pair { display: grid; gap: 1.3rem; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); }
+
+  .ladder { display: flex; flex-direction: column; }
+  .rung {
+    display: grid; grid-template-columns: 6.5rem 1fr; gap: 1.2rem; align-items: baseline;
+    padding: 0.95rem 1.15rem; background: var(--surface); border: 1px solid var(--rule); border-bottom: none;
+  }
+  .rung:last-child { border-bottom: 1px solid var(--rule); }
+  .rung.default { background: var(--chalk-w); border-left: 4px solid var(--chalk); padding-left: calc(1.15rem - 3px); }
+  .rung-tier { font-family: "IBM Plex Mono", monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); }
+  .rung.default .rung-tier { color: var(--chalk); font-weight: 500; }
+  .rung-name { font-size: var(--step-0); font-weight: 600; }
+  .rung-note { color: var(--ink-soft); font-size: var(--step--1); display: block; margin-top: 0.15rem; }
+
+  .triggers { display: grid; gap: 0.7rem; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .trigger { background: var(--surface); border: 1px solid var(--rule); padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.28rem; }
+  .trigger .mono { font-size: 0.72rem; color: var(--blueprint); }
+  .trigger p { font-size: var(--step--1); line-height: 1.5; color: var(--ink-soft); }
+  .trigger.key { border-color: var(--chalk); background: var(--chalk-w); }
+  .trigger.key .mono { color: var(--chalk); }
+
+  .finding { border: 1px solid var(--alarm); background: var(--alarm-w); padding: clamp(1.1rem, 3vw, 1.7rem); display: flex; flex-direction: column; gap: 0.85rem; }
+  .finding h3 { color: var(--alarm); }
+  .finding.fixed { border-color: var(--good); background: var(--good-w); }
+  .finding.fixed h3 { color: var(--good); }
+  .finding p { max-width: 66ch; }
+
+  .trace { display: flex; flex-wrap: wrap; gap: 0.4rem 0.75rem; align-items: center; font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; padding-top: 0.3rem; }
+  .trace span { white-space: nowrap; }
+  .trace .arrow { color: var(--ink-faint); }
+  .trace .bad { color: var(--alarm); }
+  .trace .good { color: var(--good); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--rule); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 480px; }
+  th {
+    text-align: left; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-soft); padding: 0.7rem 1rem; border-bottom: 1px solid var(--rule);
+    background: var(--surface-2); white-space: nowrap;
+  }
+  td { padding: 0.72rem 1rem; border-bottom: 1px solid var(--rule-soft); font-size: var(--step--1); line-height: 1.5; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td.mono { font-size: 0.78rem; white-space: nowrap; color: var(--blueprint); }
+  td.num { font-variant-numeric: tabular-nums; }
+
+  pre {
+    margin: 0; background: var(--surface-2); border: 1px solid var(--rule);
+    padding: 1rem 1.15rem; overflow-x: auto;
+    font-family: "IBM Plex Mono", monospace; font-size: 0.775rem; line-height: 1.7; color: var(--ink);
+    white-space: pre-wrap; word-break: break-word;
+  }
+  pre.prompt { border-left: 3px solid var(--blueprint); background: var(--surface); }
+  pre .c { color: var(--ink-faint); }
+
+  ul.plain { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+  ul.plain li { display: grid; grid-template-columns: 1.1rem 1fr; gap: 0.5rem; max-width: var(--measure); align-items: baseline; }
+  ul.plain li::before { content: ""; width: 7px; height: 7px; border: 1.5px solid var(--ink-faint); transform: translateY(-1px); }
+  ul.plain.limits li::before { border-color: var(--chalk); background: var(--chalk-w); }
+
+  footer { border-top: 1px solid var(--rule); padding-top: 1.3rem; color: var(--ink-faint); font-size: var(--step--1); display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; }
+
+  a { color: var(--blueprint); text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--chalk); outline-offset: 2px; }
+
+  @media (max-width: 560px) { .rung { grid-template-columns: 1fr; gap: 0.3rem; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="brand" href="/">
+      <span class="brand-mark">JP</span>
+      <span class="brand-title">Jacek Placek</span>
+    </a>
+    <nav class="site-nav" aria-label="Nawigacja">
+      <a href="/">Wpisy</a>
+      <a href="/xaf.html">XAF</a>
+      <a href="/2026/08/22/gantt-sterowany-rozmowa.html">Wersja skrócona</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+
+  <header>
+    <div class="masthead">
+      <span class="label">Pe&#322;ny opis POC &middot; Syncfusion Blazor + Azure OpenAI &middot; 22 sierpnia 2026</span>
+      <h1>Gantt sterowany rozmow&#261;</h1>
+      <p class="deck">Piszesz po polsku, co ma si&#281; zmieni&#263; w harmonogramie robót. Model zamienia to na list&#281; operacji na wykresie Gantta &mdash; ale do harmonogramu nie trafia nic, dopóki cz&#322;owiek tego nie zatwierdzi. Tu s&#261; wszystkie prompty, wszystkie zrzuty i wszystkie trzy pu&#322;apki, na które wszed&#322;em po drodze.</p>
+    </div>
+    <div class="chips">
+      <span class="chip">Wszystkie prompty</span>
+      <span class="chip">Zrzuty z dzia&#322;aj&#261;cej aplikacji</span>
+      <span class="chip">3 pu&#322;apki SfGantt</span>
+      <span class="chip open">Wersja skrócona: <a href="/2026/08/22/gantt-sterowany-rozmowa.html" style="margin-left:0.35rem">wpis na blogu</a></span>
+    </div>
+  </header>
+
+  <section class="thesis">
+    <p>Model nie pisze po Gantcie. Proponuje &mdash; cz&#322;owiek zatwierdza.</p>
+    <p>Odpowied&#378; modelu to nie akcja, tylko lista komend w JSON-ie. Kod sprawdza j&#261; wobec aktualnego harmonogramu, opisuje po polsku, co si&#281; stanie, i dopiero klikni&#281;cie <strong>Zastosuj</strong> rusza dane. Przy poleceniu &bdquo;przesu&#324; wszystko o tydzie&#324;&rdquo; na harmonogramie prawdziwych robót to jedyna kolejno&#347;&#263;, która nie ko&#324;czy si&#281; katastrof&#261;.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Uk&#322;ad ekranu</span>
+      <h2>Rozmowa u góry, wykres pod spodem</h2>
+    </div>
+    <p>Czat zajmuje pe&#322;n&#261; szeroko&#347;&#263; nad wykresem. Panel propozycji wchodzi mi&#281;dzy nie dopiero wtedy, gdy model co&#347; zaproponuje &mdash; i to on jest jedynym miejscem, w którym cz&#322;owiek decyduje.</p>
+    <figure class="shot">
+      <img src="/assets/images/gantt-rozmowa-uklad.png" alt="Strona gantt-ai: panel czatu u gory, wykres Gantta pod nim" loading="lazy">
+      <figcaption>Ekran startowy: czat z podpowiedziami na górze, wykres Gantta z dwunastoma zadaniami pod spodem.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Prompt systemowy</span>
+      <h2>Ca&#322;a instrukcja dla modelu</h2>
+    </div>
+    <p>Ca&#322;y prompt systemowy planera, bez skrótów. Zwró&#263; uwag&#281; na ostatni punkt: model ma prawo <strong>odmówi&#263;</strong> i to jest zachowanie po&#380;&#261;dane, nie b&#322;&#261;d.</p>
+<pre class="prompt">Jeste&#347; planist&#261; harmonogramu robót budowlanych. Zamieniasz polecenie kierownika budowy
+na list&#281; operacji na wykresie Gantta. Odpowiadasz WY&#321;&#260;CZNIE obiektem JSON, bez komentarza
+poza nim, bez bloku ```.
+
+Format odpowiedzi:
+{"komentarz":"jedno zdanie po polsku","komendy":[ ... ]}
+
+Dost&#281;pne akcje:
+- {"akcja":"dodaj","nazwa":"...","start":"RRRR-MM-DD","dni":3,"rodzic":5,"poprzednik":"7FS"}
+  rodzic i poprzednik s&#261; opcjonalne; dni=0 oznacza kamie&#324; milowy
+- {"akcja":"przesun","id":7,"dni":3}  &mdash; przesuwa start o podan&#261; liczb&#281; dni (ujemna cofa),
+  razem z zadaniami podrz&#281;dnymi
+- {"akcja":"zmien","id":7,"nazwa":"...","start":"RRRR-MM-DD","dni":5,"postep":40,"poprzednik":"6FS"}
+  podajesz tylko te pola, które maj&#261; si&#281; zmieni&#263;
+- {"akcja":"usun","id":11}  &mdash; usuwa zadanie wraz z podrz&#281;dnymi
+- {"akcja":"kamien","id":12}  &mdash; zamienia zadanie w kamie&#324; milowy
+
+Zasady:
+- Odwo&#322;ujesz si&#281; wy&#322;&#261;cznie do identyfikatorów, które s&#261; w podanym harmonogramie.
+- Nie wymy&#347;lasz zada&#324;, o które nikt nie prosi&#322;.
+- Zale&#380;no&#347;&#263; zapisujesz jako identyfikator poprzednika i typ: FS, SS, FF, SF (na przyk&#322;ad "7FS").
+- Gdy polecenie jest niejasne albo nie da si&#281; go wykona&#263;, zwracasz pust&#261; list&#281; komend
+  i wyja&#347;niasz to w polu komentarz.</pre>
+
+    <h3 style="margin-top:0.7rem">Prompt u&#380;ytkownika</h3>
+    <p>Do ka&#380;dego polecenia doklejam kompaktowy zrzut harmonogramu. Nie ca&#322;e encje &mdash; tylko te pola, na których model ma pracowa&#263;. Tabulatory zamiast JSON-a, bo to o po&#322;ow&#281; mniej tokenów przy tej samej czytelno&#347;ci dla modelu.</p>
+<pre class="prompt">Aktualny harmonogram:
+id	rodzic	nazwa	start	dni	postep	poprzednik
+1	-	Prace przygotowawcze	2026-08-17	4	90	-
+2	1	Zaplecze i kontener biurowy	2026-08-17	1	100	-
+3	1	Wywóz gruzu &mdash; etap I	2026-08-18	2	100	2FS
+4	1	Wykop pod pompowni&#281;	2026-08-17	4	70	-
+5	-	Konstrukcja i posadzki	2026-08-21	8	35	3FS
+6	5	Podbudowa drogi wewn&#281;trznej	2026-08-21	3	60	-
+7	5	Wylewka posadzki hali	2026-08-24	5	20	6FS
+8	-	Instalacje	2026-08-24	7	15	-
+9	8	Monta&#380; opraw o&#347;wietleniowych	2026-08-24	4	25	-
+10	8	Instalacja tryskaczowa	2026-08-28	3	0	9FS
+11	-	Elewacja pó&#322;nocna	2026-08-25	6	10	-
+12	-	Odbiór inspektora nadzoru	2026-09-03	0	0	10FS
+
+Polecenie kierownika budowy:
+Przesu&#324; wylewk&#281; posadzki hali o 3 dni w przód.</pre>
+    <p style="color: var(--ink-soft); font-size: var(--step--1);">Zrzut budowany jest zawsze z aktualnej kolekcji, nie z danych pocz&#261;tkowych. To wa&#380;ne, bo Gantt zapisuje przeliczone daty z powrotem do zwi&#261;zanej kolekcji &mdash; model widzi wi&#281;c dok&#322;adnie to, co widzi cz&#322;owiek na ekranie.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Droga polecenia</span>
+      <h2>Cztery etapy, jeden punkt zatrzymania</h2>
+    </div>
+    <div style="overflow-x:auto; padding-bottom:0.4rem">
+      <svg style="min-width:700px; width:100%; height:auto; display:block" viewBox="0 0 880 190" role="img" aria-label="Potok: polecenie trafia do modelu, wraca jako komendy JSON, przechodzi walidacje wobec harmonogramu, zostaje pokazane jako propozycja, i dopiero po zatwierdzeniu zmienia dane Gantta.">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,1 L9,5 L0,9" fill="none" stroke="var(--ink-faint)" stroke-width="1.6"/>
+          </marker>
+        </defs>
+        <rect x="4" y="46" width="182" height="76" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="20" y="70" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--blueprint)" letter-spacing="1">01</text>
+        <text x="20" y="90" font-family="Archivo, sans-serif" font-size="14.5" font-weight="600" fill="var(--ink)">Polecenie</text>
+        <text x="20" y="108" font-family="Source Serif 4, serif" font-size="11.5" fill="var(--ink-soft)">&bdquo;przesu&#324; wylewk&#281; o 3 dni&rdquo;</text>
+        <line x1="192" y1="84" x2="222" y2="84" stroke="var(--ink-faint)" stroke-width="1.4" marker-end="url(#ar)"/>
+        <rect x="230" y="46" width="182" height="76" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="246" y="70" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--blueprint)" letter-spacing="1">02</text>
+        <text x="246" y="90" font-family="Archivo, sans-serif" font-size="14.5" font-weight="600" fill="var(--ink)">Model &rarr; JSON</text>
+        <text x="246" y="108" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-soft)">{"akcja":"przesun",&hellip;}</text>
+        <line x1="418" y1="84" x2="448" y2="84" stroke="var(--ink-faint)" stroke-width="1.4" marker-end="url(#ar)"/>
+        <rect x="456" y="46" width="182" height="76" fill="var(--surface)" stroke="var(--rule)"/>
+        <text x="472" y="70" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--blueprint)" letter-spacing="1">03</text>
+        <text x="472" y="90" font-family="Archivo, sans-serif" font-size="14.5" font-weight="600" fill="var(--ink)">Walidacja</text>
+        <text x="472" y="108" font-family="Source Serif 4, serif" font-size="11.5" fill="var(--ink-soft)">wobec zada&#324; w harmonogramie</text>
+        <line x1="644" y1="84" x2="674" y2="84" stroke="var(--ink-faint)" stroke-width="1.4" marker-end="url(#ar)"/>
+        <rect x="682" y="46" width="194" height="76" fill="var(--chalk-w)" stroke="var(--chalk)" stroke-width="1.6"/>
+        <text x="698" y="70" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--chalk)" letter-spacing="1">04</text>
+        <text x="698" y="90" font-family="Archivo, sans-serif" font-size="14.5" font-weight="600" fill="var(--ink)">Propozycja</text>
+        <text x="698" y="108" font-family="Source Serif 4, serif" font-size="11.5" fill="var(--ink-soft)">czeka na cz&#322;owieka</text>
+        <path d="M547,126 L547,154" stroke="var(--ink-faint)" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+        <text x="560" y="160" font-family="Source Serif 4, serif" font-size="11.5" fill="var(--ink-soft)">walidacja nie przesz&#322;a &rarr; pytanie idzie wy&#380;ej po drabinie</text>
+        <path d="M779,126 L779,154" stroke="var(--chalk)" stroke-width="1.6" marker-end="url(#ar)"/>
+        <text x="672" y="176" font-family="Archivo, sans-serif" font-size="12" font-weight="600" fill="var(--chalk)">Zastosuj &rarr; dane Gantta</text>
+        <text x="20" y="30" font-family="Archivo, sans-serif" font-size="10.5" font-weight="600" fill="var(--ink-faint)" letter-spacing="1.4">AUTOMAT</text>
+        <line x1="88" y1="26" x2="670" y2="26" stroke="var(--rule)" stroke-width="1"/>
+        <text x="682" y="30" font-family="Archivo, sans-serif" font-size="10.5" font-weight="600" fill="var(--chalk)" letter-spacing="1.4">CZ&#321;OWIEK</text>
+      </svg>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Drabina modeli</span>
+      <h2>Najta&#324;szy odpowiada, wy&#380;ej idzie tylko gdy trzeba</h2>
+    </div>
+    <div class="ladder">
+      <div class="rung default">
+        <span class="rung-tier">domy&#347;lny</span>
+        <span><span class="rung-name">najta&#324;szy wariant rodziny</span>
+        <span class="rung-note">Obs&#322;u&#380;y&#322; ka&#380;de polecenie w tym POC. Ani razu nie trzeba by&#322;o eskalowa&#263;.</span></span>
+      </div>
+      <div class="rung">
+        <span class="rung-tier">eskalacja 1</span>
+        <span><span class="rung-name">wariant &#347;redni</span>
+        <span class="rung-note">Wchodzi, gdy pierwszy odda niepoprawn&#261; odpowied&#378; albo us&#322;uga odmówi.</span></span>
+      </div>
+      <div class="rung">
+        <span class="rung-tier">eskalacja 2</span>
+        <span><span class="rung-name">wariant najmocniejszy</span>
+        <span class="rung-note">Ostatni szczebel. Gdy i on nie da rady, u&#380;ytkownik dostaje powód, nie cisz&#281;.</span></span>
+      </div>
+    </div>
+    <p style="color: var(--ink-soft); font-size: var(--step--1);">Kolejno&#347;&#263; szczebli to wniosek z dost&#281;pnych SKU, nie deklaracja dostawcy: najmocniejszy wariant jako jedyny ma provisioned managed, najta&#324;szy nie ma nawet priority tier. Ca&#322;a drabina siedzi w konfiguracji, wi&#281;c zmiana kolejno&#347;ci to jedna linijka.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Kiedy pytanie idzie wy&#380;ej</span>
+      <h2>Cztery wyzwalacze eskalacji</h2>
+    </div>
+    <div class="triggers">
+      <div class="trigger">
+        <span class="mono">429 / 5xx</span>
+        <p>Us&#322;uga odmówi&#322;a. Ka&#380;dy model ma osobn&#261; pul&#281; przepustowo&#347;ci, wi&#281;c wy&#380;ej mo&#380;e si&#281; uda&#263; od razu.</p>
+      </div>
+      <div class="trigger">
+        <span class="mono">nie-JSON</span>
+        <p>Odpowied&#378; nie parsuje si&#281; na obiekt. Zdarza si&#281;, gdy model opakuje wynik w blok kodu albo dopisze komentarz.</p>
+      </div>
+      <div class="trigger">
+        <span class="mono">nieznana akcja</span>
+        <p>Model wymy&#347;li&#322; operacj&#281; spoza schematu &mdash; na przyk&#322;ad &bdquo;scal&rdquo; albo &bdquo;podziel&rdquo;.</p>
+      </div>
+      <div class="trigger key">
+        <span class="mono">zmy&#347;lony numer zadania</span>
+        <p>Najcz&#281;stszy b&#322;&#261;d ma&#322;ego modelu. Bez tego wyzwalacza ko&#324;czy&#322;by jako pomini&#281;ta pozycja na li&#347;cie, a eskalacja nigdy by si&#281; nie odpali&#322;a.</p>
+      </div>
+    </div>
+    <p><strong>Wniosek szerszy ni&#380; ten POC:</strong> walidator, który nie widzi stanu aplikacji, przepuszcza dok&#322;adnie te b&#322;&#281;dy, dla których go napisa&#322;e&#347;. Sygnatura musi bra&#263; dane, nie sam tekst odpowiedzi.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Test na &#380;ywo &mdash; sekwencja A</span>
+      <h2>Cztery polecenia pod rz&#261;d</h2>
+    </div>
+    <p>Ka&#380;de wpisane do czatu dos&#322;ownie tak, jak w tabeli, i ka&#380;de zatwierdzone przyciskiem <strong>Zastosuj</strong>. Ostatni krok jest tym, po co ta sekwencja powsta&#322;a: zmiana jednego zadania poci&#261;gn&#281;&#322;a nast&#281;pnik i rozci&#261;gn&#281;&#322;a zadanie nadrz&#281;dne, cho&#263; polecenie nie wspomina&#322;o o &#380;adnym z nich.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Prompt wpisany do czatu</th><th>Wynik na wykresie</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">Dodaj zadanie &bdquo;Monta&#380; bramy segmentowej&rdquo;, 2 dni, start 26.08.2026.</td>
+            <td>zadanie 13, bez zale&#380;no&#347;ci</td>
+          </tr>
+          <tr>
+            <td class="mono">Dodaj pod Instalacjami zadanie &bdquo;Przewierty przez &#347;ciany&rdquo;, 2 dni, po monta&#380;u opraw o&#347;wietleniowych.</td>
+            <td>zadanie 14, <code>9FS</code>, start 28.08</td>
+          </tr>
+          <tr>
+            <td class="mono">Dodaj pod Instalacjami zadanie &bdquo;Próba szczelno&#347;ci&rdquo;, 1 dzie&#324;, po przewiertach przez &#347;ciany.</td>
+            <td>zadanie 15, <code>14FS</code>, start 1.09</td>
+          </tr>
+          <tr>
+            <td class="mono">Wyd&#322;u&#380; przewierty przez &#347;ciany o 2 dni.</td>
+            <td class="num">14: 2 &rarr; 4 dni &middot; 15: 1.09 &rarr; <strong>3.09</strong> &middot; grupa Instalacje 7 &rarr; 9 dni</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="shot-pair">
+      <figure class="shot">
+      <img src="/assets/images/gantt-rozmowa-krok2.png" alt="Gantt po dodaniu przewiertow przez sciany" loading="lazy">
+      <figcaption><b>Krok 2.</b> Zadanie 14 &bdquo;Przewierty przez &#347;ciany&rdquo; wpi&#281;te pod Instalacje z zale&#380;no&#347;ci&#261; <code>9FS</code>.</figcaption>
+    </figure>
+      <figure class="shot">
+      <img src="/assets/images/gantt-rozmowa-krok3.png" alt="Gantt po dodaniu proby szczelnosci" loading="lazy">
+      <figcaption><b>Krok 3.</b> Zadanie 15 &bdquo;Próba szczelno&#347;ci&rdquo; z zale&#380;no&#347;ci&#261; <code>14FS</code> &mdash; poprzednik dodany chwil&#281; wcze&#347;niej. To ten przypadek, który w pierwszej wersji ginu&#322;.</figcaption>
+    </figure>
+    </div>
+    <figure class="shot">
+      <img src="/assets/images/gantt-rozmowa-krok4.png" alt="Gantt po wydluzeniu przewiertow i kaskadzie" loading="lazy">
+      <figcaption><b>Krok 4.</b> Wyd&#322;u&#380;enie przewiertów o 2 dni. Próba szczelno&#347;ci sama przesuwa si&#281; na 3.09, grupa Instalacje ro&#347;nie z 7 na 9 dni. Polecenie nie wspomina&#322;o o &#380;adnym z nich.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Test na &#380;ywo &mdash; sekwencja B</span>
+      <h2>Przesuni&#281;cie zadania, które trzyma zale&#380;no&#347;&#263;</h2>
+    </div>
+
+    <div class="finding fixed">
+      <h3>&bdquo;Przesu&#324;&rdquo; na zadaniu z zale&#380;no&#347;ci&#261; FS musi zmienia&#263; sam&#261; zale&#380;no&#347;&#263;</h3>
+      <p>Wylewka posadzki ma zale&#380;no&#347;&#263; <code>6FS</code>. Zmiana daty startu nic nie da &mdash; Gantt przy <code>EnablePredecessorValidation="true"</code> natychmiast cofa termin do dnia po zako&#324;czeniu poprzednika. Jedyna d&#378;wignia, która naprawd&#281; przesuwa takie zadanie, to przesuni&#281;cie wpisane w sam&#261; zale&#380;no&#347;&#263;. Planer rozpoznaje to sam i proponuje zmian&#281; zale&#380;no&#347;ci zamiast daty.</p>
+      <div class="trace">
+        <span class="bad">przedtem: data 25.08 &rarr; 28.08</span>
+        <span class="arrow">&rarr;</span>
+        <span class="bad">Gantt cofa, pasek stoi</span>
+        <span class="arrow">&middot;</span>
+        <span class="good">teraz: 6FS &rarr; 6FS+3</span>
+        <span class="arrow">&rarr;</span>
+        <span class="good">pasek na 28.08</span>
+      </div>
+      <p>Hipotez&#281; potwierdzi&#322; drugi test: przesuni&#281;cie zadania bez poprzednika zadzia&#322;a&#322;o od razu i poci&#261;gn&#281;&#322;o ca&#322;&#261; kaskad&#281;. Operacja jest te&#380; symetryczna &mdash; &bdquo;cofnij o 3 dni&rdquo; sprowadza <code>6FS+3</code> z powrotem do <code>6FS</code>, a data wraca na 25.08.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Prompt wpisany do czatu</th><th>Co pokaza&#322; panel propozycji</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">Przesu&#324; wylewk&#281; posadzki hali o 3 dni w przód.</td>
+            <td>przesu&#324; &bdquo;Wylewka posadzki hali&rdquo; o 3 dni w przód &mdash; zale&#380;no&#347;&#263; <code>6FS</code> &rarr; <code>6FS+3</code></td>
+          </tr>
+          <tr>
+            <td class="mono">Cofnij wylewk&#281; posadzki hali o 3 dni.</td>
+            <td>przesu&#324; &bdquo;Wylewka posadzki hali&rdquo; o 3 dni wstecz &mdash; zale&#380;no&#347;&#263; <code>6FS+3</code> &rarr; <code>6FS</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="shot-pair">
+      <figure class="shot">
+      <img src="/assets/images/gantt-rozmowa-propozycja.png" alt="Panel proponowanych zmian z zapisem 6FS do 6FS+3" loading="lazy">
+      <figcaption>Propozycja przed zatwierdzeniem. Panel mówi wprost, co si&#281; zmieni: <b>zale&#380;no&#347;&#263; 6FS &rarr; 6FS+3</b>, a nie data startu.</figcaption>
+    </figure>
+      <figure class="shot">
+      <img src="/assets/images/gantt-rozmowa-po-zastosowaniu.png" alt="Gantt po przesunieciu wylewki przez offset zaleznosci" loading="lazy">
+      <figcaption>Po zatwierdzeniu. Wylewka posadzki stoi na 28.08, w kolumnie zale&#380;no&#347;ci widnieje <code>6FS+3 days</code>.</figcaption>
+    </figure>
+    </div>
+
+    <h3 style="margin-top: 0.6rem;">Parser zapisu zale&#380;no&#347;ci</h3>
+    <p>Zapis <code>7FS+2</code> ma wi&#281;cej wariantów, ni&#380; wida&#263; na pierwszy rzut oka. Parser dosta&#322; w&#322;asny zestaw przypadków &mdash; 19 sprawdze&#324;, wszystkie przechodz&#261;.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Wej&#347;cie</th><th>Wynik</th><th>Dlaczego tak</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">6fs</td><td class="mono">6FS</td><td>wielko&#347;&#263; liter nie ma znaczenia</td></tr>
+          <tr><td class="mono">6FS+2d</td><td class="mono">6FS+2</td><td>Syncfusion dopuszcza jednostk&#281; po liczbie</td></tr>
+          <tr><td class="mono">3FF+10</td><td class="mono">3FF+10</td><td>typ inny ni&#380; FS te&#380; dzia&#322;a</td></tr>
+          <tr><td class="mono">6FS,7FS</td><td class="mono">null</td><td>wielu poprzedników &mdash; nie zgadujemy, do którego dopisa&#263;</td></tr>
+          <tr><td class="mono">6XX</td><td class="mono">null</td><td>nieznany typ zale&#380;no&#347;ci</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="color: var(--ink-soft); font-size: var(--step--1);">Gdy parser zwróci <code>null</code>, zmiana l&#261;duje na li&#347;cie jako pomini&#281;ta, z podanym powodem. Nie ruszamy zapisu, którego nie rozumiemy.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Od&#347;wie&#380;anie wykresu</span>
+      <h2>Dwa podej&#347;cia, które cicho gubi&#322;y dane</h2>
+    </div>
+    <p>Dokumentacja Syncfusion prowadzi wprost do obu. &#379;adne nie rzuci&#322;o wyj&#261;tku, nie zapisa&#322;o nic w logu serwera ani w konsoli przegl&#261;darki.</p>
+    <div class="ladder">
+      <div class="rung">
+        <span class="rung-tier">podej&#347;cie 1</span>
+        <span><span class="rung-name">Mutacja kolekcji + <code>RefreshAsync()</code></span>
+        <span class="rung-note">Nowe zadanie, którego poprzednik te&#380; powsta&#322; w tej sesji, wpada do kolekcji &mdash; licznik pokaza&#322; 15 pozycji &mdash; ale wykres rysuje 14 wierszy. &bdquo;Próba szczelno&#347;ci&rdquo; po prostu znika.</span></span>
+      </div>
+      <div class="rung">
+        <span class="rung-tier">podej&#347;cie 2</span>
+        <span><span class="rung-name"><code>AddRecordAsync()</code> do dodawania</span>
+        <span class="rung-note">Zadanie si&#281; pojawia, ale komponent trzyma w&#322;asn&#261; kopi&#281; rekordu. Pó&#378;niejsza zmiana mutuje obiekt w kolekcji, wykres rysuje swój &mdash; wyd&#322;u&#380;enia przewiertów nie wida&#263;. Podgl&#261;d pokazuje poprawne &bdquo;2 &rarr; 4 dni&rdquo;, bo czyta z kolekcji, w której zmiana faktycznie zasz&#322;a.</span></span>
+      </div>
+      <div class="rung default">
+        <span class="rung-tier">wybrane</span>
+        <span><span class="rung-name"><code>@key</code> na <code>SfGantt</code></span>
+        <span class="rung-note">Klucz podbijany po ka&#380;dej zatwierdzonej zmianie odtwarza komponent, który buduje drzewo od zera z kolekcji. Kolekcja zostaje jedynym &#378;ród&#322;em prawdy.</span></span>
+      </div>
+    </div>
+<pre>&lt;SfGantt @key="RenderKey" DataSource="@Tasks" TValue="GanttTask" ...&gt;
+
+<span class="c">// w kodzie strony</span>
+private void ApplyPending()
+{
+    if (Pending is null) return;
+
+    GanttPlanner.Apply(Pending, Tasks);
+    Pending = null;
+
+    <span class="c">// Kolekcja jest jedynym &#378;ród&#322;em prawdy, wi&#281;c Gantt musi zbudowa&#263; drzewo od nowa.</span>
+    RenderKey++;
+}</pre>
+    <p style="color: var(--ink-soft); font-size: var(--step--1);">Cena: drzewo si&#281; zwija, przewijanie wraca na pocz&#261;tek. Przy kilkuset zadaniach b&#281;dzie to widoczne &mdash; wtedy w&#322;a&#347;ciw&#261; drog&#261; jest <code>SfDataManager</code> z w&#322;asnym adaptorem, gdzie CRUD idzie przez <code>InsertAsync</code>, <code>UpdateAsync</code> i <code>RemoveAsync</code>, a komponent sam wie, co przerysowa&#263;.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <span class="label">Granice</span>
+      <h2>Czego ten POC nie robi</h2>
+    </div>
+    <ul class="plain limits">
+      <li><span>Harmonogram &#380;yje w pami&#281;ci procesu. Restart czy&#347;ci zmiany.</span></li>
+      <li><span>Nie ma cofania zatwierdzonej zmiany. Jest tylko odrzucenie propozycji, zanim zostanie zatwierdzona.</span></li>
+      <li><span>Ka&#380;da zatwierdzona zmiana odtwarza komponent Gantta &mdash; drzewo si&#281; zwija, przewijanie wraca na pocz&#261;tek.</span></li>
+      <li><span>Przesuni&#281;cie przez zale&#380;no&#347;&#263; obs&#322;uguje jednego poprzednika. Zadanie z kilkoma zale&#380;no&#347;ciami trafia na list&#281; jako pomini&#281;te, z podanym powodem.</span></li>
+    </ul>
+    <p style="margin-top:0.6rem">Rzecz, któr&#261; zabieram dalej: <strong>czas poszed&#322; nie na model, tylko na komponent.</strong> Prompt dzia&#322;a&#322; od pierwszego podej&#347;cia. Ca&#322;a reszta zesz&#322;a na zrozumienie, kiedy <code>SfGantt</code> rysuje to, co ma w kolekcji, a kiedy co&#347; zupe&#322;nie innego. Je&#347;li budujesz podobn&#261; rzecz, planuj bud&#380;et odwrotnie, ni&#380; podpowiada intuicja.</p>
+  </section>
+
+  <footer>
+    <span>Jacek Placek &middot; <a href="mailto:kashiash@gmail.com">kashiash@gmail.com</a></span>
+    <span><a href="/2026/08/22/gantt-sterowany-rozmowa.html">Wersja skrócona na blogu</a></span>
+    <span>Syncfusion Blazor 34.2.2 &middot; .NET 10</span>
+  </footer>
+
+</div>
+</body>
+</html>
