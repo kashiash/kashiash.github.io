@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harmonogram budowy w sześciu zdaniach | Jacek Placek</title>
+<meta name="description" content="Demo: pusty wykres Gantta i sześć poleceń po polsku. Tak powstaje harmonogram robót bez klikania w formularze.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+  :root {
+    --ink: #101A24; --ink-soft: #46586A; --ink-faint: #7E8FA0;
+    --ground: #E7ECEF; --surface: #FBFCFD; --surface-2: #F1F4F6;
+    --rule: #CBD5DC; --rule-soft: #DDE4E9;
+    --blueprint: #2C6E9B; --chalk: #B8860E; --chalk-w: #FAF1D8;
+    --measure: 66ch;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #DEE6EC; --ink-soft: #9AACBB; --ink-faint: #6B7C8C;
+      --ground: #0D151D; --surface: #141F29; --surface-2: #1A2733;
+      --rule: #2C3B49; --rule-soft: #22303C;
+      --blueprint: #6BA9D4; --chalk: #E0B33F; --chalk-w: #2E2513;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: "Source Serif 4", Georgia, serif; font-size: 1.02rem; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .site-header { border-bottom: 1px solid var(--rule); background: var(--surface); }
+  .site-header-inner {
+    max-width: 900px; margin: 0 auto; padding: 0.9rem clamp(1.1rem, 4vw, 2.5rem);
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; color: inherit; }
+  .brand-mark {
+    width: 30px; height: 30px; display: grid; place-items: center;
+    background: var(--ink); color: var(--ground);
+    font-family: Archivo, sans-serif; font-weight: 700; font-size: 0.72rem;
+  }
+  .brand-title { font-family: Archivo, sans-serif; font-weight: 600; font-size: 0.92rem; }
+  .site-nav { display: flex; gap: 1.1rem; font-family: Archivo, sans-serif; font-size: 0.84rem; }
+
+  .page {
+    max-width: 900px; margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 3.2rem) clamp(1.1rem, 4vw, 2.5rem) 5rem;
+    display: flex; flex-direction: column; gap: clamp(2rem, 4vw, 3rem);
+  }
+
+  h1, h2, .label, .krok-nr { font-family: Archivo, "Helvetica Neue", Arial, sans-serif; }
+  h1 { font-size: clamp(2.2rem, 6vw, 3rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.022em; text-wrap: balance; margin: 0; }
+  h2 { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; margin: 0; }
+  p { margin: 0; max-width: var(--measure); }
+
+  .label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.13em; text-transform: uppercase; color: var(--blueprint); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.9rem; padding-bottom: 1.5rem; border-bottom: 2px solid var(--ink); }
+  .deck { font-size: 1.24rem; line-height: 1.5; color: var(--ink-soft); max-width: 58ch; }
+
+  .zasada {
+    background: var(--chalk-w); border: 1px solid var(--chalk); border-left-width: 4px;
+    padding: 1.1rem 1.4rem; display: flex; flex-direction: column; gap: 0.6rem;
+  }
+  .zasada p:first-child { font-weight: 600; font-size: 1.1rem; }
+
+  .shot { margin: 0; display: flex; flex-direction: column; gap: 0.45rem; }
+  .shot img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); background: var(--surface); }
+  .shot figcaption { font-size: 0.82rem; color: var(--ink-faint); }
+
+  .krok { display: flex; flex-direction: column; gap: 0.85rem; }
+  .krok-head { display: grid; grid-template-columns: 2.4rem 1fr; gap: 0.9rem; align-items: start; }
+  .krok-nr {
+    width: 2.4rem; height: 2.4rem; display: grid; place-items: center;
+    background: var(--blueprint); color: #fff; font-weight: 700; font-size: 0.95rem;
+  }
+  .krok-prompt {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 14px 14px 14px 3px;
+    padding: 0.7rem 1rem; font-size: 1.06rem; margin: 0; max-width: none;
+  }
+  .krok-opis { color: var(--ink-soft); padding-left: 3.3rem; }
+
+  ul.plain { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+  ul.plain li { display: grid; grid-template-columns: 1rem 1fr; gap: 0.5rem; max-width: var(--measure); align-items: baseline; }
+  ul.plain li::before { content: ""; width: 7px; height: 7px; border: 1.5px solid var(--blueprint); transform: translateY(-1px); }
+
+  footer { border-top: 1px solid var(--rule); padding-top: 1.2rem; color: var(--ink-faint); font-size: 0.85rem; display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; }
+
+  a { color: var(--blueprint); text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--chalk); outline-offset: 2px; }
+
+  @media (max-width: 520px) { .krok-opis { padding-left: 0; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="brand" href="/">
+      <span class="brand-mark">JP</span>
+      <span class="brand-title">Jacek Placek</span>
+    </a>
+    <nav class="site-nav" aria-label="Nawigacja">
+      <a href="/">Wpisy</a>
+      <a href="/gantt-ai.html">Jak to działa</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page">
+
+  <header class="masthead">
+    <span class="label">Demo &middot; 22 sierpnia 2026</span>
+    <h1>Harmonogram budowy w sze&#347;ciu zdaniach</h1>
+    <p class="deck">Zaczynamy od pustego wykresu. Ka&#380;dy krok to jedno zdanie napisane po polsku &mdash; &#380;adnych formularzy, &#380;adnego przeci&#261;gania paska mysz&#261;. Po sze&#347;ciu zdaniach harmonogram ma dziesi&#281;&#263; pozycji, trzy etapy, zale&#380;no&#347;ci mi&#281;dzy zadaniami i kamie&#324; milowy odbioru.</p>
+  </header>
+
+  <div class="zasada">
+    <p>Nic nie dzieje si&#281; samo.</p>
+    <p>Po ka&#380;dym zdaniu system pokazuje list&#281; zmian, które zamierza wprowadzi&#263;, i czeka. Do harmonogramu nie trafia nic, dopóki kierownik nie kliknie <strong>Zastosuj</strong>. Zmian&#281; mo&#380;na odrzuci&#263; jednym klikni&#281;ciem, zanim cokolwiek si&#281; ruszy.</p>
+  </div>
+
+  <section>
+    <h2>Punkt startowy</h2>
+    <p>Pusty wykres. Przycisk <strong>Wyczy&#347;&#263;</strong> kasuje wszystko, gdy chcemy zacz&#261;&#263; od zera.</p>
+    <figure class="shot">
+      <img src="/assets/images/gantt-demo-0.png" alt="Pusty wykres Gantta przed pierwszym poleceniem" loading="lazy">
+      <figcaption>Harmonogram pusty &mdash; zero pozycji.</figcaption>
+    </figure>
+  </section>
+
+  <section class="krok">
+    <div class="krok-head">
+      <span class="krok-nr">1</span>
+      <p class="krok-prompt">Załóż etap „Prace przygotowawcze”, 5 dni, start 1 września 2026.</p>
+    </div>
+    <p class="krok-opis">Pierwsze zadanie. Harmonogram przestaje być pusty.</p>
+    <figure class="shot">
+      <img src="/assets/images/gantt-demo-1.png" alt="Wykres Gantta po kroku 1" loading="lazy">
+      <figcaption>Po kroku 1: 1 pozycja w harmonogramie.</figcaption>
+    </figure>
+  </section>
+
+  <section class="krok">
+    <div class="krok-head">
+      <span class="krok-nr">2</span>
+      <p class="krok-prompt">Pod pracami przygotowawczymi dodaj zaplecze budowy na 1 dzień oraz wywóz gruzu na 2 dni po zapleczu.</p>
+    </div>
+    <p class="krok-opis">Dwa podzadania naraz, drugie zależne od pierwszego. Wywóz gruzu sam ustawia się na dzień po zapleczu.</p>
+    <figure class="shot">
+      <img src="/assets/images/gantt-demo-2.png" alt="Wykres Gantta po kroku 2" loading="lazy">
+      <figcaption>Po kroku 2: 3 pozycje w harmonogramie.</figcaption>
+    </figure>
+  </section>
+
+  <section class="krok">
+    <div class="krok-head">
+      <span class="krok-nr">3</span>
+      <p class="krok-prompt">Dodaj etap „Konstrukcja i posadzki” po pracach przygotowawczych, a pod nim podbudowę na 3 dni i wylewkę posadzki na 5 dni po podbudowie.</p>
+    </div>
+    <p class="krok-opis">Cały etap z dwoma podzadaniami i zależnością między nimi — jednym zdaniem.</p>
+    <figure class="shot">
+      <img src="/assets/images/gantt-demo-3.png" alt="Wykres Gantta po kroku 3" loading="lazy">
+      <figcaption>Po kroku 3: 6 pozycji w harmonogramie.</figcaption>
+    </figure>
+  </section>
+
+  <section class="krok">
+    <div class="krok-head">
+      <span class="krok-nr">4</span>
+      <p class="krok-prompt">Dodaj etap „Instalacje” po konstrukcji, a pod nim montaż opraw na 4 dni i instalację tryskaczową na 3 dni po oprawach.</p>
+    </div>
+    <p class="krok-opis">To samo dla instalacji. Etap wchodzi po konstrukcji, tryskacze po oprawach.</p>
+    <figure class="shot">
+      <img src="/assets/images/gantt-demo-4.png" alt="Wykres Gantta po kroku 4" loading="lazy">
+      <figcaption>Po kroku 4: 9 pozycji w harmonogramie.</figcaption>
+    </figure>
+  </section>
+
+  <section class="krok">
+    <div class="krok-head">
+      <span class="krok-nr">5</span>
+      <p class="krok-prompt">Na koniec dodaj kamień milowy „Odbiór inspektora nadzoru” po instalacji tryskaczowej.</p>
+    </div>
+    <p class="krok-opis">Kamień milowy zamyka harmonogram. Termin liczy się sam z poprzednika.</p>
+    <figure class="shot">
+      <img src="/assets/images/gantt-demo-5.png" alt="Wykres Gantta po kroku 5" loading="lazy">
+      <figcaption>Po kroku 5: 10 pozycji w harmonogramie.</figcaption>
+    </figure>
+  </section>
+
+  <section class="krok">
+    <div class="krok-head">
+      <span class="krok-nr">6</span>
+      <p class="krok-prompt">Wylewka posadzki się opóźni — wydłuż ją o 3 dni.</p>
+    </div>
+    <p class="krok-opis">Jedno zdanie o jednym zadaniu. Etap Konstrukcja rozciąga się z 8 na 11 dni, Instalacje przesuwają się na 16 września, a odbiór inspektora na 24 września. O żadnym z nich polecenie nie wspominało.</p>
+    <figure class="shot">
+      <img src="/assets/images/gantt-demo-6.png" alt="Wykres Gantta po kroku 6" loading="lazy">
+      <figcaption>Po kroku 6: 10 pozycji w harmonogramie.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Co pokaza&#322;o to demo</h2>
+    <ul class="plain">
+      <li><span><strong>Terminów nikt nie wpisuje r&#281;cznie.</strong> Wystarczy powiedzie&#263;, co po czym nast&#281;puje &mdash; daty licz&#261; si&#281; z zale&#380;no&#347;ci.</span></li>
+      <li><span><strong>Jedno zdanie mo&#380;e utworzy&#263; ca&#322;y etap.</strong> Etap z dwoma podzadaniami i zale&#380;no&#347;ci&#261; mi&#281;dzy nimi powstaje za jednym razem.</span></li>
+      <li><span><strong>Opó&#378;nienie rozchodzi si&#281; samo.</strong> Wyd&#322;u&#380;enie jednego zadania o trzy dni przesun&#281;&#322;o etap, kolejny etap i termin odbioru &mdash; bez wskazywania ich w poleceniu.</span></li>
+      <li><span><strong>Kontrol&#281; ma cz&#322;owiek.</strong> Ka&#380;da zmiana przechodzi przez list&#281; do zatwierdzenia, opisan&#261; po polsku.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Czego to demo nie pokazuje</h2>
+    <ul class="plain">
+      <li><span>Harmonogram &#380;yje w pami&#281;ci przegl&#261;darki. To prototyp, nie system produkcyjny &mdash; nie ma bazy, u&#380;ytkowników ani uprawnie&#324;.</span></li>
+      <li><span>Nie ma cofania zatwierdzonej zmiany. Jest tylko odrzucenie propozycji, zanim zostanie zatwierdzona.</span></li>
+      <li><span>Tre&#347;&#263; harmonogramu jest wysy&#322;ana do zewn&#281;trznej us&#322;ugi AI. Przy prawdziwych danych klientów to decyzja o przetwarzaniu danych, nie techniczna.</span></li>
+    </ul>
+  </section>
+
+  <footer>
+    <span>Jacek Placek &middot; <a href="mailto:kashiash@gmail.com">kashiash@gmail.com</a></span>
+    <span><a href="/gantt-ai.html">Jak to dzia&#322;a od &#347;rodka</a></span>
+  </footer>
+
+</div>
+</body>
+</html>
