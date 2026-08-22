@@ -85,6 +85,24 @@ Aby utrzymać spójną, minimalistyczną tożsamość wizualną bloga podczas ge
 *   **BEZ LUDZI.** W prompcie dodaj absolutny zakaz: *No humans or characters.*
 *   Używaj pomysłowych metafor obiektowych: *Zamiast logo "PostgreSQL" zrób wielką szufladę na akta przedzieloną drutem kolczastym (multi-tenant)* albo *zamiast "Date Editor" zrób zablokowany drewnianym kołkiem kołowrotek*. Szukaj analogii w fizycznym świecie.
 
+## Zasady pisania treści
+
+**Wszystko, co ląduje na tym blogu, przechodzi przez `prosta-polszczyzna` i `humanizer-pl`** — post Jekylla tak samo jak statyczna strona `*.html`. Pipeline z `pisz-wpis` nie kończy się na `_posts/`; strony pisane od ręki wychodzą bełkotliwe.
+
+Czego unikać, bo już się zdarzyło:
+
+- **Slogan zamiast informacji.** „Nic nie dzieje się samo" nie mówi nic. Powiedz, co konkretnie się dzieje i kto to robi.
+- **Antropomorfizacja.** System niczego nie „zamierza" ani nie „chce". System pokazuje, czeka, zapisuje.
+- **Trzy zdania o jednym.** Jeśli drugie i trzecie zdanie parafrazują pierwsze, zostaje pierwsze.
+- **Retoryczne rozbiegi.** „Tu zaczyna się część, dla której warto było to zbudować" — wytnij, przejdź do rzeczy.
+- **Ramki wokół tez.** „Wniosek szerszy niż ten POC:" — sama teza wystarczy.
+- **Morały na koniec sekcji.** „Rzecz, którą zabieram dalej…" — jeśli teza jest dobra, obroni się bez oprawy.
+- **Podpisy powtarzające tabelę.** Podpis pod zrzutem ma dodawać, nie streszczać to, co jest obok.
+
+**Twierdzenie w materiale demo musi mieć pokrycie w zrzucie.** Jeśli tekst mówi „system pokazuje listę i czeka", to na stronie ma być zrzut tej listy. Inaczej to obietnica bez dowodu.
+
+Nazywaj odbiorcę **użytkownikiem**, nie „człowiekiem" — „człowiek" w opozycji do maszyny brzmi pretensjonalnie.
+
 ## Czego nie ruszać
 
 - Nie zmieniaj układu strony głównej bez wyraźnej prośby.
