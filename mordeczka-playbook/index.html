@@ -287,8 +287,9 @@
         </div>
         <div class="n8n-scenariusze">
           <h4>Gotowe scenariusze n8n</h4>
-          <p>W panelu n8n utworzyliśmy cztery nieaktywne workflowy. Są gotowym szkieletem do konfiguracji — przed włączeniem trzeba dodać dane dostępowe, adresy API i odbiorców. Na dashboardzie każdy scenariusz ma osobny status, historię wykonań i log błędów.</p>
+          <p>W panelu n8n utworzyliśmy cztery prawdziwe workflowy. Każdy ma wyzwalacz, konkretne węzły, połączenia, warunki i logikę obiegu. Są wyłączone do czasu dodania bezpiecznych credentiali, ale można je już otworzyć, przejrzeć i przetestować w oryginalnym edytorze n8n.</p>
           <p class="n8n-panel-link"><strong>Podgląd panelu:</strong> zrzut dashboardu pokazuje miejsce, w którym wybierasz workflow, sprawdzasz jego status i otwierasz historię wykonań. Sam panel n8n jest chroniony osobnym logowaniem. <a href="ekrany/n8n-dashboard-workflows.png">Otwórz zrzut dashboardu n8n</a>.</p>
+          <p class="n8n-panel-link"><strong>Oryginalne canvasy n8n:</strong> <a href="ekrany/n8n-01-raport-faktur.png">raport faktur</a> · <a href="ekrany/n8n-02-dokument-rag.png">dokument → RAG</a> · <a href="ekrany/n8n-03-akceptacja-telegram.png">akceptacja Telegram</a> · <a href="ekrany/n8n-04-telegram-zadanie.png">Telegram → zadanie</a>.</p>
           <article class="n8n-scenariusz">
             <h5>01. Codzienny raport zaległości — poziom podstawowy</h5>
             <p>O 08:00 wyzwalacz pobiera z Mordeczki faktury ze statusem „Nieopłacona”. Jeśli lista nie jest pusta, n8n wysyła raport do księgowości. Jeśli nie ma zaległości, workflow kończy się bez wysyłania wiadomości.</p>
@@ -310,6 +311,7 @@
             <svg class="n8n-diagram" viewBox="0 0 900 125" role="img" aria-label="Telegram, parser, zadanie w Mordeczce i potwierdzenie"><g font-family="Arial" font-size="15" text-anchor="middle"><rect x="20" y="35" width="150" height="56" rx="10" fill="#dff3ff" stroke="#2693c7"/><text x="95" y="69">Telegram</text><path d="M170 63h55" stroke="#333" stroke-width="2" marker-end="url(#d)"/><rect x="225" y="35" width="165" height="56" rx="10" fill="#f1eaff" stroke="#8055c8"/><text x="307" y="69">Rozpoznaj /zadanie</text><path d="M390 63h55" stroke="#333" stroke-width="2" marker-end="url(#d)"/><rect x="445" y="35" width="190" height="56" rx="10" fill="#fff5d9" stroke="#d99b00"/><text x="540" y="69">Utwórz rekord</text><path d="M635 63h55" stroke="#333" stroke-width="2" marker-end="url(#d)"/><rect x="690" y="35" width="190" height="56" rx="10" fill="#e4f7e8" stroke="#3d9b55"/><text x="785" y="69">Potwierdź na Telegramie</text></g><defs><marker id="d" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0l8 4-8 4z" fill="#333"/></marker></defs></svg>
           </article>
           <p class="ostrzezenie"><strong>Przed aktywacją:</strong> dodaj credential Telegram Bot API, ogranicz chat ID do zatwierdzonych osób, ustaw klucz API Mordeczki i przetestuj workflow na danych testowych. Workflowy utworzone teraz są wyłączone, więc nie wysyłają wiadomości i nie tworzą zadań.</p>
+          <p><strong>Plan na kolejny krok — AI Chat jako projektant n8n:</strong> użytkownik opisuje po polsku proces, na przykład „gdy pojawi się faktura powyżej 10 000 zł, wyślij ją do akceptacji na Telegramie”. Asystent odczytuje dostępne klasy i endpointy Mordeczki, układa plan, pokazuje podgląd węzłów i po potwierdzeniu zapisuje workflow przez API n8n. Przed publikacją sprawdza brakujące credentiale, uprawnienia, adresy webhooków i ryzyko wysyłki. Zmiana wymaga potwierdzenia człowieka, a historia zapisuje prompt, wersję JSON i wynik testu.</p>
         </div>
       </section>
     </div>
