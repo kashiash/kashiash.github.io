@@ -123,6 +123,17 @@
   .intro-copy{max-width:68ch; margin:0 0 22px;}
   .intro-copy p{font-size:1rem;}
   .intro-meta{font-family:"IBM Plex Mono",monospace; font-size:.82em;}
+  .intro-modes{
+    max-width:920px; margin:30px 0 24px; padding:22px 24px;
+    border:1px solid var(--kreska); border-radius:12px; background:var(--plyta);
+  }
+  .intro-modes h3{
+    margin:0 0 13px; font:600 1.2rem/1.2 "Fraunces",Georgia,serif;
+  }
+  .intro-modes dl{display:grid; grid-template-columns:max-content 1fr; gap:9px 18px; margin:0;}
+  .intro-modes dt{font-weight:600; color:var(--akcent);}
+  .intro-modes dd{margin:0; color:var(--atrament-cichy);}
+  @media (max-width:640px){.intro-modes dl{grid-template-columns:1fr; gap:2px;}.intro-modes dd{margin-bottom:8px;}}
   @media (max-width:640px){
     .intro-steps{grid-template-columns:1fr; gap:18px; margin-top:32px;}
     .intro-hero::after{right:-.12em; bottom:-.1em;}
@@ -244,6 +255,17 @@
         <p class="intro-meta">Przykłady pochodzą z adresu <span class="adres">mordeczka.fleetman.com.pl</span>. Wszystkie obrazki pokazują prawdziwą pracę programu. Kliknij obrazek, aby go powiększyć.</p>
       </div>
       <p class="nota">Na niektórych obrazkach zobaczysz jeszcze nazwę <em>XafXPODynAssem</em>. To poprzednia nazwa tej samej aplikacji. Dziś program nazywa się <strong>Mordeczka</strong>.</p>
+      <section class="intro-modes" aria-labelledby="intro-modes-title">
+        <h3 id="intro-modes-title">Co oznaczają tryby i przyciski?</h3>
+        <dl>
+          <dt>Runtime</dt><dd>Klasa robocza. Możesz ją zmieniać w aplikacji.</dd>
+          <dt>Deploy Schema</dt><dd>Wdraża zapisane zmiany. Program na chwilę się restartuje, a nowa klasa i jej pola pojawiają się w menu.</dd>
+          <dt>Graduate</dt><dd>Przenosi gotową klasę do kodu C#. Najpierw kopiujesz wygenerowany kod do projektu, a potem wdrażasz aplikację.</dd>
+          <dt>Graduating</dt><dd>Stan przejściowy: klasa została oznaczona do przeniesienia do kodu, ale proces nie jest jeszcze zakończony.</dd>
+          <dt>Compiled</dt><dd>Klasa działa już jako zwykła klasa C#. Nie zmieniasz jej dalej z poziomu kreatora.</dd>
+          <dt>Degraded mode</dt><dd>Tryb awaryjny. Jeśli nowa kompilacja się nie uda, działające klasy nadal są dostępne, a błędną zmianę można poprawić i wdrożyć ponownie.</dd>
+        </dl>
+      </section>
     </div>
 
     <section class="rozdzial" id="r1">
