@@ -82,6 +82,51 @@
   .wprowadzenie{max-width:64ch; margin:0 0 64px;}
   .wprowadzenie p{margin:0 0 14px; font-size:1.06rem;}
   .wprowadzenie p:last-child{margin-bottom:0;}
+  .intro-hero{
+    position:relative; overflow:hidden; max-width:920px; margin:0 0 28px;
+    padding:clamp(30px,5vw,58px); border:1px solid var(--kreska);
+    border-radius:18px; background:
+      radial-gradient(circle at 88% 12%, rgba(47,109,129,.18), transparent 31%),
+      linear-gradient(135deg, var(--plyta) 0%, var(--akcent-tlo) 100%);
+    box-shadow:0 16px 36px var(--plyta-cien);
+  }
+  .intro-hero::after{
+    content:"M"; position:absolute; right:-.03em; bottom:-.28em;
+    font:600 clamp(12rem,27vw,25rem)/.8 "Fraunces",Georgia,serif;
+    color:var(--akcent); opacity:.07; pointer-events:none;
+  }
+  .intro-kicker{
+    position:relative; z-index:1; margin:0 0 18px!important;
+    font:500 .72rem/1.2 "IBM Plex Mono",monospace!important;
+    letter-spacing:.16em; text-transform:uppercase; color:var(--akcent);
+  }
+  .intro-hero h2{
+    position:relative; z-index:1; max-width:680px; margin:0 0 18px;
+    font:600 clamp(2.35rem,6vw,5.2rem)/.98 "Fraunces",Georgia,serif;
+    letter-spacing:-.025em; text-wrap:balance;
+  }
+  .intro-lead{
+    position:relative; z-index:1; max-width:600px; margin:0!important;
+    font-size:clamp(1.05rem,2vw,1.25rem)!important; line-height:1.5;
+  }
+  .intro-steps{
+    position:relative; z-index:1; display:grid; grid-template-columns:repeat(3,1fr);
+    gap:16px; max-width:760px; margin-top:42px;
+  }
+  .intro-step{padding-top:13px; border-top:1px solid rgba(31,78,95,.35);}
+  .intro-step .flow-number{
+    display:block; margin-bottom:8px; color:var(--akcent);
+    font:500 .72rem/1 "IBM Plex Mono",monospace;
+  }
+  .intro-step strong{display:block; margin-bottom:3px; font-size:1rem;}
+  .intro-step span:last-child{display:block; color:var(--atrament-cichy); font-size:.9rem; line-height:1.45;}
+  .intro-copy{max-width:68ch; margin:0 0 22px;}
+  .intro-copy p{font-size:1rem;}
+  .intro-meta{font-family:"IBM Plex Mono",monospace; font-size:.82em;}
+  @media (max-width:640px){
+    .intro-steps{grid-template-columns:1fr; gap:18px; margin-top:32px;}
+    .intro-hero::after{right:-.12em; bottom:-.1em;}
+  }
   .adres{
     font-family:"IBM Plex Mono",monospace; font-size:.86rem;
     background:var(--akcent-tlo); color:var(--akcent); padding:2px 7px; border-radius:4px;
@@ -166,7 +211,7 @@
   <nav class="szyna" aria-label="Spis rozdziałów">
     <p class="marka">Instrukcja obsługi</p>
     <h1>Mordeczka</h1>
-    <p class="podtytul">Aplikacja, która buduje własne ekrany na polecenie</p>
+    <p class="podtytul">Tworzysz własne ekrany, kiedy ich potrzebujesz</p>
     <ol>
         <li><a href="#r1"><span class="n">01</span>Pierwsze kroki</a></li>
         <li><a href="#r2"><span class="n">02</span>Asystent AI: jak zamawiać zmiany</a></li>
@@ -184,19 +229,21 @@
 
   <main class="tresc">
     <div class="wprowadzenie">
-      <p>Ta aplikacja pozwala dołożyć nowy rodzaj danych bez pisania kodu i bez czekania
-      na programistę. Opisujesz zwykłym zdaniem, co ma powstać, klikasz wdrożenie i po
-      kilkunastu sekundach masz gotowy ekran: listę, formularz, zapis do bazy.</p>
-      <p>Instrukcja prowadzi od pierwszego zalogowania do wydrukowanej oferty handlowej.
-      Rozdziały układają się w kolejność pracy, więc czytając po kolei przejdziesz tę samą
-      drogę, którą przechodzi się przy zakładaniu nowego obszaru w systemie.</p>
-      <p>Materiał zebrano na działającej instancji pod adresem
-      <span class="adres">mordeczka.fleetman.com.pl</span>. Każdy zrzut pochodzi
-      z rzeczywistego przebiegu — nic nie jest zainscenizowane. Kliknij obrazek,
-      żeby go powiększyć.</p>
-      <p class="nota">Na części zrzutów w stopce widnieje jeszcze dawna nazwa
-      <em>XafXPODynAssem</em>. Aplikacja nazywa się teraz <strong>Mordeczka</strong>;
-      zmieniła się wyłącznie nazwa wyświetlana, wszystko inne działa tak samo.</p>
+      <div class="intro-hero">
+        <p class="intro-kicker">Od pomysłu do gotowego ekranu</p>
+        <h2>Napisz, czego potrzebujesz.</h2>
+        <p class="intro-lead">Mordeczka utworzy potrzebne dane, formularze i raporty na podstawie krótkiego opisu. Nie musisz pisać kodu ani czekać na programistę.</p>
+        <div class="intro-steps" aria-label="Jak pracować z Mordeczką">
+          <div class="intro-step"><span class="flow-number">01</span><strong>Opisz</strong><span>Napisz własnymi słowami, co chcesz dodać.</span></div>
+          <div class="intro-step"><span class="flow-number">02</span><strong>Sprawdź</strong><span>Zobacz, jak wygląda nowy ekran i jego pola.</span></div>
+          <div class="intro-step"><span class="flow-number">03</span><strong>Korzystaj</strong><span>Wprowadzaj dane, szukaj ich i drukuj dokumenty.</span></div>
+        </div>
+      </div>
+      <div class="intro-copy">
+        <p>W tej instrukcji przejdziesz całą drogę: od pierwszego logowania do przygotowania i wydrukowania oferty. Rozdziały są ułożone po kolei, więc możesz wykonywać opisane czynności razem z nami.</p>
+        <p class="intro-meta">Przykłady pochodzą z adresu <span class="adres">mordeczka.fleetman.com.pl</span>. Wszystkie obrazki pokazują prawdziwą pracę programu. Kliknij obrazek, aby go powiększyć.</p>
+      </div>
+      <p class="nota">Na niektórych obrazkach zobaczysz jeszcze nazwę <em>XafXPODynAssem</em>. To poprzednia nazwa tej samej aplikacji. Dziś program nazywa się <strong>Mordeczka</strong>.</p>
     </div>
 
     <section class="rozdzial" id="r1">
