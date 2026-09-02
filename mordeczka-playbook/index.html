@@ -235,6 +235,7 @@
         <li><a href="#r9"><span class="n">09</span>Przepływy: prowadzenie sprawy przez etapy</a></li>
         <li><a href="#r10"><span class="n">10</span>Pełny przebieg: CRM od zera</a></li>
         <li><a href="#r11"><span class="n">11</span>Zasady bezpiecznej pracy ze schematem</a></li>
+        <li><a href="#r12"><span class="n">12</span>Baza wiedzy RAG i automatyzacje n8n</a></li>
     </ol>
   </nav>
 
@@ -960,6 +961,28 @@
       jedną kolumną — to sygnał, że metadane tego pola wymagają poprawki.</p>
     </div>
 
+    </section>
+
+    <section class="rozdzial" id="r12">
+      <header class="rozdzial-glowka">
+        <span class="numer">Rozdział 12</span>
+        <h2>Baza wiedzy RAG i automatyzacje n8n</h2>
+      </header>
+      <div class="wstep">Mordeczka ma dwa uzupełniające się mechanizmy: asystenta schematu, który zarządza strukturą aplikacji, oraz asystenta RAG, który odpowiada na podstawie zaindeksowanych dokumentów.</div>
+      <div class="proza">
+        <h3>Jak działa RAG</h3>
+        <p>Dodany PDF jest zapisywany w dokumentach, dzielony lokalnie na fragmenty, a następnie każdy fragment otrzymuje embedding. Przy pytaniu system tworzy embedding pytania, wyszukuje podobne fragmenty i przekazuje je modelowi jako kontekst odpowiedzi.</p>
+        <ul>
+          <li>Wgraj dokument w widoku <strong>Dokumenty i baza wiedzy</strong>.</li>
+          <li>Uruchom indeksowanie i sprawdź status przetwarzania.</li>
+          <li>Zapytaj <strong>Asystenta RAG</strong>; odpowiedź powinna wskazywać źródło, jeśli jest dostępne.</li>
+        </ul>
+        <p>Jeśli indeksowanie się nie kończy, sprawdź status dokumentu, logi kolejki Hangfire oraz tabelę chunków. Samo wgranie pliku nie oznacza jeszcze, że jest on dostępny w wyszukiwaniu.</p>
+
+        <h3>Automatyzacje n8n</h3>
+        <p>n8n wykonuje działania poza ekranem XAF: odbiera webhook, uruchamia workflow i może wysłać powiadomienie, raport albo zaktualizować dane. Mordeczka przekazuje do n8n dane zdarzenia, a wynik wraca do kolejki lub historii operacji.</p>
+        <p>Przed włączeniem workflow sprawdź adres webhooka, aktywną wersję workflow oraz dane wejściowe. Klucze API, hasła i tokeny przechowuj w konfiguracji n8n lub zmiennych środowiskowych, nigdy w dokumentacji ani w kodzie.</p>
+      </div>
     </section>
 
     <p class="stopka">Instrukcja powstała 31 sierpnia 2026. Obok niej istnieje nagranie
