@@ -981,6 +981,22 @@
 
         <h3>Automatyzacje n8n</h3>
         <p>n8n wykonuje działania poza ekranem XAF: odbiera webhook, uruchamia workflow i może wysłać powiadomienie, raport albo zaktualizować dane. Mordeczka przekazuje do n8n dane zdarzenia, a wynik wraca do kolejki lub historii operacji.</p>
+        <figure class="figura">
+          <img src="ekrany/n8n-01-raport-faktur.png" alt="Diagram n8n: raport faktur wysyłany e-mailem" loading="lazy">
+          <figcaption><span class="nr">12.1</span><span><strong>Raport faktur.</strong> n8n pobiera dane, sprawdza warunek i wysyła wiadomość.</span></figcaption>
+        </figure>
+        <figure class="figura">
+          <img src="ekrany/n8n-02-dokument-rag.png" alt="Diagram n8n: dokument przekazany do indeksu RAG" loading="lazy">
+          <figcaption><span class="nr">12.2</span><span><strong>Dokument do RAG.</strong> Plik przechodzi przez przetwarzanie i indeksowanie.</span></figcaption>
+        </figure>
+        <figure class="figura">
+          <img src="ekrany/n8n-03-akceptacja-telegram.png" alt="Diagram n8n: akceptacja faktury przez Telegram" loading="lazy">
+          <figcaption><span class="nr">12.3</span><span><strong>Akceptacja przez Telegram.</strong> Decyzja wraca do workflowu.</span></figcaption>
+        </figure>
+        <figure class="figura">
+          <img src="ekrany/n8n-04-telegram-zadanie.png" alt="Diagram n8n: wiadomość Telegram zamieniona na zadanie" loading="lazy">
+          <figcaption><span class="nr">12.4</span><span><strong>Telegram do zadania.</strong> Wiadomość uruchamia utworzenie zadania w Mordeczce.</span></figcaption>
+        </figure>
         <p>Przed włączeniem workflow sprawdź adres webhooka, aktywną wersję workflow oraz dane wejściowe. Klucze API, hasła i tokeny przechowuj w konfiguracji n8n lub zmiennych środowiskowych, nigdy w dokumentacji ani w kodzie.</p>
       </div>
     </section>
